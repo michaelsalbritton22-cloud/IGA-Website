@@ -718,10 +718,11 @@ footer {
 
 .event-leaderboard .leaderboard-row {
     grid-template-columns:
-        70px
-        minmax(300px, 1fr)
-        120px
-        120px;
+    70px
+    minmax(300px, 1fr)
+    130px
+    100px
+    90px;
 
     min-height: 55px;
 }
