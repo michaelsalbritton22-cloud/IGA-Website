@@ -841,6 +841,7 @@ async function loadEventLeaderboards() {
                         <div>PLAYER</div>
                         <div>GROSS</div>
                         <div>NET</div>
+                        <div>POINTS</div>
 
                     </div>
 
@@ -848,26 +849,43 @@ async function loadEventLeaderboards() {
 
 
         sorted.forEach(
-            (
-                round,
-                index
-            ) => {
+    (
+        round,
+        index
+    ) => {
 
-                const previous =
-                    sorted[
-                        index - 1
-                    ];
+        const currentNet =
+            Number(round.net_score);
 
+        const tiedPosition =
+            sorted.findIndex(
+                other =>
+                    Number(other.net_score) ===
+                    currentNet
+            ) + 1;
 
-                const position =
-                    index === 0 ||
-                    round.net_score !==
-                    previous.net_score
-                        ? index + 1
-                        : "T" +
-                          (
-                              index + 1
-                          );
+        const position =
+            index === 0 ||
+            Number(round.net_score) !==
+            Number(sorted[index - 1].net_score)
+                ? tiedPosition
+                : "T" + tiedPosition;
+
+        const pointsTable = {
+            1: 100,
+            2: 85,
+            3: 75,
+            4: 65,
+            5: 55,
+            6: 45,
+            7: 35,
+            8: 25,
+            9: 20,
+            10: 15
+        };
+
+        const eventPoints =
+            pointsTable[tiedPosition] || 0;
 
 
                 html += `
@@ -901,6 +919,11 @@ async function loadEventLeaderboards() {
 
                         </div>
 
+                        <div class="points">
+
+                             ${eventPoints}
+                        </div>
+                        
                     </div>
 
                 `;
