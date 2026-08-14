@@ -1,0 +1,1768 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>IGA Commissioner Dashboard</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- Shared IGA Header -->
+
+    <div id="header"></div>
+
+
+    <main class="container">
+
+
+        <section class="page-title">
+
+            <h2>
+                Commissioner Dashboard
+            </h2>
+
+            <p>
+                Manage rounds, approvals, players, and league operations.
+            </p>
+
+        </section>
+
+
+        <!-- PENDING APPROVALS -->
+
+        <section>
+
+            <h2>
+                Pending Round Approvals
+            </h2>
+
+
+            <div id="pendingRounds">
+
+                <div class="card">
+
+                    <h3>
+                        Loading Pending Rounds...
+                    </h3>
+
+                    <p>
+                        Checking the IGA database.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ROUND REVIEW -->
+
+<section id="roundReview" class="round-review" style="display:none;">
+
+    <div class="card">
+
+        <!-- ==========================================
+             REVIEW HEADER
+        =========================================== -->
+
+        <div class="approval-header">
+
+            <div>
+
+                <h2 id="reviewCourse">
+                    Round Review
+                </h2>
+
+                <p id="reviewEventName"></p>
+
+                <p id="reviewDate"></p>
+
+            </div>
+
+            <span
+                id="reviewEventStatus"
+                class="status-pending"
+            >
+                OPEN
+            </span>
+
+        </div>
+
+
+        <!-- ==========================================
+             SUBMISSION SUMMARY
+        =========================================== -->
+
+        <div class="playing-group">
+
+            <strong>
+                Event Submission Status
+            </strong>
+
+            <p id="reviewPlayerCount"></p>
+
+        </div>
+
+
+        <!-- ==========================================
+             PLAYER SCORE REVIEW
+        =========================================== -->
+
+        <div id="reviewScores">
+
+            <div class="card">
+
+                <h3>
+                    Loading Submitted Scores...
+                </h3>
+
+                <p>
+                    Loading player score information.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==========================================
+             PROVISIONAL STANDINGS
+        =========================================== -->
+
+        <div
+            id="reviewResults"
+            style="margin-top: 25px;"
+        ></div>
+
+
+        <!-- ==========================================
+             REVIEW SUMMARY
+        =========================================== -->
+
+        <div class="review-summary">
+
+            <p>
+
+                <strong>
+                    Provisional Results
+                </strong>
+
+            </p>
+
+            <p>
+                Placement and points are based on the
+                currently approved scores.
+            </p>
+
+            <p>
+                Additional approved scores can change
+                player placement and points.
+            </p>
+
+            <p>
+                The event is not official until the
+                Commissioner finalizes it.
+            </p>
+
+        </div>
+
+
+        <!-- ==========================================
+             ACTIONS
+        =========================================== -->
+
+        <div
+            class="approval-actions"
+            id="reviewActions"
+        >
+
+            <button
+                class="button"
+                onclick="closeRoundReview()"
+            >
+
+                Back
+
+            </button>
+
+
+            <button
+                class="button"
+                onclick="approveScores()"
+            >
+
+                Approve Pending Scores
+
+            </button>
+
+
+            <button
+                class="button"
+                onclick="finalizeCurrentEvent()"
+            >
+
+                🏆 Finalize Event
+
+            </button>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+        <!-- COMMISSIONER TOOLS -->
+
+        <section class="cards">
+
+
+            <div class="card">
+
+                <h3>
+                    Enter Round
+                </h3>
+
+                <p>
+                    Manually enter a player's round.
+                </p>
+
+                <a href="#" class="button">
+                    Enter Round
+                </a>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Player Management
+                </h3>
+
+                <p>
+                    Add, edit, or deactivate IGA players.
+                </p>
+
+                <a href="#" class="button">
+                    Manage Players
+                </a>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Season Management
+                </h3>
+
+                <p>
+                    Manage seasons and qualifying requirements.
+                </p>
+
+                <a href="#" class="button">
+                    Manage Seasons
+                </a>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Championship Management
+                </h3>
+
+                <p>
+                    Manage IGA championship events and winners.
+                </p>
+
+                <a href="#" class="button">
+                    Manage Championships
+                </a>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+    <footer>
+
+        Internal Golf Association © 2027
+
+    </footer>
+
+
+    <!-- Shared Header -->
+
+    <script src="js/components.js"></script>
+
+    <script>
+
+        loadHeader();
+
+    </script>
+
+
+    <!-- Supabase -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="js/database.js"></script>
+
+
+<!-- Load Pending Rounds -->
+
+<script>
+
+let pendingRounds = [];
+
+let currentEventId = null;
+
+let currentEventKey = null;
+
+
+// ==========================================
+// LOAD PENDING ROUNDS
+// ==========================================
+
+async function loadPendingRounds() {
+
+    const container =
+        document.getElementById(
+            "pendingRounds"
+        );
+
+
+    try {
+
+        // ==========================================
+        // GET ALL OPEN EVENTS
+        // ==========================================
+
+        const events =
+            await getOpenEvents();
+
+         pendingRounds = events;
+
+        if (!events.length) {
+
+            container.innerHTML = `
+
+                <div class="card">
+
+                    <h3>
+                        No Open Events
+                    </h3>
+
+                    <p>
+                        There are currently no
+                        open IGA events.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // BUILD EVENT CARDS
+        // ==========================================
+
+        let html = "";
+
+
+        for (
+            const event
+            of events
+        ) {
+
+
+            // ==========================================
+            // GET ALL ROUNDS FOR EVENT
+            // ==========================================
+
+            const {
+                data: rounds,
+                error
+            } = await supabaseClient
+
+                .from("rounds")
+
+                .select(`
+                    id,
+                    player_id,
+                    round_date,
+                    gross_score,
+                    net_score,
+                    handicap_used,
+                    approval_status,
+
+                    "Players" (
+                        "Name"
+                    )
+                `)
+
+                .eq(
+                    "event_id",
+                    event.id
+                )
+
+                .order(
+                    "net_score",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+            if (error) {
+
+                console.error(
+                    "ERROR LOADING EVENT ROUNDS:",
+                    error
+                );
+
+                continue;
+
+            }
+
+
+            // ==========================================
+            // GET ALL ACTIVE PLAYERS
+            // ==========================================
+
+            const {
+                data: players,
+                error: playerError
+            } = await supabaseClient
+
+                .from("Players")
+
+                .select(`
+                    player_id,
+                    "Name"
+                `)
+
+                .eq(
+                    "Active",
+                    true
+                );
+
+
+            if (playerError) {
+
+                console.error(
+                    "ERROR LOADING PLAYERS:",
+                    playerError
+                );
+
+                continue;
+
+            }
+
+
+            // ==========================================
+            // COUNTS
+            // ==========================================
+
+            const submitted =
+                rounds.length;
+
+
+            const approved =
+                rounds.filter(
+                    round =>
+                        round.approval_status ===
+                        "Approved"
+                ).length;
+
+
+            const pending =
+                rounds.filter(
+                    round =>
+                        round.approval_status ===
+                        "Pending"
+                ).length;
+
+
+            const totalPlayers =
+                players.length;
+
+
+            // ==========================================
+            // PLAYER ROWS
+            // ==========================================
+
+            let playerRows = "";
+
+
+            players.forEach(
+                player => {
+
+
+                    const round =
+                        rounds.find(
+                            r =>
+                                r.player_id ===
+                                player.player_id
+                        );
+
+
+                    if (!round) {
+
+                        playerRows += `
+
+                            <div class="round-player">
+
+                                <div>
+
+                                    <strong>
+                                        ${player.Name}
+                                    </strong>
+
+                                    <div class="round-player-details">
+                                        Not Submitted
+                                    </div>
+
+                                </div>
+
+                                <div>
+                                    <span class="status-pending">
+                                        —
+                                    </span>
+                                </div>
+
+                            </div>
+
+                        `;
+
+                        return;
+
+                    }
+
+
+                    const status =
+                        round.approval_status;
+
+
+                    const statusText =
+                        status === "Approved"
+                            ? "Approved"
+                            : "Pending";
+
+
+                    playerRows += `
+
+                        <div class="round-player">
+
+                            <div>
+
+                                <strong>
+                                    ${player.Name}
+                                </strong>
+
+                                <div class="round-player-details">
+
+                                    Gross:
+                                    ${round.gross_score}
+
+                                    &nbsp; | &nbsp;
+
+                                    Net:
+                                    ${round.net_score}
+
+                                    &nbsp; | &nbsp;
+
+                                    ${statusText}
+
+                                </div>
+
+                            </div>
+
+
+                            <div>
+
+                                <span
+                                    class="${
+                                        status === "Approved"
+                                            ? "status-approved"
+                                            : "status-pending"
+                                    }"
+                                >
+
+                                    ${
+                                        status === "Approved"
+                                            ? "✓ Approved"
+                                            : "Pending"
+                                    }
+
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+
+            // ==========================================
+            // EVENT CARD
+            // ==========================================
+
+            html += `
+
+                <div class="card approval-card">
+
+
+                    <div class="approval-header">
+
+                        <div>
+
+                            <h3>
+                                ${
+                                    event.courses
+                                        .Course_name
+                                }
+                            </h3>
+
+                            <p>
+                                ${
+                                    event.event_name
+                                }
+                            </p>
+
+                            <p>
+                                ${
+                                    event.event_date ||
+                                    ""
+                                }
+                            </p>
+
+                        </div>
+
+
+                        <span class="status-pending">
+
+                            OPEN
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="playing-group">
+
+                        <strong>
+                            Submission Status
+                        </strong>
+
+                        <p>
+
+                            ${submitted}
+                            of
+                            ${totalPlayers}
+                            submitted
+
+                            &nbsp; • &nbsp;
+
+                            ${approved}
+                            approved
+
+                            ${
+                                pending
+                                    ? ` • ${pending} pending`
+                                    : ""
+                            }
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="round-players">
+
+                        ${playerRows}
+
+                    </div>
+
+
+                    <div class="approval-actions">
+
+                        <button
+                            class="button"
+                            onclick="
+                                reviewEvent(
+                                    ${event.id}
+                                )
+                            "
+                        >
+
+                            Review Event
+
+                        </button>
+
+                    </div>
+
+
+                </div>
+
+            `;
+
+        }
+
+
+        container.innerHTML =
+            html;
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "ERROR LOADING OPEN EVENTS:",
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <div class="card">
+
+                <h3>
+                    Error Loading Events
+                </h3>
+
+                <p>
+                    ${error.message}
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+// ==========================================
+// REVIEW EVENT
+// ==========================================
+
+async function reviewEvent(eventId) {
+
+    currentEventId = eventId;
+
+    try {
+
+        // ==========================================
+        // GET EVENT INFORMATION
+        // ==========================================
+
+        const {
+            data: event,
+            error: eventError
+        } = await supabaseClient
+
+            .from("events_table")
+
+            .select(`
+                id,
+                event_name,
+                event_type,
+                status,
+                event_date,
+                course_id,
+
+                courses (
+                    Course_name,
+                    par,
+                    Location
+                )
+            `)
+
+            .eq(
+                "id",
+                eventId
+            )
+
+            .single();
+
+
+        if (eventError) {
+
+            throw eventError;
+
+        }
+
+
+        // ==========================================
+        // SHOW REVIEW AREA
+        // ==========================================
+
+        document.getElementById(
+            "roundReview"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "reviewCourse"
+        ).textContent =
+            event.courses.Course_name;
+
+
+        document.getElementById(
+            "reviewEventName"
+        ).textContent =
+            event.event_name;
+
+
+        document.getElementById(
+            "reviewDate"
+        ).textContent =
+            event.event_date;
+
+
+        document.getElementById(
+            "reviewEventStatus"
+        ).textContent =
+            event.status;
+
+
+        // ==========================================
+        // GET ALL EVENT ROUNDS
+        // ==========================================
+
+        const {
+            data: rounds,
+            error: roundsError
+        } = await supabaseClient
+
+            .from("rounds")
+
+            .select(`
+                id,
+                player_id,
+                round_date,
+                gross_score,
+                net_score,
+                handicap_used,
+                approval_status,
+                counts_for_qualification,
+
+                birdies,
+                eagles,
+                pars,
+                bogeys,
+                double_bogeys,
+
+                fairways_hit,
+                greens_hit,
+                putts,
+
+                Notes,
+
+                "Players" (
+                    "Name",
+                    "Handicap"
+                )
+            `)
+
+            .eq(
+                "event_id",
+                eventId
+            )
+
+            .order(
+                "net_score",
+                {
+                    ascending: true
+                }
+            );
+
+
+        if (roundsError) {
+
+            throw roundsError;
+
+        }
+
+
+        // ==========================================
+        // GET ACTIVE PLAYERS
+        // ==========================================
+
+        const {
+            data: players,
+            error: playersError
+        } = await supabaseClient
+
+            .from("Players")
+
+            .select(`
+                player_id,
+                "Name"
+            `)
+
+            .eq(
+                "Active",
+                true
+            );
+
+
+        if (playersError) {
+
+            throw playersError;
+
+        }
+
+
+        // ==========================================
+        // COUNTS
+        // ==========================================
+
+        const submittedCount =
+            rounds.length;
+
+
+        const approvedCount =
+            rounds.filter(
+                round =>
+                    round.approval_status ===
+                    "Approved"
+            ).length;
+
+
+        const pendingCount =
+            rounds.filter(
+                round =>
+                    round.approval_status ===
+                    "Pending"
+            ).length;
+
+
+        const totalPlayers =
+            players.length;
+
+
+        document.getElementById(
+            "reviewPlayerCount"
+        ).textContent =
+            `${submittedCount} of ${totalPlayers} submitted • `
+            +
+            `${approvedCount} approved • `
+            +
+            `${pendingCount} pending`;
+
+
+        // ==========================================
+        // DISPLAY INDIVIDUAL SCORE CARDS
+        // ==========================================
+
+        const scoresContainer =
+            document.getElementById(
+                "reviewScores"
+            );
+
+
+        if (!rounds.length) {
+
+            scoresContainer.innerHTML = `
+
+                <div class="card">
+
+                    <h3>
+                        No Scores Submitted
+                    </h3>
+
+                    <p>
+                        No players have submitted a score
+                        for this event yet.
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+        else {
+
+            let scoreHTML = "";
+
+
+            rounds.forEach(
+                round => {
+
+                    const isApproved =
+                        round.approval_status ===
+                        "Approved";
+
+
+                    const statusClass =
+                        isApproved
+                            ? "status-approved"
+                            : "status-pending";
+
+
+                    const statusText =
+                        isApproved
+                            ? "✓ APPROVED"
+                            : "PENDING APPROVAL";
+
+
+                    const qualification =
+                        round.counts_for_qualification
+                            ? "Counts toward qualification"
+                            : "Does not count toward qualification";
+
+
+                    scoreHTML += `
+
+                        <div class="card approval-card">
+
+                            <div class="approval-header">
+
+                                <div>
+
+                                    <h3>
+                                        ${round.Players.Name}
+                                    </h3>
+
+                                    <p>
+                                        Handicap:
+                                        ${round.handicap_used}
+                                    </p>
+
+                                </div>
+
+
+                                <span
+                                    class="${statusClass}"
+                                >
+
+                                    ${statusText}
+
+                                </span>
+
+                            </div>
+
+
+                            <!-- SCORE -->
+
+                            <div class="round-player-details">
+
+                                <strong>
+                                    Gross:
+                                </strong>
+
+                                ${round.gross_score}
+
+                                &nbsp;&nbsp;|&nbsp;&nbsp;
+
+                                <strong>
+                                    Net:
+                                </strong>
+
+                                <strong>
+                                    ${round.net_score}
+                                </strong>
+
+                            </div>
+
+
+                            <!-- SCORING STATS -->
+
+                            <div
+                                class="round-player-details"
+                                style="margin-top:10px;"
+                            >
+
+                                <strong>
+                                    Birdies:
+                                </strong>
+
+                                ${round.birdies || 0}
+
+                                &nbsp; | &nbsp;
+
+                                <strong>
+                                    Eagles:
+                                </strong>
+
+                                ${round.eagles || 0}
+
+                                &nbsp; | &nbsp;
+
+                                <strong>
+                                    Pars:
+                                </strong>
+
+                                ${round.pars || 0}
+
+                                &nbsp; | &nbsp;
+
+                                <strong>
+                                    Bogeys:
+                                </strong>
+
+                                ${round.bogeys || 0}
+
+                                &nbsp; | &nbsp;
+
+                                <strong>
+                                    Doubles:
+                                </strong>
+
+                                ${round.double_bogeys || 0}
+
+                            </div>
+
+
+                            <!-- PERFORMANCE STATS -->
+
+                            <div
+                                class="round-player-details"
+                                style="margin-top:10px;"
+                            >
+
+                                <strong>
+                                    Fairways:
+                                </strong>
+
+                                ${round.fairways_hit ?? "-"}
+
+                                &nbsp; | &nbsp;
+
+                                <strong>
+                                    Greens:
+                                </strong>
+
+                                ${round.greens_hit ?? "-"}
+
+                                &nbsp; | &nbsp;
+
+                                <strong>
+                                    Putts:
+                                </strong>
+
+                                ${round.putts ?? "-"}
+
+                            </div>
+
+
+                            <!-- QUALIFICATION -->
+
+                            <div
+                                class="qualification-status"
+                                style="margin-top:12px;"
+                            >
+
+                                ${qualification}
+
+                            </div>
+
+
+                            ${
+                                round.Notes
+                                    ? `
+
+                                        <div
+                                            class="review-summary"
+                                            style="margin-top:12px;"
+                                        >
+
+                                            <strong>
+                                                Notes:
+                                            </strong>
+
+                                            ${round.Notes}
+
+                                        </div>
+
+                                    `
+                                    : ""
+                            }
+
+                            
+
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+
+            scoresContainer.innerHTML =
+                scoreHTML;
+
+        }
+
+
+        // ==========================================
+        // PROVISIONAL STANDINGS
+        // ==========================================
+
+        const standings =
+            await getEventStandings(
+                eventId
+            );
+
+
+        const results =
+            document.getElementById(
+                "reviewResults"
+            );
+
+
+        if (!standings.length) {
+
+            results.innerHTML = `
+
+                <div class="card">
+
+                    <h3>
+                        Provisional Standings
+                    </h3>
+
+                    <p>
+                        No approved scores yet.
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+        else {
+
+            let standingsHTML = `
+
+                <div class="card">
+
+                    <h3>
+                        Provisional Standings
+                    </h3>
+
+                    <div class="round-players">
+
+            `;
+
+
+            standings.forEach(
+                round => {
+
+                    standingsHTML += `
+
+                        <div class="round-player">
+
+                            <div>
+
+                                <strong>
+
+                                    ${round.finish_position}.
+                                    ${round.Players.Name}
+
+                                </strong>
+
+
+                                <div
+                                    class="round-player-details"
+                                >
+
+                                    Net:
+                                    ${round.net_score}
+
+                                    &nbsp; | &nbsp;
+
+                                    Provisional Points:
+                                    <strong>
+                                        ${round.provisional_points}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+
+            standingsHTML += `
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            results.innerHTML =
+                standingsHTML;
+
+        }
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "REVIEW EVENT ERROR:",
+            error
+        );
+
+
+        alert(
+            "Could not load event review.\n\n"
+            +
+            error.message
+        );
+
+    }
+
+}
+
+// ==========================================
+// APPROVE SINGLE SCORE
+// ==========================================
+
+async function approveSingleScore(roundId) {
+
+    try {
+
+        // ==========================================
+        // GET ROUND
+        // ==========================================
+
+        const {
+            data: round,
+            error: roundError
+        } = await supabaseClient
+
+            .from("rounds")
+
+            .select(`
+                id,
+                player_id,
+                event_id,
+                gross_score,
+                net_score,
+
+                "Players" (
+                    "Name"
+                )
+            `)
+
+            .eq(
+                "id",
+                roundId
+            )
+
+            .single();
+
+
+        if (roundError) {
+
+            throw roundError;
+
+        }
+
+
+        // ==========================================
+        // CONFIRM
+        // ==========================================
+
+        const confirmed =
+            confirm(
+
+                `Approve ${round.Players.Name}'s score?\n\n`
+                +
+                `Gross: ${round.gross_score}\n`
+                +
+                `Net: ${round.net_score}\n\n`
+                +
+                `This will make the score eligible `
+                +
+                `for provisional standings.`
+
+            );
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // APPROVE
+        // ==========================================
+
+        await approveIndividualRound(
+            round.id,
+            "Commissioner"
+        );
+
+
+        // ==========================================
+        // REFRESH REVIEW
+        // ==========================================
+
+        await reviewEvent(
+            round.event_id
+        );
+
+
+        // ==========================================
+        // REFRESH EVENT LIST
+        // ==========================================
+
+        await loadPendingRounds();
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "SINGLE SCORE APPROVAL ERROR:",
+            error
+        );
+
+
+        alert(
+            "Could not approve this score.\n\n"
+            +
+            error.message
+        );
+
+    }
+
+}
+
+// ==========================================
+// APPROVE ALL PENDING SCORES FOR EVENT
+// ==========================================
+
+async function approveScores() {
+
+    if (!currentEventId) {
+
+        alert(
+            "No event selected."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        // ==========================================
+        // GET PENDING SCORES DIRECTLY FROM DATABASE
+        // ==========================================
+
+        const {
+            data: pending,
+            error
+        } = await supabaseClient
+
+            .from("rounds")
+
+            .select(`
+                id,
+                player_id,
+                gross_score,
+                net_score,
+                approval_status,
+
+                "Players" (
+                    "Name"
+                )
+            `)
+
+            .eq(
+                "event_id",
+                currentEventId
+            )
+
+            .eq(
+                "approval_status",
+                "Pending"
+            );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        // ==========================================
+        // NO PENDING SCORES
+        // ==========================================
+
+        if (
+            !pending ||
+            !pending.length
+        ) {
+
+            alert(
+                "There are no pending scores for this event."
+            );
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // CONFIRM
+        // ==========================================
+
+        let playerList =
+            pending
+                .map(
+                    round =>
+                        `• ${round.Players.Name} — Net ${round.net_score}`
+                )
+                .join("\n");
+
+
+        const confirmed =
+            confirm(
+
+                `Approve ${pending.length} `
+                +
+                `pending score(s)?\n\n`
+                +
+                playerList
+                +
+                `\n\n`
+                +
+                `This verifies the submitted scores `
+                +
+                `but does NOT finalize placement or points.`
+
+            );
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // APPROVE EACH PENDING SCORE
+        // ==========================================
+
+        for (
+            const round
+            of pending
+        ) {
+
+            await approveIndividualRound(
+                round.id,
+                "Commissioner"
+            );
+
+        }
+
+
+        alert(
+            `${pending.length} score(s) approved.`
+        );
+
+
+        // ==========================================
+        // REFRESH REVIEW
+        // ==========================================
+
+        await reviewEvent(
+            currentEventId
+        );
+
+
+        // ==========================================
+        // REFRESH EVENT LIST
+        // ==========================================
+
+        await loadPendingRounds();
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "APPROVAL ERROR:",
+            error
+        );
+
+
+        alert(
+            "Could not approve scores.\n\n"
+            +
+            error.message
+        );
+
+    }
+
+}
+
+// ==========================================
+// FINALIZE CURRENT EVENT
+// ==========================================
+
+async function finalizeCurrentEvent() {
+
+    if (!currentEventId) {
+
+        alert(
+            "No event selected."
+        );
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+
+            "FINALIZE THIS EVENT?\n\n"
+            +
+            "This will permanently lock:\n"
+            +
+            "• Final placement\n"
+            +
+            "• Points\n"
+            +
+            "• Qualification\n\n"
+            +
+            "New scores will no longer "
+            +
+            "change the results."
+
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    try {
+
+
+        await finalizeEvent(
+
+            currentEventId,
+
+            "Commissioner"
+
+        );
+
+
+        alert(
+            "Event finalized successfully!"
+        );
+
+
+        closeRoundReview();
+
+
+        currentEventId =
+            null;
+
+
+        currentEventKey =
+            null;
+
+
+        await loadPendingRounds();
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "FINALIZE ERROR:",
+            error
+        );
+
+
+        alert(
+            "Could not finalize event.\n\n"
+            +
+            error.message
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// CLOSE REVIEW
+// ==========================================
+
+function closeRoundReview() {
+
+    document.getElementById(
+        "roundReview"
+    ).style.display =
+        "none";
+
+}
+
+
+// ==========================================
+// LOAD PAGE
+// ==========================================
+
+loadPendingRounds();
+
+</script>
+
+</body>
+
+</html>

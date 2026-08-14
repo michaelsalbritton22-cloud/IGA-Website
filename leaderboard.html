@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>
+        IGA Leaderboard
+    </title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+<div id="header"></div>
+
+
+<div class="container">
+
+    <!-- ==========================================
+         PAGE HEADER
+    =========================================== -->
+
+    <div class="leaderboard-page-header">
+
+        <h1>
+            IGA Championship Standings
+        </h1>
+
+        <p>
+            2027 Season
+        </p>
+
+        <div class="live-notice">
+
+            🟡 LIVE STANDINGS
+
+            <span>
+                Scores are unofficial until events are finalized.
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==========================================
+         CHAMPIONSHIP STANDINGS
+    =========================================== -->
+
+    <div class="card leaderboard-card">
+
+        <div class="leaderboard-section-header">
+
+            <div>
+
+                <h2>
+                    🏆 Championship Standings
+                </h2>
+
+                <p>
+                    Official points + projected points from open events
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div id="seasonLeaderboard">
+
+            <div class="loading">
+
+                Loading championship standings...
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==========================================
+         EVENT LEADERBOARDS
+    =========================================== -->
+
+    <div class="card leaderboard-card">
+
+        <div class="leaderboard-section-header">
+
+            <div>
+
+                <h2>
+                    ⛳ Event Leaderboards
+                </h2>
+
+                <p>
+                    Live and finalized event results
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div id="eventLeaderboards">
+
+            <div class="loading">
+
+                Loading events...
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<footer>
+
+    Internal Golf Association © 2027
+
+</footer>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/components.js"></script>
+
+<script src="js/database.js"></script>
+
+
+<script>
+
+loadHeader();
+
+
+// ==========================================
+// LOAD LEADERBOARD
+// ==========================================
+
+async function loadLeaderboard() {
+
+    try {
+
+        await loadSeasonLeaderboard();
+
+        await loadEventLeaderboards();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "LEADERBOARD ERROR:",
+            error
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// LOAD SEASON LEADERBOARD
+// ==========================================
+
+async function loadSeasonLeaderboard() {
+
+    const container =
+        document.getElementById(
+            "seasonLeaderboard"
+        );
+
+
+    container.innerHTML = `
+
+        <div class="loading">
+
+            Calculating live standings...
+
+        </div>
+
+    `;
+
+
+    // ------------------------------------------
+    // GET ACTIVE PLAYERS
+    // ------------------------------------------
+
+    const {
+        data: players,
+        error: playerError
+    } = await supabaseClient
+
+        .from("Players")
+
+        .select(`
+            player_id,
+            "Name"
+        `)
+
+        .eq(
+            "Active",
+            true
+        );
+
+
+    if (playerError) {
+
+        throw playerError;
+
+    }
+
+
+    // ------------------------------------------
+    // GET OFFICIAL SEASON POINTS
+    // ------------------------------------------
+
+    const {
+        data: seasonPoints,
+        error: pointsError
+    } = await supabaseClient
+
+        .from("season_points")
+
+        .select(`
+            "Player_id",
+            season_id,
+            total_points,
+            rounds_played,
+            birdies,
+            wins,
+            top_3_finishes,
+            eagles,
+            average_score,
+            low_round
+        `)
+
+        .eq(
+            "season_id",
+            1
+        );
+
+
+    if (pointsError) {
+
+        throw pointsError;
+
+    }
+
+
+    // ------------------------------------------
+    // GET ALL OPEN EVENTS
+    // ------------------------------------------
+
+    const {
+        data: openEvents,
+        error: eventError
+    } = await supabaseClient
+
+        .from("events_table")
+
+        .select(`
+            id,
+            event_name,
+            event_type,
+            season_id,
+            status,
+            course_id,
+            event_date
+        `)
+
+        .eq(
+            "season_id",
+            1
+        )
+
+        .eq(
+            "status",
+            "Open"
+        );
+
+
+    if (eventError) {
+
+        throw eventError;
+
+    }
+
+
+    // ------------------------------------------
+    // GET ALL SUBMITTED ROUNDS
+    // FROM ALL OPEN EVENTS
+    // ------------------------------------------
+
+    let liveRounds = [];
+
+
+    if (openEvents.length) {
+
+        const eventIds =
+            openEvents.map(
+                event =>
+                    event.id
+            );
+
+
+        const {
+            data: rounds,
+            error: roundsError
+        } = await supabaseClient
+
+            .from("rounds")
+
+            .select(`
+                id,
+                player_id,
+                event_id,
+                net_score,
+                gross_score,
+                approval_status
+            `)
+
+            .in(
+                "event_id",
+                eventIds
+            );
+
+
+        if (roundsError) {
+
+            throw roundsError;
+
+        }
+
+
+        liveRounds =
+            rounds || [];
+
+    }
+
+
+    // ------------------------------------------
+    // BUILD LIVE STANDINGS
+    // ------------------------------------------
+
+    const standings =
+        players.map(
+            player => {
+
+                const official =
+                    seasonPoints.find(
+                        record =>
+                            Number(
+                                record.Player_id
+                            ) ===
+                            Number(
+                                player.player_id
+                            )
+                    );
+
+
+                const playerLiveRounds =
+                    liveRounds.filter(
+                        round =>
+                            Number(
+                                round.player_id
+                            ) ===
+                            Number(
+                                player.player_id
+                            )
+                    );
+
+
+                let projectedPoints = 0;
+
+
+                // --------------------------------
+                // CALCULATE EACH OPEN EVENT
+                // --------------------------------
+
+                openEvents.forEach(
+                    event => {
+
+                        const eventRounds =
+                            playerLiveRounds
+                                .filter(
+                                    round =>
+                                        round.event_id ===
+                                        event.id
+                                );
+
+
+                        if (
+                            !eventRounds.length
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        // Get all submitted scores
+                        // for this event
+
+                        const allEventRounds =
+                            liveRounds.filter(
+                                round =>
+                                    round.event_id ===
+                                    event.id
+                            );
+
+
+                        const sorted =
+                            allEventRounds
+                                .slice()
+                                .sort(
+                                    (
+                                        a,
+                                        b
+                                    ) =>
+                                        Number(
+                                            a.net_score
+                                        )
+                                        -
+                                        Number(
+                                            b.net_score
+                                        )
+                                );
+
+
+                        const playerRound =
+                            eventRounds[0];
+
+
+                        const position =
+                            sorted.findIndex(
+                                round =>
+                                    round.id ===
+                                    playerRound.id
+                            )
+                            + 1;
+
+
+                        const pointsTable = {
+
+                            1: 100,
+                            2: 85,
+                            3: 75,
+                            4: 65,
+                            5: 55,
+                            6: 45,
+                            7: 35,
+                            8: 25,
+                            9: 20,
+                            10: 15
+
+                        };
+
+
+                        projectedPoints +=
+                            pointsTable[
+                                position
+                            ] || 0;
+
+                    }
+                );
+
+
+                const officialPoints =
+                    official
+                        ? Number(
+                            official.total_points
+                        )
+                        : 0;
+
+
+                return {
+
+                    player_id:
+                        player.player_id,
+
+                    name:
+                        player.Name,
+
+                    officialPoints,
+
+                    projectedPoints,
+
+                    livePoints:
+                        officialPoints +
+                        projectedPoints,
+
+                    roundsPlayed:
+                        official
+                            ? Number(
+                                official.rounds_played
+                            )
+                            : 0,
+
+                    wins:
+                        official
+                            ? Number(
+                                official.wins
+                            )
+                            : 0,
+
+                    top3:
+                        official
+                            ? Number(
+                                official.top_3_finishes
+                            )
+                            : 0
+
+                };
+
+            }
+        );
+
+
+    // ------------------------------------------
+    // SORT
+    // ------------------------------------------
+
+    standings.sort(
+        (
+            a,
+            b
+        ) =>
+            b.livePoints -
+            a.livePoints
+    );
+
+
+    // ------------------------------------------
+    // BUILD TABLE
+    // ------------------------------------------
+
+    let html = `
+
+        <div class="leaderboard-table">
+
+            <div class="leaderboard-row leaderboard-header">
+
+               <div>POS</div>
+               <div>PLAYER</div>
+               <div>POINTS</div>
+               <div>WINS</div>
+               <div>TOP 3</div>
+
+            </div>
+
+    `;
+
+
+    standings.forEach(
+        (
+            player,
+            index
+        ) => {
+
+            const previous =
+                standings[
+                    index - 1
+                ];
+
+
+            const position =
+                index === 0 ||
+                player.livePoints !==
+                previous.livePoints
+                    ? index + 1
+                    : "T" +
+                      (
+                          index + 1
+                      );
+
+
+            const live =
+                player.projectedPoints >
+                0;
+
+
+            html += `
+
+                <div class="leaderboard-row">
+
+                    <div class="position">
+
+                        ${position}
+
+                    </div>
+
+
+                    <div class="player-name">
+
+                        ${player.name}
+
+                        ${
+                            live
+                                ? `
+                                    <span class="live-badge">
+                                        LIVE
+                                    </span>
+                                  `
+                                : ""
+                        }
+
+                    </div>
+
+
+                    <div class="points">
+
+                        ${player.livePoints}
+
+                    </div>
+
+
+                    <div>
+
+                        ${player.roundsPlayed}
+
+                    </div>
+
+
+                    <div>
+
+                        ${player.wins}
+
+                    </div>
+
+
+                    <div>
+
+                        ${player.top3}
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+
+    html += `
+
+        </div>
+
+    `;
+
+
+    container.innerHTML =
+        html;
+
+}
+
+
+// ==========================================
+// LOAD EVENT LEADERBOARDS
+// ==========================================
+
+async function loadEventLeaderboards() {
+
+    const container =
+        document.getElementById(
+            "eventLeaderboards"
+        );
+
+
+    const {
+        data: events,
+        error
+    } = await supabaseClient
+
+        .from("events_table")
+
+        .select(`
+            id,
+            event_name,
+            event_type,
+            status,
+            course_id,
+            event_date
+        `)
+
+        .eq(
+            "season_id",
+            1
+        )
+
+        .order(
+            "event_date",
+            {
+                ascending: false
+            }
+        );
+
+
+    if (error) {
+
+        throw error;
+
+    }
+
+
+    if (!events.length) {
+
+        container.innerHTML = `
+
+            <p>
+                No events available.
+            </p>
+
+        `;
+
+        return;
+
+    }
+
+
+    let html = "";
+
+
+    for (
+        const event
+        of events
+    ) {
+
+
+        const {
+            data: rounds,
+            error: roundError
+        } = await supabaseClient
+
+            .from("rounds")
+
+            .select(`
+                id,
+                player_id,
+                gross_score,
+                net_score,
+                approval_status,
+
+                "Players" (
+                    "Name"
+                )
+            `)
+
+            .eq(
+                "event_id",
+                event.id
+            );
+
+
+        if (roundError) {
+
+            throw roundError;
+
+        }
+
+
+        const sorted =
+            (rounds || [])
+                .slice()
+                .sort(
+                    (
+                        a,
+                        b
+                    ) =>
+                        Number(
+                            a.net_score
+                        )
+                        -
+                        Number(
+                            b.net_score
+                        )
+                );
+
+
+        html += `
+
+            <div class="event-leaderboard">
+
+                <div class="event-header">
+
+                    <div>
+
+                        <h3>
+
+                            ${event.event_name}
+
+                        </h3>
+
+                        <p>
+
+                            ${
+                                event.event_date ||
+                                ""
+                            }
+
+                        </p>
+
+                    </div>
+
+
+                    <span class="${
+                        event.status ===
+                        "Finalized"
+                            ? "status-approved"
+                            : "status-pending"
+                    }">
+
+                        ${
+                            event.status ===
+                            "Finalized"
+                                ? "FINAL"
+                                : "LIVE"
+                        }
+
+                    </span>
+
+                </div>
+
+
+                <div class="leaderboard-table">
+
+                    <div class="leaderboard-row leaderboard-header">
+
+                        <div>POS</div>
+                        <div>PLAYER</div>
+                        <div>GROSS</div>
+                        <div>NET</div>
+
+                    </div>
+
+        `;
+
+
+        sorted.forEach(
+            (
+                round,
+                index
+            ) => {
+
+                const previous =
+                    sorted[
+                        index - 1
+                    ];
+
+
+                const position =
+                    index === 0 ||
+                    round.net_score !==
+                    previous.net_score
+                        ? index + 1
+                        : "T" +
+                          (
+                              index + 1
+                          );
+
+
+                html += `
+
+                    <div class="leaderboard-row">
+
+                        <div>
+
+                            ${position}
+
+                        </div>
+
+
+                        <div>
+
+                            ${round.Players.Name}
+
+                        </div>
+
+
+                        <div>
+
+                            ${round.gross_score}
+
+                        </div>
+
+
+                        <div class="points">
+
+                            ${round.net_score}
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+        );
+
+
+        html += `
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+
+    container.innerHTML =
+        html;
+
+}
+
+
+// ==========================================
+// START
+// ==========================================
+
+loadLeaderboard();
+
+</script>
+
+
+</body>
+
+</html>
