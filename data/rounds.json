@@ -1,0 +1,25 @@
+[
+    {
+        "id":1,
+        "date":"2026-08-15",
+        "course":"Firelake Golf Course",
+
+        "players":[
+
+            {
+                "player":"Michael Albritton",
+                "gross":82,
+                "net":74,
+                "birdies":3
+            },
+
+            {
+                "player":"Connor",
+                "gross":85,
+                "net":76,
+                "birdies":2
+            }
+
+        ]
+    }
+]
