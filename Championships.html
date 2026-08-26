@@ -169,8 +169,154 @@ td {
 
 }
 
+/* ==========================================
+   LEAGUE CHAMPIONS PODIUM
+========================================== */
 
+.podium-section {
+    margin-top: 30px;
+}
 
+.podium-section h3 {
+    text-align: center;
+    font-size: 26px;
+    color: #003b24;
+    margin-bottom: 30px;
+}
+
+.podium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 15px;
+    max-width: 850px;
+    margin: 0 auto 40px;
+}
+
+.podium-place {
+    background: #f5f5f2;
+    border-radius: 12px 12px 0 0;
+    text-align: center;
+    padding: 20px 15px;
+    flex: 1;
+    max-width: 240px;
+    box-shadow: 0 4px 10px #ddd;
+}
+
+.podium-place.first {
+    min-height: 230px;
+    border-top: 8px solid #d4af37;
+}
+
+.podium-place.second {
+    min-height: 190px;
+    border-top: 8px solid #aaa;
+}
+
+.podium-place.third {
+    min-height: 165px;
+    border-top: 8px solid #cd7f32;
+}
+
+.podium-player {
+    font-size: 45px;
+    margin-bottom: 10px;
+}
+
+.podium-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: #003b24;
+    margin-bottom: 10px;
+}
+
+.podium-points {
+    font-size: 32px;
+    font-weight: bold;
+    color: #111;
+}
+
+.podium-label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #707070;
+    letter-spacing: 1px;
+}
+
+.champions-history {
+    margin-top: 20px;
+}
+
+.champions-history h3 {
+    color: #003b24;
+    margin-bottom: 15px;
+}
+
+/* ==========================================
+   KINGS OF THE COURSES
+========================================== */
+
+.course-kings {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(250px, 1fr)
+    );
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.course-king-card {
+    background: #f5f5f2;
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+    border-top: 6px solid #d4af37;
+    box-shadow: 0 4px 10px #ddd;
+}
+
+.king-crown {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+.king-course-name {
+    font-size: 22px;
+    font-weight: bold;
+    color: #003b24;
+    margin-bottom: 15px;
+}
+
+.king-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.king-score {
+    font-size: 32px;
+    font-weight: bold;
+    color: #003b24;
+}
+
+.king-label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #707070;
+    letter-spacing: 1px;
+}
+
+.king-rounds {
+    margin-top: 18px;
+    font-size: 14px;
+    color: #555;
+}
+
+.king-loading {
+    text-align: center;
+    padding: 30px;
+    color: #707070;
+}
 
 footer {
 
@@ -252,75 +398,186 @@ Honoring the champions who define the history of the Internal Golf Association.
 <!-- LEAGUE CHAMPIONS -->
 
 
+<!-- ==========================================
+     IGA LEAGUE CHAMPIONS
+=========================================== -->
+
 <div class="card champion">
 
+    <div class="trophy">
+        🏆
+    </div>
 
-<div class="trophy">
-🏆
-</div>
+    <h2>
+        IGA League Champions
+    </h2>
 
-
-<h2>
-IGA League Champions
-</h2>
-
-
-<p>
-The overall season champion based on performance throughout the IGA season.
-</p>
+    <p>
+        The overall season champion based on performance
+        throughout the IGA season.
+    </p>
 
 
+    <!-- CURRENT SEASON PODIUM -->
 
-<table>
+    <div class="podium-section">
 
-
-<tr>
-
-<th>Season</th>
-
-<th>Champion</th>
-
-<th>Points</th>
-
-</tr>
+        <h3>
+            2027 IGA League
+        </h3>
 
 
-<tr>
-
-<td>
-2027
-</td>
-
-<td>
-TBD
-</td>
-
-<td>
----
-</td>
-
-</tr>
+        <div class="podium">
 
 
-<tr>
+            <!-- SECOND PLACE -->
 
-<td>
-2028
-</td>
+            <div class="podium-place second">
 
-<td>
-TBD
-</td>
+                <div class="podium-player">
 
-<td>
----
-</td>
+                    🥈
 
-</tr>
+                </div>
+
+                <div class="podium-name">
+                    Dawson Padgett
+                </div>
+
+                <div class="podium-points">
+                    175
+                </div>
+
+                <div class="podium-label">
+                    POINTS
+                </div>
+
+            </div>
 
 
 
-</table>
+            <!-- FIRST PLACE -->
+
+            <div class="podium-place first">
+
+                <div class="podium-player">
+
+                    🥇
+
+                </div>
+
+                <div class="podium-name">
+                    Michael Albritton
+                </div>
+
+                <div class="podium-points">
+                    186
+                </div>
+
+                <div class="podium-label">
+                    POINTS
+                </div>
+
+            </div>
+
+
+
+            <!-- THIRD PLACE -->
+
+            <div class="podium-place third">
+
+                <div class="podium-player">
+
+                    🥉
+
+                </div>
+
+                <div class="podium-name">
+                    Connor Williams
+                </div>
+
+                <div class="podium-points">
+                    150
+                </div>
+
+                <div class="podium-label">
+                    POINTS
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- HISTORICAL CHAMPIONS -->
+
+    <div class="champions-history">
+
+        <h3>
+            IGA League Champions
+        </h3>
+
+
+        <table>
+
+            <tr>
+
+                <th>
+                    Season
+                </th>
+
+                <th>
+                    Champion
+                </th>
+
+                <th>
+                    Points
+                </th>
+
+            </tr>
+
+
+            <tr>
+
+                <td>
+                    2027
+                </td>
+
+                <td>
+                    TBD
+                </td>
+
+                <td>
+                    ---
+                </td>
+
+            </tr>
+
+
+            <tr>
+
+                <td>
+                    2028
+                </td>
+
+                <td>
+                    TBD
+                </td>
+
+                <td>
+                    ---
+                </td>
+
+            </tr>
+
+
+        </table>
+
+    </div>
 
 
 </div>
@@ -406,7 +663,38 @@ TBD
 
 </div>
 
+<!-- ==========================================
+     KINGS OF THE COURSES
+=========================================== -->
 
+<div class="card">
+
+    <div class="trophy">
+        👑
+    </div>
+
+    <h2>
+        Kings of the Courses
+    </h2>
+
+    <p>
+        The lowest combined net score after completing
+        the required qualifying rounds earns the crown.
+    </p>
+
+
+    <div
+        id="courseKings"
+        class="course-kings"
+    >
+
+        <div class="king-loading">
+            Loading course champions...
+        </div>
+
+    </div>
+
+</div>
 
 
 
@@ -531,13 +819,318 @@ Future legends of the Internal Golf Association will be recognized here.
 
 
 <footer>
-
-IGA Tour © 2027 | Internal Golf Association
-
+    IGA Tour © 2027 | Internal Golf Association
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="database.js"></script>
+
+<!-- ==========================================
+     CHAMPIONSHIPS PAGE JAVASCRIPT
+=========================================== -->
+
+<script>
+
+// ==========================================
+// LOAD CURRENT SEASON
+// ==========================================
+
+async function loadChampionships() {
+
+    try {
+
+        console.log(
+            "Loading IGA Championships..."
+        );
+
+
+        // --------------------------------------
+        // GET CURRENT SEASON
+        // --------------------------------------
+
+        const {
+            data: seasons,
+            error: seasonError
+        } = await supabaseClient
+
+            .from("seasons")
+
+            .select(`
+                id,
+                season_name,
+                start_date,
+                end_date
+            `)
+
+            .order(
+                "start_date",
+                {
+                    ascending: false
+                }
+            );
+
+
+        if (seasonError) {
+
+            throw seasonError;
+
+        }
+
+
+        if (
+            !seasons ||
+            seasons.length === 0
+        ) {
+
+            throw new Error(
+                "No IGA seasons were found."
+            );
+
+        }
+
+
+        // --------------------------------------
+        // FIND CURRENT SEASON
+        // --------------------------------------
+
+        const today =
+            new Date();
+
+
+        const currentSeason =
+            seasons.find(
+                season => {
+
+                    const start =
+                        new Date(
+                            season.start_date
+                        );
+
+                    const end =
+                        new Date(
+                            season.end_date
+                        );
+
+                    return (
+                        today >= start &&
+                        today <= end
+                    );
+
+                }
+            );
+
+
+        if (!currentSeason) {
+
+            throw new Error(
+                "No current IGA season found."
+            );
+
+        }
+
+
+        console.log(
+            "Current IGA season:",
+            currentSeason
+        );
+
+
+        // --------------------------------------
+        // LOAD KINGS
+        // --------------------------------------
+
+        const kings =
+            await getKingsOfCourses(
+                currentSeason.id
+            );
+
+
+        // --------------------------------------
+        // DISPLAY KINGS
+        // --------------------------------------
+
+        displayCourseKings(
+            kings
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "CHAMPIONSHIPS PAGE ERROR:",
+            error
+        );
+
+
+        const container =
+            document.getElementById(
+                "courseKings"
+            );
+
+
+        if (container) {
+
+            container.innerHTML = `
+                <div class="king-loading">
+                    Unable to load course champions.
+                </div>
+            `;
+
+        }
+
+    }
+
+}
+
+
+// ==========================================
+// DISPLAY COURSE KINGS
+// ==========================================
+
+function displayCourseKings(
+    kings
+) {
+
+    const container =
+        document.getElementById(
+            "courseKings"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    // ==========================================
+    // CREATE COURSE CARD
+    // ==========================================
+
+    kings.forEach(
+        course => {
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "course-king-card";
+
+
+            // --------------------------------------
+            // NO QUALIFIED KING
+            // --------------------------------------
+
+            if (!course.champion) {
+
+                card.innerHTML = `
+
+                    <div class="king-crown">
+                        👑
+                    </div>
+
+                    <div class="king-course-name">
+                        ${course.courseName}
+                    </div>
+
+                    <div class="king-name">
+                        TBD
+                    </div>
+
+                    <div class="king-score">
+                        —
+                    </div>
+
+                    <div class="king-label">
+                        NET
+                    </div>
+
+                `;
+
+            }
+
+
+            // --------------------------------------
+            // QUALIFIED KING
+            // --------------------------------------
+
+            else {
+
+                const champion =
+                    course.champion;
+
+
+                const roundScores =
+                    champion.rounds
+                        .map(
+                            round =>
+                                Number(
+                                    round.net_score
+                                )
+                        )
+                        .join(
+                            " • "
+                        );
+
+
+                card.innerHTML = `
+
+                    <div class="king-crown">
+                        👑
+                    </div>
+
+                    <div class="king-course-name">
+                        ${course.courseName}
+                    </div>
+
+                    <div class="king-name">
+                        ${champion.playerName}
+                    </div>
+
+                    <div class="king-score">
+                        ${champion.combinedNet}
+                    </div>
+
+                    <div class="king-label">
+                        COMBINED NET
+                    </div>
+
+                    <div class="king-rounds">
+                        ${roundScores}
+                    </div>
+
+                `;
+
+            }
+
+
+            container.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// START CHAMPIONSHIPS PAGE
+// ==========================================
+
+loadChampionships();
+
+</script>
 
 
 </body>
-
 </html>

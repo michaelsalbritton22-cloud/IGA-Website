@@ -317,6 +317,400 @@ async function getQualificationStatus(
 }
 
 // ==========================================
+// GET KINGS OF THE COURSES
+// ==========================================
+//
+// Determines the King of each qualifying course
+// based on the lowest combined net score after
+// completing the required number of rounds.
+//
+// Only APPROVED rounds with
+// counts_for_qualification = true are included.
+// ==========================================
+
+async function getKingsOfCourses(seasonId) {
+
+    console.log(
+        "Calculating Kings of the Courses:",
+        seasonId
+    );
+
+
+    // ==========================================
+    // GET COURSE REQUIREMENTS
+    // ==========================================
+
+    const {
+        data: requirements,
+        error: requirementError
+    } = await supabaseClient
+
+        .from("season_requirements")
+
+        .select(`
+            course_id,
+            required_rounds
+        `)
+
+        .eq(
+            "season",
+            seasonId
+        )
+
+        .gt(
+            "required_rounds",
+            0
+        );
+
+
+    if (requirementError) {
+
+        console.error(
+            "ERROR LOADING COURSE REQUIREMENTS:",
+            requirementError
+        );
+
+        throw requirementError;
+
+    }
+
+
+    if (
+        !requirements ||
+        requirements.length === 0
+    ) {
+
+        return [];
+
+    }
+
+
+    // ==========================================
+    // GET COURSE INFORMATION
+    // ==========================================
+
+    const courseIds =
+        requirements.map(
+            requirement =>
+                requirement.course_id
+        );
+
+
+    const {
+        data: courses,
+        error: courseError
+    } = await supabaseClient
+
+        .from("courses")
+
+        .select(`
+            course_id,
+            "Course_name",
+            "Location",
+            par
+        `)
+
+        .in(
+            "course_id",
+            courseIds
+        );
+
+
+    if (courseError) {
+
+        console.error(
+            "ERROR LOADING COURSES:",
+            courseError
+        );
+
+        throw courseError;
+
+    }
+
+
+    // ==========================================
+    // GET QUALIFYING ROUNDS
+    // ==========================================
+
+    const {
+        data: rounds,
+        error: roundError
+    } = await supabaseClient
+
+        .from("rounds")
+
+        .select(`
+            id,
+            player_id,
+            course_id,
+            season_id,
+            round_date,
+            net_score,
+            approval_status,
+            counts_for_qualification,
+
+            "Players" (
+                "Name"
+            )
+        `)
+
+        .eq(
+            "season_id",
+            seasonId
+        )
+
+        .eq(
+            "approval_status",
+            "Approved"
+        )
+
+        .eq(
+            "counts_for_qualification",
+            true
+        )
+
+        .in(
+            "course_id",
+            courseIds
+        )
+
+        .order(
+            "round_date",
+            {
+                ascending: true
+            }
+        );
+
+
+    if (roundError) {
+
+        console.error(
+            "ERROR LOADING QUALIFYING ROUNDS:",
+            roundError
+        );
+
+        throw roundError;
+
+    }
+
+
+    // ==========================================
+    // CALCULATE KING FOR EACH COURSE
+    // ==========================================
+
+    const kings = [];
+
+
+    for (
+        const requirement
+        of requirements
+    ) {
+
+        const course =
+            courses.find(
+                c =>
+                    c.course_id ===
+                    requirement.course_id
+            );
+
+
+        if (!course) {
+
+            continue;
+
+        }
+
+
+        // --------------------------------------
+        // GET ROUNDS FOR THIS COURSE
+        // --------------------------------------
+
+        const courseRounds =
+            rounds.filter(
+                round =>
+                    round.course_id ===
+                    requirement.course_id
+            );
+
+
+        // --------------------------------------
+        // GROUP ROUNDS BY PLAYER
+        // --------------------------------------
+
+        const playerGroups = {};
+
+
+        courseRounds.forEach(
+            round => {
+
+                if (
+                    !playerGroups[
+                        round.player_id
+                    ]
+                ) {
+
+                    playerGroups[
+                        round.player_id
+                    ] = [];
+
+                }
+
+
+                playerGroups[
+                    round.player_id
+                ].push(round);
+
+            }
+        );
+
+
+        // --------------------------------------
+        // FIND QUALIFIED PLAYERS
+        // --------------------------------------
+
+        const qualifiedPlayers = [];
+
+
+        Object.entries(
+            playerGroups
+        ).forEach(
+            (
+                [
+                    playerId,
+                    playerRounds
+                ]
+            ) => {
+
+                // ----------------------------------
+                // A PLAYER MUST COMPLETE
+                // ALL REQUIRED ROUNDS
+                // ----------------------------------
+
+                if (
+                    playerRounds.length <
+                    requirement.required_rounds
+                ) {
+
+                    return;
+
+                }
+
+
+                // ----------------------------------
+                // USE THE REQUIRED NUMBER OF ROUNDS
+                // ----------------------------------
+
+                const qualifyingRounds =
+                    playerRounds
+                        .slice(
+                            0,
+                            requirement.required_rounds
+                        );
+
+
+                // ----------------------------------
+                // CALCULATE COMBINED NET
+                // ----------------------------------
+
+                const combinedNet =
+                    qualifyingRounds.reduce(
+                        (
+                            total,
+                            round
+                        ) =>
+                            total +
+                            (
+                                Number(
+                                    round.net_score
+                                ) || 0
+                            ),
+                        0
+                    );
+
+
+                qualifiedPlayers.push({
+
+                    playerId:
+                        playerId,
+
+                    playerName:
+                        qualifyingRounds[0]
+                            ?.Players
+                            ?.Name ||
+                        "Unknown",
+
+                    rounds:
+                        qualifyingRounds,
+
+                    combinedNet:
+                        combinedNet
+
+                });
+
+            }
+        );
+
+
+        // --------------------------------------
+        // SORT LOWEST COMBINED NET FIRST
+        // --------------------------------------
+
+        qualifiedPlayers.sort(
+            (
+                a,
+                b
+            ) =>
+                a.combinedNet -
+                b.combinedNet
+        );
+
+
+        // --------------------------------------
+        // GET KING
+        // --------------------------------------
+
+        const king =
+            qualifiedPlayers.length > 0
+                ? qualifiedPlayers[0]
+                : null;
+
+
+        kings.push({
+
+            courseId:
+                requirement.course_id,
+
+            courseName:
+                course.Course_name,
+
+            location:
+                course.Location,
+
+            requiredRounds:
+                requirement.required_rounds,
+
+            champion:
+                king,
+
+            qualifiedPlayers:
+                qualifiedPlayers
+
+        });
+
+    }
+
+
+    console.log(
+        "Kings of the Courses:",
+        kings
+    );
+
+
+    return kings;
+
+}
+
+// ==========================================
 // APPROVE ROUND GROUP
 // ==========================================
 
