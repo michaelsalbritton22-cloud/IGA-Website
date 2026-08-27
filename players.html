@@ -358,141 +358,114 @@ async function loadPlayersPage() {
 
             card.innerHTML = `
 
-                <div class="photo">
-                    ${initials}
-                </div>
+    <div class="photo">
+        ${initials}
+    </div>
 
 
-                <h2>
-                    ${player.Name}
-                </h2>
+    <h2>
+        ${player.Name}
+    </h2>
 
 
-                <span class="rank">
-                    IGA Player
-                </span>
+    <span class="rank">
+        IGA Player
+    </span>
 
 
-                <p>
-                    ${player["Home Town"] || "Oklahoma"}
-                </p>
+    <p>
+        ${player["Home Town"] || "Oklahoma"}
+    </p>
 
 
-                <div class="stat">
-
-                    <span>
-                        Handicap
-                    </span>
-
-                    <b>
-                        ${
-                            player.Handicap ??
-                            "—"
-                        }
-                    </b>
-
-                </div>
+    <div class="stat">
+        <span>Handicap</span>
+        <b>
+            ${player.Handicap ?? "—"}
+        </b>
+    </div>
 
 
-                <div class="stat">
-
-                    <span>
-                        Rounds Played
-                    </span>
-
-                    <b>
-                        ${stats.roundsPlayed}
-                    </b>
-
-                </div>
+    <div class="stat">
+        <span>Rounds Played</span>
+        <b>
+            ${stats.roundsPlayed}
+        </b>
+    </div>
 
 
-                <div class="stat">
-
-                    <span>
-                        Average Gross
-                    </span>
-
-                    <b>
-                        ${
-                            stats.roundsPlayed > 0
-                                ? stats.averageGross
-                                : "—"
-                        }
-                    </b>
-
-                </div>
+    <div class="stat">
+        <span>Average Gross</span>
+        <b>
+            ${stats.averageGross}
+        </b>
+    </div>
 
 
-                <div class="stat">
-
-                    <span>
-                        Average Net
-                    </span>
-
-                    <b>
-                        ${
-                            stats.roundsPlayed > 0
-                                ? stats.averageNet
-                                : "—"
-                        }
-                    </b>
-
-                </div>
+    <div class="stat">
+        <span>Average Net</span>
+        <b>
+            ${stats.averageNet}
+        </b>
+    </div>
 
 
-                <div class="stat">
-
-                    <span>
-                        Birdies
-                    </span>
-
-                    <b>
-                        ${stats.birdies}
-                    </b>
-
-                </div>
+    <div class="stat">
+        <span>Birdies</span>
+        <b>
+            ${stats.birdies}
+        </b>
+    </div>
 
 
-                <div class="stat">
-
-                    <span>
-                        Eagles
-                    </span>
-
-                    <b>
-                        ${stats.eagles}
-                    </b>
-
-                </div>
+    <div class="stat">
+        <span>Eagles</span>
+        <b>
+            ${stats.eagles}
+        </b>
+    </div>
 
 
-                <div class="stat">
-
-                    <span>
-                        Season Points
-                    </span>
-
-                    <b>
-                        ${stats.points}
-                    </b>
-
-                </div>
+    <div class="stat">
+        <span>Pars</span>
+        <b>
+            ${stats.pars}
+        </b>
+    </div>
 
 
-                <div class="stat">
+    <div class="stat">
+        <span>Bogeys</span>
+        <b>
+            ${stats.bogeys}
+        </b>
+    </div>
 
-                    <span>
-                        Wins
-                    </span>
 
-                    <b>
-                        ${stats.wins}
-                    </b>
+    <div class="stat">
+        <span>Double Bogeys</span>
+        <b>
+            ${stats.doubleBogeys}
+        </b>
+    </div>
 
-                </div>
 
-            `;
+    <div class="stat">
+        <span>Season Points</span>
+        <b>
+            ${stats.points}
+        </b>
+    </div>
+
+
+    <div class="stat">
+        <span>Career Wins</span>
+        <b>
+            ${stats.wins}
+        </b>
+    </div>
+
+`;
 
 
             container.appendChild(
