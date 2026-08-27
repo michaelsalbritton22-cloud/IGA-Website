@@ -2152,6 +2152,7 @@ async function saveCommissionerRound({
     handicapUsed,
     roundDate,
     grossScores,
+    netScore,
     notes = ""
 }) {
 
@@ -2213,6 +2214,24 @@ async function saveCommissionerRound({
 
     }
 
+
+
+// ==========================================
+// VALIDATE 18BIRDIES NET SCORE
+// ==========================================
+
+if (
+    netScore === null ||
+    netScore === undefined ||
+    netScore === "" ||
+    !Number.isFinite(Number(netScore))
+) {
+
+    throw new Error(
+        "A valid 18Birdies net score is required."
+    );
+
+}
 
     const invalidScore =
         grossScores.some(
@@ -2365,120 +2384,64 @@ async function saveCommissionerRound({
     const holeRecords = [];
 
 
-    let grossTotal = 0;
+let grossTotal = 0;
 
-    let netTotal = 0;
+let birdies = 0;
 
-    let birdies = 0;
+let eagles = 0;
 
-    let eagles = 0;
+let pars = 0;
 
-    let pars = 0;
+let bogeys = 0;
 
-    let bogeys = 0;
-
-    let doubleBogeys = 0;
+let doubleBogeys = 0;
 
 
     holes.forEach(
-        hole => {
+    hole => {
 
-            const holeNumber =
-                hole.hole_number;
-
-
-            const gross =
-                Number(
-                    grossScores[
-                        holeNumber - 1
-                    ]
-                );
+        const holeNumber =
+            hole.hole_number;
 
 
-            const handicapStrokes =
-                calculateHandicapStrokes(
-                    handicapUsed,
-                    hole.handicap_index
-                );
+        const gross =
+            Number(
+                grossScores[
+                    holeNumber - 1
+                ]
+            );
 
 
-            const net =
-                gross -
-                handicapStrokes;
+        // ==========================================
+        // ADD TO GROSS TOTAL
+        // ==========================================
+
+        grossTotal +=
+            gross;
 
 
-            grossTotal +=
-                gross;
+        // ==========================================
+        // HOLE RECORD
+        // ==========================================
 
+        holeRecords.push({
 
-            netTotal +=
-                net;
+            hole_number:
+                holeNumber,
 
+            gross_score:
+                gross,
 
-            const scoreToPar =
-                gross -
-                Number(hole.par);
+            handicap_strokes:
+                null,
 
+            net_score:
+                null
 
-            if (
-                scoreToPar <= -2
-            ) {
+        });
 
-                eagles++;
-
-            }
-
-            else if (
-                scoreToPar === -1
-            ) {
-
-                birdies++;
-
-            }
-
-            else if (
-                scoreToPar === 0
-            ) {
-
-                pars++;
-
-            }
-
-            else if (
-                scoreToPar === 1
-            ) {
-
-                bogeys++;
-
-            }
-
-            else if (
-                scoreToPar === 2
-            ) {
-
-                doubleBogeys++;
-
-            }
-
-
-            holeRecords.push({
-
-                hole_number:
-                    holeNumber,
-
-                gross_score:
-                    gross,
-
-                handicap_strokes:
-                    handicapStrokes,
-
-                net_score:
-                    net
-
-            });
-
-        }
-    );
+    }
+);
 
 
     // ==========================================
@@ -2565,7 +2528,7 @@ async function saveCommissionerRound({
                 grossTotal,
 
             net_score:
-                netTotal,
+                Number(netScore),
 
             handicap_used:
                 Number(
@@ -2715,7 +2678,7 @@ async function saveCommissionerRound({
             grossTotal,
 
         netScore:
-            netTotal,
+            Number(netscore),
 
         handicapUsed:
             Number(

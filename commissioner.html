@@ -3121,10 +3121,14 @@ for (
 
 
 // ==========================================
-// SAVE ROUND
+// SAVE MULTIPLE PLAYER ROUNDS
 // ==========================================
 
 async function saveRoundEntry() {
+
+    // ==========================================
+    // VALIDATE EVENT
+    // ==========================================
 
     if (!selectedEntryEvent) {
 
@@ -3137,10 +3141,17 @@ async function saveRoundEntry() {
     }
 
 
-    if (!selectedEntryPlayer) {
+    // ==========================================
+    // VALIDATE PLAYERS
+    // ==========================================
+
+    if (
+        !selectedEntryPlayers ||
+        !selectedEntryPlayers.length
+    ) {
 
         alert(
-            "Please select a player."
+            "Please select at least one player."
         );
 
         return;
@@ -3148,58 +3159,223 @@ async function saveRoundEntry() {
     }
 
 
-    const scores = [];
+    // ==========================================
+    // COLLECT PLAYER SCORES
+    // ==========================================
+
+    const playerRounds = [];
 
 
     for (
-        let hole = 1;
-        hole <= 18;
-        hole++
+        const player of selectedEntryPlayers
     ) {
 
-        const value =
-            document.getElementById(
-                `hole${hole}`
-            ).value;
+        const scores = [];
 
 
-        if (
-            value === ""
+        for (
+            let hole = 1;
+            hole <= 18;
+            hole++
         ) {
 
-            alert(
-                `Please enter a score for Hole ${hole}.`
+            const input =
+                document.querySelector(
+                    `.multi-score-input[data-player-id="${player.player_id}"][data-hole="${hole}"]`
+                );
+
+
+            if (!input) {
+
+                alert(
+                    `Could not find the score input for ${player.Name}, Hole ${hole}.`
+                );
+
+                return;
+
+            }
+
+
+            const value =
+                input.value.trim();
+
+
+            if (value === "") {
+
+                alert(
+                    `Please enter a score for ${player.Name}, Hole ${hole}.`
+                );
+
+                input.focus();
+
+                return;
+
+            }
+
+
+            const score =
+                Number(value);
+
+
+            if (
+                !Number.isInteger(score) ||
+                score < 1 ||
+                score > 20
+            ) {
+
+                alert(
+                    `${player.Name}, Hole ${hole} must be a whole number between 1 and 20.`
+                );
+
+                input.focus();
+
+                return;
+
+            }
+
+
+            scores.push(
+                score
             );
 
-            document.getElementById(
-                `hole${hole}`
-            ).focus();
+        }
+
+
+        // ==========================================
+        // GET 18BIRDIES NET SCORE
+        // ==========================================
+
+        const netInput =
+            document.querySelector(
+                `.net-score-input[data-player-id="${player.player_id}"]`
+            );
+
+
+        if (!netInput) {
+
+            alert(
+                `Could not find the net score field for ${player.Name}.`
+            );
 
             return;
 
         }
 
 
-        scores.push(
-            Number(value)
-        );
+        const netValue =
+            netInput.value.trim();
+
+
+        if (netValue === "") {
+
+            alert(
+                `Please enter the 18Birdies net score for ${player.Name}.`
+            );
+
+            netInput.focus();
+
+            return;
+
+        }
+
+
+        const netScore =
+            Number(netValue);
+
+
+        if (
+            !Number.isFinite(netScore)
+        ) {
+
+            alert(
+                `The 18Birdies net score for ${player.Name} is not valid.`
+            );
+
+            netInput.focus();
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // ADD PLAYER ROUND
+        // ==========================================
+
+        playerRounds.push({
+
+            player:
+                player,
+
+            scores:
+                scores,
+
+            netScore:
+                netScore
+
+        });
 
     }
 
 
+    // ==========================================
+    // BUILD CONFIRMATION
+    // ==========================================
+
+    let confirmationText =
+        `Save ${playerRounds.length} player round`;
+
+    if (
+        playerRounds.length !== 1
+    ) {
+
+        confirmationText +=
+            "s";
+
+    }
+
+
+    confirmationText +=
+        `?\n\n`;
+
+
+    confirmationText +=
+        `Event: ${selectedEntryEvent.event_name}\n\n`;
+
+
+    playerRounds.forEach(
+        round => {
+
+            const gross =
+                round.scores.reduce(
+                    (total, score) =>
+                        total + score,
+                    0
+                );
+
+
+            confirmationText +=
+                `${round.player.Name}`
+                +
+                ` — Gross: ${gross}`
+                +
+                ` | Net: ${round.netScore}`
+                +
+                ` | Handicap: ${round.player.Handicap}`
+                +
+                `\n`;
+
+        }
+    );
+
+
+    confirmationText +=
+        `\nAll rounds will be saved as PENDING for approval.`;
+
+
     const confirmed =
         confirm(
-
-            `Save ${selectedEntryPlayer.Name}'s round?\n\n`
-            +
-            `Event: ${selectedEntryEvent.event_name}\n`
-            +
-            `Gross: ${scores.reduce((a,b) => a + b, 0)}\n`
-            +
-            `Handicap: ${selectedEntryPlayer.Handicap}\n\n`
-            +
-            `The round will be saved as PENDING for approval.`
-
+            confirmationText
         );
 
 
@@ -3210,49 +3386,111 @@ async function saveRoundEntry() {
     }
 
 
+    // ==========================================
+    // SAVE ALL PLAYER ROUNDS
+    // ==========================================
+
     try {
 
-        const result =
-            await saveCommissionerRound({
-
-                eventId:
-                    selectedEntryEvent.id,
-
-                playerId:
-                    selectedEntryPlayer.player_id,
-
-                handicapUsed:
-                    selectedEntryPlayer.Handicap,
-
-                roundDate:
-                    selectedEntryEvent.event_date,
-
-                grossScores:
-                    scores,
-
-                notes:
-                    document.getElementById(
-                        "entryNotes"
-                    ).value.trim()
-
-            });
+        const results = [];
 
 
-        alert(
+        for (
+            const round of playerRounds
+        ) {
 
-            `${selectedEntryPlayer.Name}'s round was saved successfully!\n\n`
-            +
-            `Gross: ${result.grossScore}\n`
-            +
-            `Net: ${result.netScore}\n\n`
-            +
-            `Status: Pending Approval`
+            const result =
+                await saveCommissionerRound({
 
+                    eventId:
+                        selectedEntryEvent.id,
+
+                    playerId:
+                        round.player.player_id,
+
+                    handicapUsed:
+                        round.player.Handicap,
+
+                    roundDate:
+                        selectedEntryEvent.event_date,
+
+                    grossScores:
+                        round.scores,
+
+                    netScore:
+                        round.netScore,
+
+                    notes:
+                        document.getElementById(
+                            "entryNotes"
+                        ).value.trim()
+
+                });
+
+
+            results.push(
+                result
+            );
+
+        }
+
+
+        // ==========================================
+        // SUCCESS MESSAGE
+        // ==========================================
+
+        let message =
+            `${results.length} round`;
+
+        if (
+            results.length !== 1
+        ) {
+
+            message +=
+                "s";
+
+        }
+
+
+        message +=
+            ` saved successfully!\n\n`;
+
+
+        results.forEach(
+            result => {
+
+                message +=
+                    `${result.player.Name}`
+                    +
+                    ` — Gross: ${result.grossScore}`
+                    +
+                    ` | Net: ${result.netScore}`
+                    +
+                    `\n`;
+
+            }
         );
 
 
+        message +=
+            `\nStatus: Pending Approval`;
+
+
+        alert(
+            message
+        );
+
+
+        // ==========================================
+        // CLOSE ENTRY
+        // ==========================================
+
         closeRoundEntry();
 
+
+        // ==========================================
+        // REFRESH PENDING APPROVALS
+        // ==========================================
 
         await loadPendingRounds();
 
@@ -3261,13 +3499,13 @@ async function saveRoundEntry() {
     catch (error) {
 
         console.error(
-            "SAVE ROUND ERROR:",
+            "SAVE MULTIPLE ROUNDS ERROR:",
             error
         );
 
 
         alert(
-            "Could not save the round.\n\n"
+            "Could not save the round(s).\n\n"
             +
             error.message
         );
@@ -3275,7 +3513,6 @@ async function saveRoundEntry() {
     }
 
 }
-
 
 // ==========================================
 // CLEAR ROUND ENTRY
