@@ -2426,19 +2426,19 @@ let doubleBogeys = 0;
 
         holeRecords.push({
 
-            hole_number:
-                holeNumber,
+    hole_number:
+        holeNumber,
 
-            gross_score:
-                gross,
+    gross_score:
+        gross,
 
-            handicap_strokes:
-                null,
+    handicap_strokes:
+        calculateHandicapStrokes(
+            Number(handicapUsed),
+            hole.handicap_index
+        )
 
-            net_score:
-                null
-
-        });
+});
 
     }
 );
