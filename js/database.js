@@ -2689,48 +2689,95 @@ else if (scoreDifference === 2) {
     }
 
 
-    // ==========================================
-    // ADD 18 HOLE RECORDS
-    // ==========================================
+   // ==========================================
+// ADD 18 HOLE RECORDS
+// ==========================================
 
-    const records =
-        holeRecords.map(
-            hole => ({
+const records =
+    holeRecords.map(
+        hole => ({
 
-                round_id:
-                    round.id,
+            round_id:
+                round.id,
 
-                hole_number:
-                    hole.hole_number,
+            hole_number:
+                Number(
+                    hole.hole_number
+                ),
 
-                gross_score:
-                    hole.gross_score,
+            gross_score:
+                Number(
+                    hole.gross_score
+                ),
 
-                handicap_strokes:
+            handicap_strokes:
+                Number(
                     hole.handicap_strokes
+                )
 
-            })
-        );
-
-
-    console.log(
-        "ROUND HOLES BEING INSERTED:",
-        records
+        })
     );
 
 
-    const {
-        error: holeError
-    } = await supabaseClient
+console.log(
+    "ROUND HOLES BEING INSERTED:",
+    records
+);
 
-        .from("round_holes")
 
-        .insert(
-            records
+if (
+    records.length !== 18
+) {
+
+    throw new Error(
+        `Expected 18 hole records, but found ${records.length}.`
+    );
+
+}
+
+
+const {
+    data: savedHoles,
+    error: holeError
+} = await supabaseClient
+
+    .from("round_holes")
+
+    .insert(records)
+
+    .select(
+        "id, round_id, hole_number, gross_score, handicap_strokes, net_score"
+    );
+
+
+if (holeError) {
+
+    await supabaseClient
+
+        .from("rounds")
+
+        .delete()
+
+        .eq(
+            "id",
+            round.id
         );
 
 
-    if (holeError) {
+    console.error(
+        "ERROR SAVING ROUND HOLES:",
+        holeError
+    );
+
+    throw holeError;
+
+}
+
+
+console.log(
+    "ROUND HOLES SAVED:",
+    savedHoles
+);
 
         // --------------------------------------
         // CLEAN UP ROUND IF HOLES FAIL
