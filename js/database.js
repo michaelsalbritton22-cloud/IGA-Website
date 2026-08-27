@@ -2475,6 +2475,43 @@ let doubleBogeys = 0;
         grossTotal +=
             gross;
 
+            const par =
+    Number(
+        hole.par
+    );
+
+const scoreDifference =
+    gross - par;
+
+if (scoreDifference === -2) {
+
+    eagles++;
+
+}
+
+else if (scoreDifference === -1) {
+
+    birdies++;
+
+}
+
+else if (scoreDifference === 0) {
+
+    pars++;
+
+}
+
+else if (scoreDifference === 1) {
+
+    bogeys++;
+
+}
+
+else if (scoreDifference === 2) {
+
+    doubleBogeys++;
+
+}
 
         // ==========================================
         // HOLE RECORD
