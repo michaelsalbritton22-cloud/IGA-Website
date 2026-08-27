@@ -2779,32 +2779,6 @@ console.log(
     savedHoles
 );
 
-        // --------------------------------------
-        // CLEAN UP ROUND IF HOLES FAIL
-        // --------------------------------------
-
-        await supabaseClient
-
-            .from("rounds")
-
-            .delete()
-
-            .eq(
-                "id",
-                round.id
-            );
-
-
-        console.error(
-            "ERROR SAVING ROUND HOLES:",
-            holeError
-        );
-
-
-        throw holeError;
-
-    }
-
     // ==========================================
     // RETURN SAVED ROUND
     // ==========================================
