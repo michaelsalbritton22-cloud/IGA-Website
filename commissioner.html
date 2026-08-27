@@ -2661,25 +2661,114 @@ async function buildMultiPlayerScorecard() {
 
 
     // ==========================================
-    // TOTAL ROW
+    // GROSS / HANDICAP / NET ROWS
     // ==========================================
 
-    html += `
+    // ------------------------------------------
+    // GROSS
+    // ------------------------------------------
+
+            html += `
 
                 <tr class="scorecard-total">
 
-                    <td colspan="2">
+                <td colspan="2">
 
-                        <strong>
-                            Gross
-                        </strong>
+                    <strong>
+                        Gross
+                    </strong>
 
-                    </td>
+                </td>
 
-    `;
+            `;
+
+            selectedPlayers.forEach(
+                player => {
+
+                    html += `
+
+                        <td>
+
+                            <strong
+                                id="gross-${player.player_id}"
+                            >
+                    —
+                            </strong>
+
+                        </td>
+
+                    `;
+
+            }       
+        );
+
+        html += `
+
+            </tr>
+
+`;
 
 
-    selectedPlayers.forEach(
+// ------------------------------------------
+// HANDICAP
+// ------------------------------------------
+
+html += `
+
+    <tr>
+
+        <td colspan="2">
+
+            <strong>
+                Handicap
+            </strong>
+
+        </td>
+
+`;
+
+selectedPlayers.forEach(
+    player => {
+
+        html += `
+
+            <td>
+
+                ${player.Handicap}
+
+            </td>
+
+        `;
+
+    }
+);
+
+html += `
+
+    </tr>
+
+`;
+
+
+// ------------------------------------------
+// 18BIRDIES NET
+// ------------------------------------------
+
+html += `
+
+    <tr>
+
+        <td colspan="2">
+
+            <strong>
+                18Birdies Net
+            </strong>
+
+        </td>
+
+`;
+
+selectedPlayers.forEach(
     player => {
 
         html += `
@@ -2689,8 +2778,6 @@ async function buildMultiPlayerScorecard() {
                 <input
                     type="number"
                     step="0.1"
-                    min="-20"
-                    max="150"
                     class="net-score-input"
                     data-player-id="${player.player_id}"
                     placeholder="Net"
@@ -2703,100 +2790,28 @@ async function buildMultiPlayerScorecard() {
     }
 );
 
+html += `
 
-    html += `
+    </tr>
 
-                </tr>
+        </tbody>
 
+    </table>
 
-                <tr>
+</div>
 
-                    <td colspan="2">
-
-                        <strong>
-                            Handicap
-                        </strong>
-
-                    </td>
-
-    `;
+`;
 
 
-    selectedPlayers.forEach(
-        player => {
+// ==========================================
+// DISPLAY SCORECARD
+// ==========================================
 
-            html += `
-
-                <td>
-
-                    ${player.Handicap}
-
-                </td>
-
-            `;
-
-        }
-    );
+scorecard.innerHTML =
+    html;
 
 
-    html += `
-
-                </tr>
-
-
-                <tr>
-
-                    <td colspan="2">
-
-                        <strong>
-                            Net
-                        </strong>
-
-                    </td>
-
-    `;
-
-
-    selectedPlayers.forEach(
-        player => {
-
-            html += `
-
-                <td>
-
-                    <strong
-                        id="net-${player.player_id}"
-                    >
-                        —
-                    </strong>
-
-                </td>
-
-            `;
-
-        }
-    );
-
-
-    html += `
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-    `;
-
-
-    scorecard.innerHTML =
-        html;
-
-
-    updateMultiPlayerPreview();
-
+updateMultiPlayerPreview();
 }
 
 // ==========================================
