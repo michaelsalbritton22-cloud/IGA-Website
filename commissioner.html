@@ -882,10 +882,7 @@ let currentEventKey = null;
 async function loadPendingRounds() {
 
     const container =
-        document.getElementById(
-            "pendingRounds"
-        );
-
+        document.getElementById("pendingRounds");
 
     try {
 
@@ -893,10 +890,9 @@ async function loadPendingRounds() {
         // GET ALL OPEN EVENTS
         // ==========================================
 
-        const events =
-            await getOpenEvents();
+        const events = await getOpenEvents();
 
-         pendingRounds = events;
+        pendingRounds = events;
 
         if (!events.length) {
 
@@ -918,7 +914,6 @@ async function loadPendingRounds() {
             `;
 
             return;
-
         }
 
 
@@ -929,14 +924,10 @@ async function loadPendingRounds() {
         let html = "";
 
 
-        for (
-            const event
-            of events
-        ) {
-
+        for (const event of events) {
 
             // ==========================================
-            // GET ALL ROUNDS FOR EVENT
+            // GET SUBMITTED ROUNDS FOR EVENT
             // ==========================================
 
             const {
@@ -986,40 +977,6 @@ async function loadPendingRounds() {
 
 
             // ==========================================
-            // GET ALL ACTIVE PLAYERS
-            // ==========================================
-
-            const {
-                data: players,
-                error: playerError
-            } = await supabaseClient
-
-                .from("Players")
-
-                .select(`
-                    player_id,
-                    "Name"
-                `)
-
-                .eq(
-                    "Active",
-                    true
-                );
-
-
-            if (playerError) {
-
-                console.error(
-                    "ERROR LOADING PLAYERS:",
-                    playerError
-                );
-
-                continue;
-
-            }
-
-
-            // ==========================================
             // COUNTS
             // ==========================================
 
@@ -1043,60 +1000,20 @@ async function loadPendingRounds() {
                 ).length;
 
 
-            const totalPlayers =
-                players.length;
-
-
             // ==========================================
             // PLAYER ROWS
+            // ONLY SHOW PLAYERS WHO SUBMITTED
             // ==========================================
 
             let playerRows = "";
 
 
-            players.forEach(
-                player => {
+            rounds.forEach(
+                round => {
 
-
-                    const round =
-                        rounds.find(
-                            r =>
-                                r.player_id ===
-                                player.player_id
-                        );
-
-
-                    if (!round) {
-
-                        playerRows += `
-
-                            <div class="round-player">
-
-                                <div>
-
-                                    <strong>
-                                        ${player.Name}
-                                    </strong>
-
-                                    <div class="round-player-details">
-                                        Not Submitted
-                                    </div>
-
-                                </div>
-
-                                <div>
-                                    <span class="status-pending">
-                                        —
-                                    </span>
-                                </div>
-
-                            </div>
-
-                        `;
-
-                        return;
-
-                    }
+                    const playerName =
+                        round.Players?.Name ||
+                        "Unknown Player";
 
 
                     const status =
@@ -1116,7 +1033,7 @@ async function loadPendingRounds() {
                             <div>
 
                                 <strong>
-                                    ${player.Name}
+                                    ${playerName}
                                 </strong>
 
                                 <div class="round-player-details">
@@ -1167,13 +1084,41 @@ async function loadPendingRounds() {
 
 
             // ==========================================
+            // NO SCORES YET
+            // ==========================================
+
+            if (!submitted) {
+
+                playerRows = `
+
+                    <div class="round-player">
+
+                        <div>
+
+                            <strong>
+                                No scores submitted
+                            </strong>
+
+                            <div class="round-player-details">
+                                Waiting for players to submit scores.
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+
+
+            // ==========================================
             // EVENT CARD
             // ==========================================
 
             html += `
 
                 <div class="card approval-card">
-
 
                     <div class="approval-header">
 
@@ -1182,7 +1127,8 @@ async function loadPendingRounds() {
                             <h3>
                                 ${
                                     event.courses
-                                        .Course_name
+                                        ?.Course_name ||
+                                    "Course"
                                 }
                             </h3>
 
@@ -1195,7 +1141,7 @@ async function loadPendingRounds() {
                             <p>
                                 ${
                                     event.event_date ||
-                                    ""
+                                    "Date not established"
                                 }
                             </p>
 
@@ -1220,8 +1166,7 @@ async function loadPendingRounds() {
                         <p>
 
                             ${submitted}
-                            of
-                            ${totalPlayers}
+                            score${submitted === 1 ? "" : "s"}
                             submitted
 
                             &nbsp; • &nbsp;
@@ -1264,7 +1209,6 @@ async function loadPendingRounds() {
 
                     </div>
 
-
                 </div>
 
             `;
@@ -1305,7 +1249,6 @@ async function loadPendingRounds() {
     }
 
 }
-
 
 // ==========================================
 // REVIEW EVENT
