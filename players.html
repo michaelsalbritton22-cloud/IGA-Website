@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -7,111 +8,83 @@
 
 <title>IGA Tour | Players</title>
 
-
 <style>
 
 body {
-
     margin:0;
     font-family:Arial, Helvetica, sans-serif;
     background:#f5f5f2;
     color:#222;
-
 }
 
 
 /* HEADER */
 
 header {
-
     background:#003b24;
     color:white;
     padding:25px 50px;
-
 }
-
 
 .logo {
-
     font-size:36px;
     font-weight:bold;
-
 }
-
 
 .subtitle {
-
     font-size:18px;
     margin-top:5px;
-
 }
-
 
 
 /* NAV */
 
 nav {
-
     background:#111;
     padding:15px 50px;
-
 }
 
-
 nav a {
-
     color:white;
     text-decoration:none;
     margin-right:25px;
     font-weight:bold;
-
 }
-
 
 
 /* PAGE */
 
 .container {
-
     padding:40px 50px;
-
 }
-
 
 h1 {
-
     font-size:42px;
-
 }
-
 
 
 /* PLAYER GRID */
 
 .players {
-
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
     gap:25px;
-
 }
 
 
-.card {
+/* PLAYER CARD */
 
+.card {
     background:white;
     padding:25px;
     border-radius:12px;
     box-shadow:0 5px 15px #ddd;
-
 }
-
 
 
 /* PROFILE IMAGE PLACEHOLDER */
 
 .photo {
-
     width:100px;
     height:100px;
     border-radius:50%;
@@ -123,72 +96,74 @@ h1 {
     font-size:35px;
     font-weight:bold;
     margin-bottom:15px;
-
 }
 
 
+/* RANK */
 
 .rank {
-
     background:#d4af37;
     color:white;
     padding:5px 10px;
     border-radius:20px;
     display:inline-block;
     font-size:14px;
-
 }
 
 
-.stat {
+/* STATS */
 
+.stat {
     display:flex;
     justify-content:space-between;
     border-bottom:1px solid #eee;
     padding:8px 0;
-
 }
 
 
+/* LOADING / ERROR */
+
+.message {
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 5px 15px #ddd;
+}
+
+
+/* FOOTER */
 
 footer {
-
     background:#111;
     color:white;
     text-align:center;
     padding:20px;
-
+    margin-top:40px;
 }
-
 
 </style>
 
-
 </head>
-
-
 
 <body>
 
-
-
 <header>
 
+```
 <div class="logo">
-⛳ IGA TOUR
+    ⛳ IGA TOUR
 </div>
 
 <div class="subtitle">
-Internal Golf Association | Player Directory
+    Internal Golf Association | Player Directory
 </div>
-
+```
 
 </header>
 
-
-
 <nav>
 
+```
 <a href="index.html">Home</a>
 
 <a href="leaderboard.html">Leaderboard</a>
@@ -200,222 +175,260 @@ Internal Golf Association | Player Directory
 <a href="stats.html">Stats</a>
 
 <a href="championships.html">Championships</a>
-
+```
 
 </nav>
 
-
-
-
 <div class="container">
 
-
+```
 <h1>
-🏌️ IGA Players
+    🏌️ IGA Players
 </h1>
 
 
-<div class="players">
+<div
+    class="players"
+    id="playersContainer"
+>
 
-
-
-<!-- PLAYER 1 -->
-
-<div class="card">
-
-
-<div class="photo">
-MA
-</div>
-
-
-<h2>
-Michael Albritton
-</h2>
-
-
-<span class="rank">
-IGA Rank #1
-</span>
-
-
-<p>
-Ada, Oklahoma
-</p>
-
-
-<p>
-Aggressive player known for chasing birdies and questionable club decisions.
-</p>
-
-
-
-<div class="stat">
-<span>Handicap</span>
-<b>8.2</b>
-</div>
-
-
-<div class="stat">
-<span>Average Score</span>
-<b>78.4</b>
-</div>
-
-
-<div class="stat">
-<span>Birdies</span>
-<b>34</b>
-</div>
-
-
-<div class="stat">
-<span>Career Wins</span>
-<b>3</b>
-</div>
-
+    <div class="message">
+        Loading players...
+    </div>
 
 </div>
-
-
-
-
-
-<!-- PLAYER 2 -->
-
-
-<div class="card">
-
-
-<div class="photo">
-C
-</div>
-
-
-<h2>
-Connor
-</h2>
-
-
-<span class="rank">
-IGA Rank #2
-</span>
-
-
-<p>
-Oklahoma
-</p>
-
-
-<p>
-Consistent ball striker with a focus on smart course management.
-</p>
-
-
-<div class="stat">
-<span>Handicap</span>
-<b>10.1</b>
-</div>
-
-
-<div class="stat">
-<span>Average Score</span>
-<b>80.1</b>
-</div>
-
-
-<div class="stat">
-<span>Birdies</span>
-<b>29</b>
-</div>
-
-
-<div class="stat">
-<span>Career Wins</span>
-<b>2</b>
-</div>
-
+```
 
 </div>
-
-
-
-
-
-<!-- PLAYER 3 -->
-
-
-<div class="card">
-
-
-<div class="photo">
-R
-</div>
-
-
-<h2>
-Ryan
-</h2>
-
-
-<span class="rank">
-IGA Rank #3
-</span>
-
-
-<p>
-Oklahoma
-</p>
-
-
-<p>
-A steady competitor looking to make a championship run.
-</p>
-
-
-
-<div class="stat">
-<span>Handicap</span>
-<b>11.4</b>
-</div>
-
-
-<div class="stat">
-<span>Average Score</span>
-<b>81.0</b>
-</div>
-
-
-<div class="stat">
-<span>Birdies</span>
-<b>25</b>
-</div>
-
-
-<div class="stat">
-<span>Career Wins</span>
-<b>1</b>
-</div>
-
-
-</div>
-
-
-
-</div>
-
-
-</div>
-
-
-
 
 <footer>
 
+```
 IGA Tour © 2027 | Internal Golf Association
+```
 
 </footer>
 
+<!-- ==========================================
+     SUPABASE
+     ========================================== -->
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- ==========================================
+     DATABASE
+     ========================================== -->
+
+<script src="database.js"></script>
+
+<script>
+
+// ==========================================
+// LOAD PLAYERS
+// ==========================================
+
+async function loadPlayersPage() {
+
+    const container =
+        document.getElementById(
+            "playersContainer"
+        );
+
+
+    try {
+
+        console.log(
+            "Loading IGA players..."
+        );
+
+
+        const players =
+            await getActivePlayers();
+
+
+        console.log(
+            "Players loaded:",
+            players
+        );
+
+
+        // ==================================
+        // NO PLAYERS
+        // ==================================
+
+        if (
+            !players ||
+            players.length === 0
+        ) {
+
+            container.innerHTML = `
+
+                <div class="message">
+
+                    <h2>
+                        No Active Players
+                    </h2>
+
+                    <p>
+                        There are currently no
+                        active IGA players.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        // ==================================
+        // CLEAR LOADING MESSAGE
+        // ==================================
+
+        container.innerHTML = "";
+
+
+        // ==================================
+        // CREATE PLAYER CARDS
+        // ==================================
+
+        players.forEach(
+            (player, index) => {
+
+
+                // ------------------------------
+                // CREATE INITIALS
+                // ------------------------------
+
+                const initials =
+                    player.Name
+                        .split(" ")
+                        .map(
+                            part =>
+                                part
+                                    .charAt(0)
+                                    .toUpperCase()
+                        )
+                        .join("")
+                        .substring(
+                            0,
+                            2
+                        );
+
+
+                // ------------------------------
+                // CREATE CARD
+                // ------------------------------
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+                card.className =
+                    "card";
+
+
+                card.innerHTML = `
+
+                    <div class="photo">
+                        ${initials}
+                    </div>
+
+
+                    <h2>
+                        ${player.Name}
+                    </h2>
+
+
+                    <span class="rank">
+                        IGA Player
+                    </span>
+
+
+                    <p>
+                        ${player["Home Town"] || "Oklahoma"}
+                    </p>
+
+
+                    <div class="stat">
+
+                        <span>
+                            Handicap
+                        </span>
+
+                        <b>
+                            ${
+                                player.Handicap ??
+                                "—"
+                            }
+                        </b>
+
+                    </div>
+
+
+                    <div class="stat">
+
+                        <span>
+                            Player ID
+                        </span>
+
+                        <b>
+                            ${player.player_id}
+                        </b>
+
+                    </div>
+
+                `;
+
+
+                container.appendChild(
+                    card
+                );
+
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "ERROR LOADING PLAYERS PAGE:",
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <div class="message">
+
+                <h2>
+                    Error Loading Players
+                </h2>
+
+                <p>
+                    ${error.message}
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+// ==========================================
+// START PAGE
+// ==========================================
+
+loadPlayersPage();
+
+</script>
 
 </body>
 
