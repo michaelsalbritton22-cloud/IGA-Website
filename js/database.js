@@ -2600,27 +2600,24 @@ let doubleBogeys = 0;
     // ADD 18 HOLE RECORDS
     // ==========================================
 
-    const records =
-        holeRecords.map(
-            hole => ({
+const records =
+    holeRecords.map(
+        hole => ({
 
-                round_id:
-                    round.id,
+            round_id:
+                round.id,
 
-                hole_number:
-                    hole.hole_number,
+            hole_number:
+                hole.hole_number,
 
-                gross_score:
-                    hole.gross_score,
+            gross_score:
+                hole.gross_score,
 
-                handicap_strokes:
-                    hole.handicap_strokes,
+            handicap_strokes:
+                hole.handicap_strokes
 
-                net_score:
-                    hole.net_score
-
-            })
-        );
+        })
+    );
 
 
     const {
