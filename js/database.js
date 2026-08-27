@@ -2816,7 +2816,17 @@ console.log(
 // GET PLAYER STATS
 // ==========================================
 
+// ==========================================
+// GET PLAYER STATS
+// ==========================================
+
 async function getPlayerStats(playerId) {
+
+    console.log(
+        "Getting stats for player:",
+        playerId
+    );
+
 
     const {
         data: rounds,
@@ -2863,11 +2873,20 @@ async function getPlayerStats(playerId) {
     }
 
 
-    // ------------------------------------------
-    // NO APPROVED ROUNDS
-    // ------------------------------------------
+    console.log(
+        `Approved rounds for player ${playerId}:`,
+        rounds
+    );
 
-    if (!rounds || rounds.length === 0) {
+
+    // ==========================================
+    // NO ROUNDS
+    // ==========================================
+
+    if (
+        !rounds ||
+        rounds.length === 0
+    ) {
 
         return {
 
@@ -2889,20 +2908,16 @@ async function getPlayerStats(playerId) {
 
             points: 0,
 
-            wins: 0,
-
-            bestGross: null,
-
-            bestNet: null
+            wins: 0
 
         };
 
     }
 
 
-    // ------------------------------------------
-    // CALCULATE TOTALS
-    // ------------------------------------------
+    // ==========================================
+    // TOTALS
+    // ==========================================
 
     const roundsPlayed =
         rounds.length;
@@ -2912,7 +2927,9 @@ async function getPlayerStats(playerId) {
         rounds.reduce(
             (total, round) =>
                 total +
-                Number(round.gross_score || 0),
+                Number(
+                    round.gross_score || 0
+                ),
             0
         );
 
@@ -2921,7 +2938,9 @@ async function getPlayerStats(playerId) {
         rounds.reduce(
             (total, round) =>
                 total +
-                Number(round.net_score || 0),
+                Number(
+                    round.net_score || 0
+                ),
             0
         );
 
@@ -2930,7 +2949,9 @@ async function getPlayerStats(playerId) {
         rounds.reduce(
             (total, round) =>
                 total +
-                Number(round.birdies || 0),
+                Number(
+                    round.birdies || 0
+                ),
             0
         );
 
@@ -2939,7 +2960,9 @@ async function getPlayerStats(playerId) {
         rounds.reduce(
             (total, round) =>
                 total +
-                Number(round.eagles || 0),
+                Number(
+                    round.eagles || 0
+                ),
             0
         );
 
@@ -2948,7 +2971,9 @@ async function getPlayerStats(playerId) {
         rounds.reduce(
             (total, round) =>
                 total +
-                Number(round.pars || 0),
+                Number(
+                    round.pars || 0
+                ),
             0
         );
 
@@ -2957,7 +2982,9 @@ async function getPlayerStats(playerId) {
         rounds.reduce(
             (total, round) =>
                 total +
-                Number(round.bogeys || 0),
+                Number(
+                    round.bogeys || 0
+                ),
             0
         );
 
@@ -2966,7 +2993,9 @@ async function getPlayerStats(playerId) {
         rounds.reduce(
             (total, round) =>
                 total +
-                Number(round.double_bogeys || 0),
+                Number(
+                    round.double_bogeys || 0
+                ),
             0
         );
 
@@ -2975,10 +3004,16 @@ async function getPlayerStats(playerId) {
         rounds.reduce(
             (total, round) =>
                 total +
-                Number(round.points_earned || 0),
+                Number(
+                    round.points_earned || 0
+                ),
             0
         );
 
+
+    // ==========================================
+    // WINS
+    // ==========================================
 
     const wins =
         rounds.filter(
@@ -2989,33 +3024,11 @@ async function getPlayerStats(playerId) {
         ).length;
 
 
-    const bestGross =
-        Math.min(
-            ...rounds.map(
-                round =>
-                    Number(
-                        round.gross_score
-                    )
-            )
-        );
+    // ==========================================
+    // RETURN STATS
+    // ==========================================
 
-
-    const bestNet =
-        Math.min(
-            ...rounds.map(
-                round =>
-                    Number(
-                        round.net_score
-                    )
-            )
-        );
-
-
-    // ------------------------------------------
-    // RETURN PLAYER STATS
-    // ------------------------------------------
-
-    return {
+    const stats = {
 
         roundsPlayed:
 
@@ -3024,22 +3037,18 @@ async function getPlayerStats(playerId) {
 
         averageGross:
 
-            Number(
-                (
-                    totalGross /
-                    roundsPlayed
-                ).toFixed(1)
-            ),
+            (
+                totalGross /
+                roundsPlayed
+            ).toFixed(1),
 
 
         averageNet:
 
-            Number(
-                (
-                    totalNet /
-                    roundsPlayed
-                ).toFixed(1)
-            ),
+            (
+                totalNet /
+                roundsPlayed
+            ).toFixed(1),
 
 
         birdies:
@@ -3074,18 +3083,17 @@ async function getPlayerStats(playerId) {
 
         wins:
 
-            wins,
-
-
-        bestGross:
-
-            bestGross,
-
-
-        bestNet:
-
-            bestNet
+            wins
 
     };
+
+
+    console.log(
+        `Calculated stats for player ${playerId}:`,
+        stats
+    );
+
+
+    return stats;
 
 }
