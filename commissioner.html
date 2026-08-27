@@ -2528,43 +2528,27 @@ async function buildMultiPlayerScorecard() {
 
     `;
 
-
     // ==========================================
-    // GET COURSE HOLES
+    // BUILD 18 HOLES
     // ==========================================
 
-    let holes;
+    const holes = [];
 
+    for (
+        let holeNumber = 1;
+        holeNumber <= 18;
+        holeNumber++
+    ) {
 
-    try {
+        holes.push({
 
-        holes =
-            await getCourseHoles(
-                selectedEntryEvent.course_id
-            );
+        hole_number:
+            holeNumber
+
+        });
 
     }
-
-    catch (error) {
-
-        console.error(
-            "ERROR LOADING COURSE HOLES:",
-            error
-        );
-
-
-        scorecard.innerHTML = `
-
-            <p>
-                Could not load course hole information.
-            </p>
-
-        `;
-
-        return;
-
-    }
-
+    
 
     // ==========================================
     // BUILD TABLE HEADER
@@ -2635,7 +2619,7 @@ async function buildMultiPlayerScorecard() {
                     </td>
 
                     <td>
-                        ${hole.par}
+                        -
                     </td>
 
             `;
