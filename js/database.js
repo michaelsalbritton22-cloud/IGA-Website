@@ -2596,9 +2596,9 @@ let doubleBogeys = 0;
     }
 
 
-    // ==========================================
-    // ADD 18 HOLE RECORDS
-    // ==========================================
+  // ==========================================
+// ADD 18 HOLE RECORDS
+// ==========================================
 
 const records =
     holeRecords.map(
@@ -2619,19 +2619,20 @@ const records =
         })
     );
 
+console.log(
+    "ROUND HOLES BEING INSERTED:",
+    records
+);
 
-    const {
-        error: holeError
-    } = await supabaseClient
+const {
+    error: holeError
+} = await supabaseClient
 
-        .from("round_holes")
+    .from("round_holes")
 
-        .insert(
-            records
-        );
-
-
-    if (holeError) {
+    .insert(
+        records
+    );
 
         // --------------------------------------
         // CLEAN UP ROUND IF HOLES FAIL

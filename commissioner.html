@@ -3520,71 +3520,151 @@ async function saveRoundEntry() {
 
 }
 
-// ==========================================
-// CLEAR ROUND ENTRY
-// ==========================================
-
 function clearRoundEntry() {
 
-    document.getElementById(
-        "entryEvent"
-    ).value = "";
+    // ==========================================
+    // CLEAR EVENT
+    // ==========================================
 
+    const entryEvent =
+        document.getElementById(
+            "entryEvent"
+        );
 
-    document.getElementById(
-        "entryPlayer"
-    ).innerHTML = `
+    if (entryEvent) {
 
-        <option value="">
-            Select Player
-        </option>
-
-    `;
-
-
-    document.getElementById(
-        "entryPlayerInfo"
-    ).style.display =
-        "none";
-
-
-    document.getElementById(
-        "entryScorecard"
-    ).style.display =
-        "none";
-
-
-    document.getElementById(
-        "entryNotes"
-    ).value = "";
-
-
-    for (
-        let hole = 1;
-        hole <= 18;
-        hole++
-    ) {
-
-        const input =
-            document.getElementById(
-                `hole${hole}`
-            );
-
-
-        if (input) {
-
-            input.value = "";
-
-        }
+        entryEvent.value = "";
 
     }
 
 
-    selectedEntryEvent =
+    // ==========================================
+    // CLEAR SELECTED PLAYERS
+    // ==========================================
+
+    const entryPlayer =
+        document.getElementById(
+            "entryPlayer"
+        );
+
+    if (entryPlayer) {
+
+        entryPlayer.innerHTML = `
+
+            <option value="">
+                Select Player
+            </option>
+
+        `;
+
+    }
+
+
+    // ==========================================
+    // CLEAR PLAYER DISPLAY
+    // ==========================================
+
+    const entrySelectedPlayers =
+        document.getElementById(
+            "entrySelectedPlayers"
+        );
+
+    if (entrySelectedPlayers) {
+
+        entrySelectedPlayers.innerHTML = "";
+
+    }
+
+
+    // ==========================================
+    // CLEAR MULTI-PLAYER SCORECARD
+    // ==========================================
+
+    const multiPlayerScorecard =
+        document.getElementById(
+            "multiPlayerScorecard"
+        );
+
+    if (multiPlayerScorecard) {
+
+        multiPlayerScorecard.innerHTML = "";
+
+        multiPlayerScorecard.style.display =
+            "none";
+
+    }
+
+
+    // ==========================================
+    // CLEAR OLD PLAYER INFO
+    // ==========================================
+
+    const entryPlayerInfo =
+        document.getElementById(
+            "entryPlayerInfo"
+        );
+
+    if (entryPlayerInfo) {
+
+        entryPlayerInfo.style.display =
+            "none";
+
+    }
+
+
+    // ==========================================
+    // CLEAR OLD SCORECARD
+    // ==========================================
+
+    const entryScorecard =
+        document.getElementById(
+            "entryScorecard"
+        );
+
+    if (entryScorecard) {
+
+        entryScorecard.style.display =
+            "none";
+
+    }
+
+
+    // ==========================================
+    // CLEAR NOTES
+    // ==========================================
+
+    const entryNotes =
+        document.getElementById(
+            "entryNotes"
+        );
+
+    if (entryNotes) {
+
+        entryNotes.value = "";
+
+    }
+
+
+    // ==========================================
+    // CLEAR SELECTED PLAYERS ARRAY
+    // ==========================================
+
+    selectedEntryPlayers = [];
+
+
+    // ==========================================
+    // CLEAR OLD SINGLE PLAYER
+    // ==========================================
+
+    selectedEntryPlayer =
         null;
 
 
-    selectedEntryPlayer =
+    // ==========================================
+    // CLEAR SELECTED EVENT
+    // ==========================================
+
+    selectedEntryEvent =
         null;
 
 }
