@@ -294,102 +294,212 @@ async function loadPlayersPage() {
         // CREATE PLAYER CARDS
         // ==================================
 
-        players.forEach(
-            (player, index) => {
+        for (
+            const [index, player]
+            of players.entries()
+        ) {
 
 
-                // ------------------------------
-                // CREATE INITIALS
-                // ------------------------------
-
-                const initials =
-                    player.Name
-                        .split(" ")
-                        .map(
-                            part =>
-                                part
-                                    .charAt(0)
-                                    .toUpperCase()
-                        )
-                        .join("")
-                        .substring(
-                            0,
-                            2
-                        );
+            console.log(
+                "Loading stats for:",
+                player.Name
+            );
 
 
-                // ------------------------------
-                // CREATE CARD
-                // ------------------------------
+            // ------------------------------
+            // GET PLAYER STATS
+            // ------------------------------
 
-                const card =
-                    document.createElement(
-                        "div"
-                    );
-
-                card.className =
-                    "card";
-
-
-                card.innerHTML = `
-
-                    <div class="photo">
-                        ${initials}
-                    </div>
-
-
-                    <h2>
-                        ${player.Name}
-                    </h2>
-
-
-                    <span class="rank">
-                        IGA Player
-                    </span>
-
-
-                    <p>
-                        ${player["Home Town"] || "Oklahoma"}
-                    </p>
-
-
-                    <div class="stat">
-
-                        <span>
-                            Handicap
-                        </span>
-
-                        <b>
-                            ${
-                                player.Handicap ??
-                                "—"
-                            }
-                        </b>
-
-                    </div>
-
-
-                    <div class="stat">
-
-                        <span>
-                            Player ID
-                        </span>
-
-                        <b>
-                            ${player.player_id}
-                        </b>
-
-                    </div>
-
-                `;
-
-
-                container.appendChild(
-                    card
+            const stats =
+                await getPlayerStats(
+                    player.player_id
                 );
 
-            }
-        );
+
+            console.log(
+                `Stats for ${player.Name}:`,
+                stats
+            );
+
+
+            // ------------------------------
+            // CREATE INITIALS
+            // ------------------------------
+
+            const initials =
+                player.Name
+                    .split(" ")
+                    .map(
+                        part =>
+                            part
+                                .charAt(0)
+                                .toUpperCase()
+                    )
+                    .join("")
+                    .substring(
+                        0,
+                        2
+                    );
+
+
+            // ------------------------------
+            // CREATE CARD
+            // ------------------------------
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "card";
+
+
+            card.innerHTML = `
+
+                <div class="photo">
+                    ${initials}
+                </div>
+
+
+                <h2>
+                    ${player.Name}
+                </h2>
+
+
+                <span class="rank">
+                    IGA Player
+                </span>
+
+
+                <p>
+                    ${player["Home Town"] || "Oklahoma"}
+                </p>
+
+
+                <div class="stat">
+
+                    <span>
+                        Handicap
+                    </span>
+
+                    <b>
+                        ${
+                            player.Handicap ??
+                            "—"
+                        }
+                    </b>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <span>
+                        Rounds Played
+                    </span>
+
+                    <b>
+                        ${stats.roundsPlayed}
+                    </b>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <span>
+                        Average Gross
+                    </span>
+
+                    <b>
+                        ${
+                            stats.roundsPlayed > 0
+                                ? stats.averageGross
+                                : "—"
+                        }
+                    </b>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <span>
+                        Average Net
+                    </span>
+
+                    <b>
+                        ${
+                            stats.roundsPlayed > 0
+                                ? stats.averageNet
+                                : "—"
+                        }
+                    </b>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <span>
+                        Birdies
+                    </span>
+
+                    <b>
+                        ${stats.birdies}
+                    </b>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <span>
+                        Eagles
+                    </span>
+
+                    <b>
+                        ${stats.eagles}
+                    </b>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <span>
+                        Season Points
+                    </span>
+
+                    <b>
+                        ${stats.points}
+                    </b>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <span>
+                        Wins
+                    </span>
+
+                    <b>
+                        ${stats.wins}
+                    </b>
+
+                </div>
+
+            `;
+
+
+            container.appendChild(
+                card
+            );
+
+        }
 
     }
 
