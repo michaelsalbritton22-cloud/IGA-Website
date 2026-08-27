@@ -2811,3 +2811,281 @@ console.log(
     };
 
 }
+
+// ==========================================
+// GET PLAYER STATS
+// ==========================================
+
+async function getPlayerStats(playerId) {
+
+    const {
+        data: rounds,
+        error
+    } = await supabaseClient
+
+        .from("rounds")
+
+        .select(`
+            id,
+            player_id,
+            gross_score,
+            net_score,
+            points_earned,
+            birdies,
+            eagles,
+            pars,
+            bogeys,
+            double_bogeys,
+            approval_status,
+            finish_position
+        `)
+
+        .eq(
+            "player_id",
+            playerId
+        )
+
+        .eq(
+            "approval_status",
+            "Approved"
+        );
+
+
+    if (error) {
+
+        console.error(
+            "ERROR LOADING PLAYER STATS:",
+            error
+        );
+
+        throw error;
+
+    }
+
+
+    // ------------------------------------------
+    // NO APPROVED ROUNDS
+    // ------------------------------------------
+
+    if (!rounds || rounds.length === 0) {
+
+        return {
+
+            roundsPlayed: 0,
+
+            averageGross: 0,
+
+            averageNet: 0,
+
+            birdies: 0,
+
+            eagles: 0,
+
+            pars: 0,
+
+            bogeys: 0,
+
+            doubleBogeys: 0,
+
+            points: 0,
+
+            wins: 0,
+
+            bestGross: null,
+
+            bestNet: null
+
+        };
+
+    }
+
+
+    // ------------------------------------------
+    // CALCULATE TOTALS
+    // ------------------------------------------
+
+    const roundsPlayed =
+        rounds.length;
+
+
+    const totalGross =
+        rounds.reduce(
+            (total, round) =>
+                total +
+                Number(round.gross_score || 0),
+            0
+        );
+
+
+    const totalNet =
+        rounds.reduce(
+            (total, round) =>
+                total +
+                Number(round.net_score || 0),
+            0
+        );
+
+
+    const birdies =
+        rounds.reduce(
+            (total, round) =>
+                total +
+                Number(round.birdies || 0),
+            0
+        );
+
+
+    const eagles =
+        rounds.reduce(
+            (total, round) =>
+                total +
+                Number(round.eagles || 0),
+            0
+        );
+
+
+    const pars =
+        rounds.reduce(
+            (total, round) =>
+                total +
+                Number(round.pars || 0),
+            0
+        );
+
+
+    const bogeys =
+        rounds.reduce(
+            (total, round) =>
+                total +
+                Number(round.bogeys || 0),
+            0
+        );
+
+
+    const doubleBogeys =
+        rounds.reduce(
+            (total, round) =>
+                total +
+                Number(round.double_bogeys || 0),
+            0
+        );
+
+
+    const points =
+        rounds.reduce(
+            (total, round) =>
+                total +
+                Number(round.points_earned || 0),
+            0
+        );
+
+
+    const wins =
+        rounds.filter(
+            round =>
+                Number(
+                    round.finish_position
+                ) === 1
+        ).length;
+
+
+    const bestGross =
+        Math.min(
+            ...rounds.map(
+                round =>
+                    Number(
+                        round.gross_score
+                    )
+            )
+        );
+
+
+    const bestNet =
+        Math.min(
+            ...rounds.map(
+                round =>
+                    Number(
+                        round.net_score
+                    )
+            )
+        );
+
+
+    // ------------------------------------------
+    // RETURN PLAYER STATS
+    // ------------------------------------------
+
+    return {
+
+        roundsPlayed:
+
+            roundsPlayed,
+
+
+        averageGross:
+
+            Number(
+                (
+                    totalGross /
+                    roundsPlayed
+                ).toFixed(1)
+            ),
+
+
+        averageNet:
+
+            Number(
+                (
+                    totalNet /
+                    roundsPlayed
+                ).toFixed(1)
+            ),
+
+
+        birdies:
+
+            birdies,
+
+
+        eagles:
+
+            eagles,
+
+
+        pars:
+
+            pars,
+
+
+        bogeys:
+
+            bogeys,
+
+
+        doubleBogeys:
+
+            doubleBogeys,
+
+
+        points:
+
+            points,
+
+
+        wins:
+
+            wins,
+
+
+        bestGross:
+
+            bestGross,
+
+
+        bestNet:
+
+            bestNet
+
+    };
+
+}
