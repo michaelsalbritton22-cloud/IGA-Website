@@ -2596,43 +2596,48 @@ let doubleBogeys = 0;
     }
 
 
-  // ==========================================
-// ADD 18 HOLE RECORDS
-// ==========================================
+    // ==========================================
+    // ADD 18 HOLE RECORDS
+    // ==========================================
 
-const records =
-    holeRecords.map(
-        hole => ({
+    const records =
+        holeRecords.map(
+            hole => ({
 
-            round_id:
-                round.id,
+                round_id:
+                    round.id,
 
-            hole_number:
-                hole.hole_number,
+                hole_number:
+                    hole.hole_number,
 
-            gross_score:
-                hole.gross_score,
+                gross_score:
+                    hole.gross_score,
 
-            handicap_strokes:
-                hole.handicap_strokes
+                handicap_strokes:
+                    hole.handicap_strokes
 
-        })
-    );
+            })
+        );
 
-console.log(
-    "ROUND HOLES BEING INSERTED:",
-    records
-);
 
-const {
-    error: holeError
-} = await supabaseClient
-
-    .from("round_holes")
-
-    .insert(
+    console.log(
+        "ROUND HOLES BEING INSERTED:",
         records
     );
+
+
+    const {
+        error: holeError
+    } = await supabaseClient
+
+        .from("round_holes")
+
+        .insert(
+            records
+        );
+
+
+    if (holeError) {
 
         // --------------------------------------
         // CLEAN UP ROUND IF HOLES FAIL
@@ -2655,10 +2660,10 @@ const {
             holeError
         );
 
+
         throw holeError;
 
     }
-
 
     // ==========================================
     // RETURN SAVED ROUND
