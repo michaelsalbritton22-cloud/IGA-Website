@@ -285,28 +285,30 @@
             </div>
 
 
-            <div class="card">
+             <div class="card">
 
                 <h3>
-                    Player
+                    Players
                 </h3>
 
-                <select
-                    id="entryPlayer"
-                    class="form-control"
-                    onchange="updateEntryPlayer()"
-                >
+            <p>
+                Select the players who played this round.
+            </p>
 
-                    <option value="">
-                        Select Player
-                    </option>
+            <div
+                id="entryPlayers"
+                class="player-selection"
+            >
 
-                </select>
+                <p>
+                    Select an event first.
+                </p>
 
-            </div>
-
+           </div>
 
         </div>
+
+     </div>
 
 
         <!-- ==========================================
@@ -2258,6 +2260,8 @@ let selectedEntryEvent = null;
 
 let selectedEntryPlayer = null;
 
+let selectedEntryPlayers = [];
+
 
 // ==========================================
 // OPEN ROUND ENTRY
@@ -2390,7 +2394,7 @@ async function loadRoundEntryEvents() {
 
 
 // ==========================================
-// EVENT SELECTED
+// EVENT SELECTED — LOAD MULTIPLE PLAYERS
 // ==========================================
 
 async function loadRoundEntryEvent() {
@@ -2411,7 +2415,29 @@ async function loadRoundEntryEvent() {
         );
 
 
+    const playerContainer =
+        document.getElementById(
+            "entryPlayers"
+        );
+
+
+    // ==========================================
+    // NO EVENT SELECTED
+    // ==========================================
+
     if (!selectedEntryEvent) {
+
+        playerContainer.innerHTML = `
+
+            <p>
+                Select an event first.
+            </p>
+
+        `;
+
+        document.getElementById(
+            "entryScorecard"
+        ).style.display = "none";
 
         return;
 
@@ -2419,6 +2445,10 @@ async function loadRoundEntryEvent() {
 
 
     try {
+
+        // ==========================================
+        // GET ACTIVE PLAYERS
+        // ==========================================
 
         const {
             data: players,
@@ -2458,56 +2488,90 @@ async function loadRoundEntryEvent() {
             players;
 
 
-        const playerSelect =
-            document.getElementById(
-                "entryPlayer"
-            );
+        // ==========================================
+        // BUILD PLAYER SELECTION
+        // ==========================================
 
-
-        playerSelect.innerHTML = `
-
-            <option value="">
-                Select Player
-            </option>
-
-        `;
+        playerContainer.innerHTML = "";
 
 
         players.forEach(
             player => {
 
-                const option =
+                const label =
                     document.createElement(
-                        "option"
+                        "label"
                     );
 
 
-                option.value =
+                label.className =
+                    "player-option";
+
+
+                const checkbox =
+                    document.createElement(
+                        "input"
+                    );
+
+
+                checkbox.type =
+                    "checkbox";
+
+
+                checkbox.value =
                     player.player_id;
 
 
-                option.textContent =
+                checkbox.dataset.playerId =
+                    player.player_id;
+
+
+                checkbox.addEventListener(
+                    "change",
+                    updateSelectedEntryPlayers
+                );
+
+
+                const name =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                name.textContent =
                     player.Name;
 
 
-                playerSelect.appendChild(
-                    option
+                label.appendChild(
+                    checkbox
+                );
+
+
+                label.appendChild(
+                    name
+                );
+
+
+                playerContainer.appendChild(
+                    label
                 );
 
             }
         );
 
 
-        document.getElementById(
-            "entryPlayerInfo"
-        ).style.display =
-            "none";
+        // ==========================================
+        // RESET SCORECARD
+        // ==========================================
+
+        selectedEntryPlayers = [];
 
 
         document.getElementById(
             "entryScorecard"
         ).style.display =
             "none";
+
 
     }
 
@@ -2517,6 +2581,15 @@ async function loadRoundEntryEvent() {
             "ERROR LOADING EVENT PLAYERS:",
             error
         );
+
+
+        playerContainer.innerHTML = `
+
+            <p>
+                Could not load players.
+            </p>
+
+        `;
 
 
         alert(
@@ -2529,6 +2602,96 @@ async function loadRoundEntryEvent() {
 
 }
 
+// ==========================================
+// UPDATE SELECTED PLAYERS
+// ==========================================
+
+function updateSelectedEntryPlayers() {
+
+    const checkboxes =
+        document.querySelectorAll(
+            "#entryPlayers input[type='checkbox']"
+        );
+
+
+    selectedEntryPlayers = [];
+
+
+    checkboxes.forEach(
+        checkbox => {
+
+            if (!checkbox.checked) {
+
+                return;
+
+            }
+
+
+            const playerId =
+                Number(
+                    checkbox.value
+                );
+
+
+            const player =
+                entryPlayers.find(
+                    p =>
+                        p.player_id ===
+                        playerId
+                );
+
+
+            if (player) {
+
+                selectedEntryPlayers.push(
+                    player
+                );
+
+            }
+
+        }
+    );
+
+
+    console.log(
+        "Selected entry players:",
+        selectedEntryPlayers
+    );
+
+
+    // ==========================================
+    // SHOW / HIDE SCORECARD
+    // ==========================================
+
+    const scorecard =
+        document.getElementById(
+            "entryScorecard"
+        );
+
+
+    if (
+        selectedEntryPlayers.length === 0
+    ) {
+
+        scorecard.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    scorecard.style.display =
+        "block";
+
+
+    // ==========================================
+    // UPDATE SCORECARD
+    // ==========================================
+
+    buildMultiPlayerScorecard();
+
+}
 
 // ==========================================
 // PLAYER SELECTED
