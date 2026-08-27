@@ -327,6 +327,84 @@ footer {
 
 }
 
+/* ==========================================
+   AUDIT MASTER LEADERBOARD
+========================================== */
+
+.audit-master-card {
+    overflow: hidden;
+}
+
+.audit-leaderboard-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 30px;
+}
+
+.audit-leaderboard {
+    width: 100%;
+    min-width: 1250px;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: white;
+}
+
+.audit-leaderboard th {
+    background: #003b24;
+    color: white;
+    padding: 10px 6px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.audit-leaderboard td {
+    padding: 10px 6px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    white-space: nowrap;
+    font-weight: bold;
+}
+
+.audit-leaderboard tbody tr:hover {
+    background: #f5f5f2;
+}
+
+.position-column {
+    width: 45px;
+}
+
+.player-column {
+    min-width: 170px;
+    text-align: left !important;
+}
+
+.total-column {
+    min-width: 65px;
+}
+
+.audit-score {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* UNDER PAR */
+
+.audit-under {
+    color: #c00000;
+}
+
+/* EVEN OR OVER PAR */
+
+.audit-even,
+.audit-over {
+    color: #003b24;
+}
+
+.audit-loading {
+    padding: 30px !important;
+    color: #707070;
+    font-weight: normal !important;
+}
 
 </style>
 
@@ -583,83 +661,93 @@ Honoring the champions who define the history of the Internal Golf Association.
 </div>
 
 
+<!-- ==========================================
+     AUDIT MASTER
+=========================================== -->
+
+<div class="card audit-master-card">
+
+    <div class="trophy">
+        🏆
+    </div>
+
+    <h2>
+        Audit Master
+    </h2>
+
+    <p>
+        The premier individual championship of the
+        Internal Golf Association.
+    </p>
 
 
+    <!-- AUDIT MASTER LEADERBOARD -->
+
+    <div class="audit-leaderboard-wrapper">
+
+        <table
+            class="audit-leaderboard"
+            id="auditLeaderboard"
+        >
+
+            <thead>
+
+                <tr>
+
+                    <th class="position-column">
+                        POS
+                    </th>
+
+                    <th class="player-column">
+                        PLAYER
+                    </th>
+
+                    <th>1</th>
+                    <th>2</th>
+                    <th>3</th>
+                    <th>4</th>
+                    <th>5</th>
+                    <th>6</th>
+                    <th>7</th>
+                    <th>8</th>
+                    <th>9</th>
+                    <th>10</th>
+                    <th>11</th>
+                    <th>12</th>
+                    <th>13</th>
+                    <th>14</th>
+                    <th>15</th>
+                    <th>16</th>
+                    <th>17</th>
+                    <th>18</th>
+
+                    <th class="total-column">
+                        TOTAL
+                    </th>
+
+                </tr>
+
+            </thead>
 
 
-<!-- AUDIT MASTER -->
+            <tbody id="auditLeaderboardBody">
 
+                <tr>
 
-<div class="card champion">
+                    <td
+                        colspan="21"
+                        class="audit-loading"
+                    >
+                        Audit Master scores will appear here.
+                    </td>
 
+                </tr>
 
-<div class="trophy">
-🏆
-</div>
+            </tbody>
 
+        </table>
 
-<h2>
-Audit Master Champions
-</h2>
-
-
-<p>
-The premier individual championship of the Internal Golf Association.
-</p>
-
-
-<table>
-
-
-<tr>
-
-<th>Year</th>
-
-<th>Champion</th>
-
-<th>Course</th>
-
-</tr>
-
-
-<tr>
-
-<td>
-2027
-</td>
-
-<td>
-TBD
-</td>
-
-<td>
-TBD
-</td>
-
-</tr>
-
-
-
-<tr>
-
-<td>
-2028
-</td>
-
-<td>
-TBD
-</td>
-
-<td>
-TBD
-</td>
-
-</tr>
-
-
-
-</table>
-
+    </div>
 
 </div>
 

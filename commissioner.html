@@ -219,6 +219,544 @@
 
 </section>
 
+<!-- ==========================================
+     COMMISSIONER ROUND ENTRY
+=========================================== -->
+
+<section
+    id="roundEntry"
+    class="round-review"
+    style="display:none;"
+>
+
+    <div class="card">
+
+        <!-- ==========================================
+             HEADER
+        =========================================== -->
+
+        <div class="approval-header">
+
+            <div>
+
+                <h2>
+                    Enter Round
+                </h2>
+
+                <p>
+                    Enter the player's gross scores
+                    from 18Birdies.
+                </p>
+
+            </div>
+
+            <span class="status-pending">
+                COMMISSIONER
+            </span>
+
+        </div>
+
+
+        <!-- ==========================================
+             EVENT / PLAYER
+        =========================================== -->
+
+        <div class="cards">
+
+
+            <div class="card">
+
+                <h3>
+                    Event
+                </h3>
+
+                <select
+                    id="entryEvent"
+                    class="form-control"
+                    onchange="loadRoundEntryEvent()"
+                >
+
+                    <option value="">
+                        Select Event
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>
+                    Player
+                </h3>
+
+                <select
+                    id="entryPlayer"
+                    class="form-control"
+                    onchange="updateEntryPlayer()"
+                >
+
+                    <option value="">
+                        Select Player
+                    </option>
+
+                </select>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- ==========================================
+             PLAYER INFORMATION
+        =========================================== -->
+
+        <div
+            id="entryPlayerInfo"
+            class="playing-group"
+            style="display:none;"
+        >
+
+            <strong>
+                Player Information
+            </strong>
+
+            <p id="entryPlayerDetails"></p>
+
+        </div>
+
+
+        <!-- ==========================================
+             SCORECARD
+        =========================================== -->
+
+        <div
+            id="entryScorecard"
+            style="display:none;"
+        >
+
+            <h3>
+                Gross Scores
+            </h3>
+
+            <p>
+                Enter the score shown by 18Birdies
+                for each hole.
+            </p>
+
+
+            <!-- FRONT NINE -->
+
+            <h4>
+                Front Nine
+            </h4>
+
+            <div class="round-players">
+
+                <div class="round-player">
+
+                    <div>
+                        <strong>Hole 1</strong>
+                    </div>
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        id="hole1"
+                        class="score-input"
+                    >
+
+                </div>
+
+
+                <div class="round-player">
+
+                    <div>
+                        <strong>Hole 2</strong>
+                    </div>
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        id="hole2"
+                        class="score-input"
+                    >
+
+                </div>
+
+
+                <div class="round-player">
+
+                    <div>
+                        <strong>Hole 3</strong>
+                    </div>
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        id="hole3"
+                        class="score-input"
+                    >
+
+                </div>
+
+
+                <div class="round-player">
+
+                    <div>
+                        <strong>Hole 4</strong>
+                    </div>
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        id="hole4"
+                        class="score-input"
+                    >
+
+                </div>
+
+
+                <div class="round-player">
+
+                    <div>
+                        <strong>Hole 5</strong>
+                    </div>
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        id="hole5"
+                        class="score-input"
+                    >
+
+                </div>
+
+
+                <div class="round-player">
+
+                    <div>
+                        <strong>Hole 6</strong>
+                    </div>
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        id="hole6"
+                        class="score-input"
+                    >
+
+                </div>
+
+
+                <div class="round-player">
+
+                    <div>
+                        <strong>Hole 7</strong>
+                    </div>
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        id="hole7"
+                        class="score-input"
+                    >
+
+                </div>
+
+
+                <div class="round-player">
+
+                    <div>
+                        <strong>Hole 8</strong>
+                    </div>
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        id="hole8"
+                        class="score-input"
+                    >
+
+                </div>
+
+
+                <div class="round-player">
+
+                    <div>
+                        <strong>Hole 9</strong>
+                    </div>
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        id="hole9"
+                        class="score-input"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- BACK NINE -->
+
+            <h4 style="margin-top:25px;">
+                Back Nine
+            </h4>
+
+            <div class="round-players">
+
+                <div class="round-player">
+
+                    <div>
+                        <strong>Hole 10</strong>
+                    </div>
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        id="hole10"
+                        class="score-input"
+                    >
+
+                </div>
+
+
+                <div class="round-player">
+
+                    <div>
+                        <strong>Hole 11</strong>
+                    </div>
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        id="hole11"
+                        class="score-input"
+                    >
+
+                </div>
+
+
+                <div class="round-player">
+
+                    <div>
+                        <strong>Hole 12</strong>
+                    </div>
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        id="hole12"
+                        class="score-input"
+                    >
+
+                </div>
+
+
+                <div class="round-player">
+
+                    <div>
+                        <strong>Hole 13</strong>
+                    </div>
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        id="hole13"
+                        class="score-input"
+                    >
+
+                </div>
+
+
+                <div class="round-player">
+
+                    <div>
+                        <strong>Hole 14</strong>
+                    </div>
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        id="hole14"
+                        class="score-input"
+                    >
+
+                </div>
+
+
+                <div class="round-player">
+
+                    <div>
+                        <strong>Hole 15</strong>
+                    </div>
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        id="hole15"
+                        class="score-input"
+                    >
+
+                </div>
+
+
+                <div class="round-player">
+
+                    <div>
+                        <strong>Hole 16</strong>
+                    </div>
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        id="hole16"
+                        class="score-input"
+                    >
+
+                </div>
+
+
+                <div class="round-player">
+
+                    <div>
+                        <strong>Hole 17</strong>
+                    </div>
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        id="hole17"
+                        class="score-input"
+                    >
+
+                </div>
+
+
+                <div class="round-player">
+
+                    <div>
+                        <strong>Hole 18</strong>
+                    </div>
+
+                    <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        id="hole18"
+                        class="score-input"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- ==========================================
+                 ROUND PREVIEW
+            =========================================== -->
+
+            <div
+                id="entryPreview"
+                class="review-summary"
+                style="margin-top:25px;"
+            >
+
+                <strong>
+                    Round Preview
+                </strong>
+
+                <p id="entryPreviewText">
+                    Enter all 18 scores to calculate
+                    the round.
+                </p>
+
+            </div>
+
+
+            <!-- ==========================================
+                 NOTES
+            =========================================== -->
+
+            <div style="margin-top:20px;">
+
+                <label for="entryNotes">
+
+                    <strong>
+                        Notes
+                    </strong>
+
+                </label>
+
+                <br>
+
+                <textarea
+                    id="entryNotes"
+                    rows="3"
+                    style="width:100%; margin-top:8px;"
+                    placeholder="Optional commissioner notes"
+                ></textarea>
+
+            </div>
+
+
+            <!-- ==========================================
+                 ACTIONS
+            =========================================== -->
+
+            <div
+                class="approval-actions"
+                style="margin-top:25px;"
+            >
+
+                <button
+                    class="button"
+                    onclick="closeRoundEntry()"
+                >
+
+                    Cancel
+
+                </button>
+
+
+                <button
+                    class="button"
+                    onclick="saveRoundEntry()"
+                >
+
+                    Save Round
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
         <!-- COMMISSIONER TOOLS -->
 
         <section class="cards">
@@ -226,19 +764,22 @@
 
             <div class="card">
 
-                <h3>
-                    Enter Round
-                </h3>
+         <h3>
+           Enter Round
+        </h3>
 
-                <p>
-                    Manually enter a player's round.
-                </p>
+        <p>
+            Enter a player's 18-hole score directly from 18Birdies.
+         </p>
 
-                <a href="#" class="button">
-                    Enter Round
-                </a>
+         <button
+          class="button"
+            onclick="openRoundEntry()"
+            >
+            Enter Round
+         </button>
 
-            </div>
+     </div>
 
 
             <div class="card">
@@ -1761,8 +2302,701 @@ function closeRoundReview() {
 
 loadPendingRounds();
 
-</script>
 
-</body>
+// ==========================================
+// COMMISSIONER ROUND ENTRY
+// ==========================================
 
-</html>
+let entryEvents = [];
+
+let entryPlayers = [];
+
+let selectedEntryEvent = null;
+
+let selectedEntryPlayer = null;
+
+
+// ==========================================
+// OPEN ROUND ENTRY
+// ==========================================
+
+async function openRoundEntry() {
+
+    document.getElementById(
+        "roundEntry"
+    ).style.display = "block";
+
+
+    document.getElementById(
+        "roundEntry"
+    ).scrollIntoView({
+        behavior: "smooth"
+    });
+
+
+    await loadRoundEntryEvents();
+
+}
+
+
+// ==========================================
+// CLOSE ROUND ENTRY
+// ==========================================
+
+function closeRoundEntry() {
+
+    document.getElementById(
+        "roundEntry"
+    ).style.display = "none";
+
+
+    clearRoundEntry();
+
+}
+
+
+// ==========================================
+// LOAD OPEN EVENTS
+// ==========================================
+
+async function loadRoundEntryEvents() {
+
+    const select =
+        document.getElementById(
+            "entryEvent"
+        );
+
+
+    select.innerHTML = `
+
+        <option value="">
+            Loading events...
+        </option>
+
+    `;
+
+
+    try {
+
+        entryEvents =
+            await getOpenEvents();
+
+
+        select.innerHTML = `
+
+            <option value="">
+                Select Event
+            </option>
+
+        `;
+
+
+        entryEvents.forEach(
+            event => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    event.id;
+
+
+                option.textContent =
+                    `${event.event_name} — `
+                    +
+                    `${event.courses?.Course_name || ""}`;
+
+
+                select.appendChild(
+                    option
+                );
+
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "ERROR LOADING ENTRY EVENTS:",
+            error
+        );
+
+
+        select.innerHTML = `
+
+            <option value="">
+                Error loading events
+            </option>
+
+        `;
+
+        alert(
+            "Could not load open events.\n\n"
+            +
+            error.message
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// EVENT SELECTED
+// ==========================================
+
+async function loadRoundEntryEvent() {
+
+    const eventId =
+        Number(
+            document.getElementById(
+                "entryEvent"
+            ).value
+        );
+
+
+    selectedEntryEvent =
+        entryEvents.find(
+            event =>
+                event.id ===
+                eventId
+        );
+
+
+    if (!selectedEntryEvent) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const {
+            data: players,
+            error
+        } = await supabaseClient
+
+            .from("Players")
+
+            .select(`
+                player_id,
+                "Name",
+                "Handicap",
+                Active
+            `)
+
+            .eq(
+                "Active",
+                true
+            )
+
+            .order(
+                "Name",
+                {
+                    ascending: true
+                }
+            );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        entryPlayers =
+            players;
+
+
+        const playerSelect =
+            document.getElementById(
+                "entryPlayer"
+            );
+
+
+        playerSelect.innerHTML = `
+
+            <option value="">
+                Select Player
+            </option>
+
+        `;
+
+
+        players.forEach(
+            player => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    player.player_id;
+
+
+                option.textContent =
+                    player.Name;
+
+
+                playerSelect.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+        document.getElementById(
+            "entryPlayerInfo"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "entryScorecard"
+        ).style.display =
+            "none";
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "ERROR LOADING EVENT PLAYERS:",
+            error
+        );
+
+
+        alert(
+            "Could not load players.\n\n"
+            +
+            error.message
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// PLAYER SELECTED
+// ==========================================
+
+function updateEntryPlayer() {
+
+    const playerId =
+        Number(
+            document.getElementById(
+                "entryPlayer"
+            ).value
+        );
+
+
+    selectedEntryPlayer =
+        entryPlayers.find(
+            player =>
+                player.player_id ===
+                playerId
+        );
+
+
+    if (!selectedEntryPlayer) {
+
+        document.getElementById(
+            "entryPlayerInfo"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "entryScorecard"
+        ).style.display =
+            "none";
+
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "entryPlayerInfo"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "entryPlayerDetails"
+    ).textContent =
+        `Handicap: ${selectedEntryPlayer.Handicap}`;
+
+
+    document.getElementById(
+        "entryScorecard"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "entryScorecard"
+    ).scrollIntoView({
+        behavior: "smooth"
+    });
+
+
+    updateEntryPreview();
+
+}
+
+
+// ==========================================
+// SCORE INPUT PREVIEW
+// ==========================================
+
+function updateEntryPreview() {
+
+    if (!selectedEntryPlayer) {
+
+        return;
+
+    }
+
+
+    const scores = [];
+
+
+    for (
+        let hole = 1;
+        hole <= 18;
+        hole++
+    ) {
+
+        const input =
+            document.getElementById(
+                `hole${hole}`
+            );
+
+
+        const value =
+            Number(
+                input.value
+            );
+
+
+        scores.push(
+            value || null
+        );
+
+    }
+
+
+    const entered =
+        scores.filter(
+            score =>
+                score !== null
+        ).length;
+
+
+    const preview =
+        document.getElementById(
+            "entryPreviewText"
+        );
+
+
+    if (entered < 18) {
+
+        preview.textContent =
+            `${entered} of 18 holes entered.`;
+
+        return;
+
+    }
+
+
+    const gross =
+        scores.reduce(
+            (
+                total,
+                score
+            ) =>
+                total + score,
+            0
+        );
+
+
+    preview.innerHTML =
+        `Gross Score: <strong>${gross}</strong>`
+        +
+        `<br>`
+        +
+        `Handicap Used: <strong>${selectedEntryPlayer.Handicap}</strong>`
+        +
+        `<br>`
+        +
+        `Net score will be calculated automatically when saved.`;
+
+}
+
+
+// ==========================================
+// WATCH SCORE INPUTS
+// ==========================================
+
+for (
+    let hole = 1;
+    hole <= 18;
+    hole++
+) {
+
+    const input =
+        document.getElementById(
+            `hole${hole}`
+        );
+
+
+    if (input) {
+
+        input.addEventListener(
+            "input",
+            updateEntryPreview
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// SAVE ROUND
+// ==========================================
+
+async function saveRoundEntry() {
+
+    if (!selectedEntryEvent) {
+
+        alert(
+            "Please select an event."
+        );
+
+        return;
+
+    }
+
+
+    if (!selectedEntryPlayer) {
+
+        alert(
+            "Please select a player."
+        );
+
+        return;
+
+    }
+
+
+    const scores = [];
+
+
+    for (
+        let hole = 1;
+        hole <= 18;
+        hole++
+    ) {
+
+        const value =
+            document.getElementById(
+                `hole${hole}`
+            ).value;
+
+
+        if (
+            value === ""
+        ) {
+
+            alert(
+                `Please enter a score for Hole ${hole}.`
+            );
+
+            document.getElementById(
+                `hole${hole}`
+            ).focus();
+
+            return;
+
+        }
+
+
+        scores.push(
+            Number(value)
+        );
+
+    }
+
+
+    const confirmed =
+        confirm(
+
+            `Save ${selectedEntryPlayer.Name}'s round?\n\n`
+            +
+            `Event: ${selectedEntryEvent.event_name}\n`
+            +
+            `Gross: ${scores.reduce((a,b) => a + b, 0)}\n`
+            +
+            `Handicap: ${selectedEntryPlayer.Handicap}\n\n`
+            +
+            `The round will be saved as PENDING for approval.`
+
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const result =
+            await saveCommissionerRound({
+
+                eventId:
+                    selectedEntryEvent.id,
+
+                playerId:
+                    selectedEntryPlayer.player_id,
+
+                handicapUsed:
+                    selectedEntryPlayer.Handicap,
+
+                roundDate:
+                    selectedEntryEvent.event_date,
+
+                grossScores:
+                    scores,
+
+                notes:
+                    document.getElementById(
+                        "entryNotes"
+                    ).value.trim()
+
+            });
+
+
+        alert(
+
+            `${selectedEntryPlayer.Name}'s round was saved successfully!\n\n`
+            +
+            `Gross: ${result.grossScore}\n`
+            +
+            `Net: ${result.netScore}\n\n`
+            +
+            `Status: Pending Approval`
+
+        );
+
+
+        closeRoundEntry();
+
+
+        await loadPendingRounds();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "SAVE ROUND ERROR:",
+            error
+        );
+
+
+        alert(
+            "Could not save the round.\n\n"
+            +
+            error.message
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// CLEAR ROUND ENTRY
+// ==========================================
+
+function clearRoundEntry() {
+
+    document.getElementById(
+        "entryEvent"
+    ).value = "";
+
+
+    document.getElementById(
+        "entryPlayer"
+    ).innerHTML = `
+
+        <option value="">
+            Select Player
+        </option>
+
+    `;
+
+
+    document.getElementById(
+        "entryPlayerInfo"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "entryScorecard"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "entryNotes"
+    ).value = "";
+
+
+    for (
+        let hole = 1;
+        hole <= 18;
+        hole++
+    ) {
+
+        const input =
+            document.getElementById(
+                `hole${hole}`
+            );
+
+
+        if (input) {
+
+            input.value = "";
+
+        }
+
+    }
+
+
+    selectedEntryEvent =
+        null;
+
+
+    selectedEntryPlayer =
+        null;
+
+}

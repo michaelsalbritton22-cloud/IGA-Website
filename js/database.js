@@ -2023,3 +2023,711 @@ getOpenEventRoster(1)
         );
 
     });
+
+    // ==========================================
+// COMMISSIONER SCORE ENTRY
+// ==========================================
+
+// ------------------------------------------
+// CALCULATE HANDICAP STROKES FOR A HOLE
+// ------------------------------------------
+
+function calculateHandicapStrokes(
+    handicapUsed,
+    holeHandicapIndex
+) {
+
+    const handicap =
+        Math.max(
+            0,
+            Math.floor(
+                Number(handicapUsed) || 0
+            )
+        );
+
+    const index =
+        Number(holeHandicapIndex);
+
+
+    if (!index || index < 1 || index > 18) {
+
+        return 0;
+
+    }
+
+
+    // Base stroke on every hole
+    const baseStrokes =
+        Math.floor(
+            handicap / 18
+        );
+
+
+    // Remaining strokes
+    const remainder =
+        handicap % 18;
+
+
+    return (
+        baseStrokes
+        +
+        (
+            index <= remainder
+                ? 1
+                : 0
+        )
+    );
+
+}
+
+
+// ------------------------------------------
+// GET COURSE HOLES
+// ------------------------------------------
+
+async function getCourseHoles(courseId) {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+        .from("course_holes")
+
+        .select(`
+            id,
+            course_id,
+            hole_number,
+            par,
+            handicap_index
+        `)
+
+        .eq(
+            "course_id",
+            courseId
+        )
+
+        .order(
+            "hole_number",
+            {
+                ascending: true
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            "ERROR LOADING COURSE HOLES:",
+            error
+        );
+
+        throw error;
+
+    }
+
+
+    if (!data || data.length !== 18) {
+
+        throw new Error(
+            `This course must have 18 holes configured. ` +
+            `Found ${data?.length || 0}.`
+        );
+
+    }
+
+
+    return data;
+
+}
+
+
+// ------------------------------------------
+// SAVE COMMISSIONER ROUND
+// ------------------------------------------
+
+async function saveCommissionerRound({
+    eventId,
+    playerId,
+    handicapUsed,
+    roundDate,
+    grossScores,
+    notes = ""
+}) {
+
+    console.log(
+        "Saving Commissioner Round:",
+        {
+            eventId,
+            playerId,
+            handicapUsed,
+            roundDate,
+            grossScores
+        }
+    );
+
+
+    // ==========================================
+    // VALIDATE INPUT
+    // ==========================================
+
+    if (!eventId) {
+
+        throw new Error(
+            "An event must be selected."
+        );
+
+    }
+
+
+    if (!playerId) {
+
+        throw new Error(
+            "A player must be selected."
+        );
+
+    }
+
+
+    if (
+        handicapUsed === null ||
+        handicapUsed === undefined ||
+        handicapUsed === ""
+    ) {
+
+        throw new Error(
+            "Handicap used is required."
+        );
+
+    }
+
+
+    if (
+        !Array.isArray(grossScores) ||
+        grossScores.length !== 18
+    ) {
+
+        throw new Error(
+            "Exactly 18 hole scores are required."
+        );
+
+    }
+
+
+    const invalidScore =
+        grossScores.some(
+            score => {
+
+                const number =
+                    Number(score);
+
+                return (
+                    !Number.isInteger(number)
+                    ||
+                    number < 1
+                    ||
+                    number > 20
+                );
+
+            }
+        );
+
+
+    if (invalidScore) {
+
+        throw new Error(
+            "Each hole score must be a whole number between 1 and 20."
+        );
+
+    }
+
+
+    // ==========================================
+    // GET EVENT
+    // ==========================================
+
+    const {
+        data: event,
+        error: eventError
+    } = await supabaseClient
+
+        .from("events_table")
+
+        .select(`
+            id,
+            event_name,
+            event_date,
+            season_id,
+            course_id,
+            status
+        `)
+
+        .eq(
+            "id",
+            eventId
+        )
+
+        .single();
+
+
+    if (eventError) {
+
+        throw eventError;
+
+    }
+
+
+    if (!event) {
+
+        throw new Error(
+            "Event could not be found."
+        );
+
+    }
+
+
+    if (
+        event.status !== "Open"
+    ) {
+
+        throw new Error(
+            "This event is not open for score entry."
+        );
+
+    }
+
+
+    // ==========================================
+    // GET PLAYER
+    // ==========================================
+
+    const {
+        data: player,
+        error: playerError
+    } = await supabaseClient
+
+        .from("Players")
+
+        .select(`
+            player_id,
+            "Name",
+            "Handicap",
+            Active
+        `)
+
+        .eq(
+            "player_id",
+            playerId
+        )
+
+        .single();
+
+
+    if (playerError) {
+
+        throw playerError;
+
+    }
+
+
+    if (!player) {
+
+        throw new Error(
+            "Player could not be found."
+        );
+
+    }
+
+
+    if (!player.Active) {
+
+        throw new Error(
+            "This player is not active."
+        );
+
+    }
+
+
+    // ==========================================
+    // GET COURSE HOLES
+    // ==========================================
+
+    const holes =
+        await getCourseHoles(
+            event.course_id
+        );
+
+
+    // ==========================================
+    // CALCULATE HOLE SCORES
+    // ==========================================
+
+    const holeRecords = [];
+
+
+    let grossTotal = 0;
+
+    let netTotal = 0;
+
+    let birdies = 0;
+
+    let eagles = 0;
+
+    let pars = 0;
+
+    let bogeys = 0;
+
+    let doubleBogeys = 0;
+
+
+    holes.forEach(
+        hole => {
+
+            const holeNumber =
+                hole.hole_number;
+
+
+            const gross =
+                Number(
+                    grossScores[
+                        holeNumber - 1
+                    ]
+                );
+
+
+            const handicapStrokes =
+                calculateHandicapStrokes(
+                    handicapUsed,
+                    hole.handicap_index
+                );
+
+
+            const net =
+                gross -
+                handicapStrokes;
+
+
+            grossTotal +=
+                gross;
+
+
+            netTotal +=
+                net;
+
+
+            const scoreToPar =
+                gross -
+                Number(hole.par);
+
+
+            if (
+                scoreToPar <= -2
+            ) {
+
+                eagles++;
+
+            }
+
+            else if (
+                scoreToPar === -1
+            ) {
+
+                birdies++;
+
+            }
+
+            else if (
+                scoreToPar === 0
+            ) {
+
+                pars++;
+
+            }
+
+            else if (
+                scoreToPar === 1
+            ) {
+
+                bogeys++;
+
+            }
+
+            else if (
+                scoreToPar === 2
+            ) {
+
+                doubleBogeys++;
+
+            }
+
+
+            holeRecords.push({
+
+                hole_number:
+                    holeNumber,
+
+                gross_score:
+                    gross,
+
+                handicap_strokes:
+                    handicapStrokes,
+
+                net_score:
+                    net
+
+            });
+
+        }
+    );
+
+
+    // ==========================================
+    // CHECK FOR EXISTING ROUND
+    // ==========================================
+
+    const {
+        data: existingRound,
+        error: existingError
+    } = await supabaseClient
+
+        .from("rounds")
+
+        .select(`
+            id,
+            approval_status
+        `)
+
+        .eq(
+            "event_id",
+            eventId
+        )
+
+        .eq(
+            "player_id",
+            playerId
+        )
+
+        .maybeSingle();
+
+
+    if (existingError) {
+
+        throw existingError;
+
+    }
+
+
+    if (existingRound) {
+
+        throw new Error(
+            `${player.Name} already has a round entered for this event.`
+        );
+
+    }
+
+
+    // ==========================================
+    // DETERMINE QUALIFICATION STATUS
+    // ==========================================
+
+    const qualification =
+        await getQualificationStatus(
+            playerId,
+            event.course_id,
+            event.season_id
+        );
+
+
+    // ==========================================
+    // CREATE ROUND RECORD
+    // ==========================================
+
+    const {
+        data: round,
+        error: roundError
+    } = await supabaseClient
+
+        .from("rounds")
+
+        .insert({
+
+            player_id:
+                playerId,
+
+            course_id:
+                event.course_id,
+
+            round_date:
+                roundDate ||
+                event.event_date,
+
+            gross_score:
+                grossTotal,
+
+            net_score:
+                netTotal,
+
+            handicap_used:
+                Number(
+                    handicapUsed
+                ),
+
+            points_earned:
+                0,
+
+            birdies:
+                birdies,
+
+            eagles:
+                eagles,
+
+            pars:
+                pars,
+
+            bogeys:
+                bogeys,
+
+            double_bogeys:
+                doubleBogeys,
+
+            fairways_hit:
+                null,
+
+            greens_hit:
+                null,
+
+            putts:
+                null,
+
+            Notes:
+                notes || null,
+
+            season_id:
+                event.season_id,
+
+            event_id:
+                eventId,
+
+            approval_status:
+                "Pending",
+
+            counts_for_qualification:
+                qualification.countsForQualification
+
+        })
+
+        .select("id")
+
+        .single();
+
+
+    if (roundError) {
+
+        console.error(
+            "ERROR CREATING ROUND:",
+            roundError
+        );
+
+        throw roundError;
+
+    }
+
+
+    // ==========================================
+    // ADD 18 HOLE RECORDS
+    // ==========================================
+
+    const records =
+        holeRecords.map(
+            hole => ({
+
+                round_id:
+                    round.id,
+
+                hole_number:
+                    hole.hole_number,
+
+                gross_score:
+                    hole.gross_score,
+
+                handicap_strokes:
+                    hole.handicap_strokes,
+
+                net_score:
+                    hole.net_score
+
+            })
+        );
+
+
+    const {
+        error: holeError
+    } = await supabaseClient
+
+        .from("round_holes")
+
+        .insert(
+            records
+        );
+
+
+    if (holeError) {
+
+        // --------------------------------------
+        // CLEAN UP ROUND IF HOLES FAIL
+        // --------------------------------------
+
+        await supabaseClient
+
+            .from("rounds")
+
+            .delete()
+
+            .eq(
+                "id",
+                round.id
+            );
+
+
+        console.error(
+            "ERROR SAVING ROUND HOLES:",
+            holeError
+        );
+
+        throw holeError;
+
+    }
+
+
+    // ==========================================
+    // RETURN SAVED ROUND
+    // ==========================================
+
+    return {
+
+        roundId:
+            round.id,
+
+        player:
+            player,
+
+        grossScore:
+            grossTotal,
+
+        netScore:
+            netTotal,
+
+        handicapUsed:
+            Number(
+                handicapUsed
+            ),
+
+        holes:
+            holeRecords,
+
+        qualification:
+            qualification
+
+    };
+
+}
