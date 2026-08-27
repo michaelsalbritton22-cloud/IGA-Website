@@ -2821,6 +2821,7 @@ updateMultiPlayerPreview();
 function updateMultiPlayerPreview() {
 
     if (
+        !selectedEntryPlayers ||
         !selectedEntryPlayers.length
     ) {
 
@@ -2840,6 +2841,10 @@ function updateMultiPlayerPreview() {
 
     selectedEntryPlayers.forEach(
         player => {
+
+            // ==========================================
+            // GET GROSS SCORE INPUTS
+            // ==========================================
 
             const inputs =
                 document.querySelectorAll(
@@ -2875,11 +2880,14 @@ function updateMultiPlayerPreview() {
             );
 
 
+            // ==========================================
+            // GROSS DISPLAY
+            // ==========================================
+
             const grossElement =
                 document.getElementById(
                     `gross-${player.player_id}`
                 );
-
 
 
             if (complete) {
@@ -2887,37 +2895,33 @@ function updateMultiPlayerPreview() {
                 completePlayers++;
 
 
-                const handicap =
-                    Number(
-                        player.Handicap
-                    );
+                if (grossElement) {
 
+                    grossElement.textContent =
+                        gross;
 
-                const net =
-                    gross -
-                    handicap;
-
-
-                grossElement.textContent =
-                    gross;
-
+                }
 
             }
 
             else {
 
-                grossElement.textContent =
-                    "—";
+                if (grossElement) {
 
+                    grossElement.textContent =
+                        "—";
 
-                netElement.textContent =
-                    "—";
+                }
 
             }
 
         }
     );
 
+
+    // ==========================================
+    // UPDATE PREVIEW
+    // ==========================================
 
     preview.innerHTML = `
 

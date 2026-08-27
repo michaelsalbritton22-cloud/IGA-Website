@@ -2678,7 +2678,7 @@ let doubleBogeys = 0;
             grossTotal,
 
         netScore:
-            Number(netscore),
+            Number(netScore),
 
         handicapUsed:
             Number(
