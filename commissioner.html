@@ -2680,24 +2680,28 @@ async function buildMultiPlayerScorecard() {
 
 
     selectedPlayers.forEach(
-        player => {
+    player => {
 
-            html += `
+        html += `
 
-                <td>
+            <td>
 
-                    <strong
-                        id="gross-${player.player_id}"
-                    >
-                        —
-                    </strong>
+                <input
+                    type="number"
+                    step="0.1"
+                    min="-20"
+                    max="150"
+                    class="net-score-input"
+                    data-player-id="${player.player_id}"
+                    placeholder="Net"
+                >
 
-                </td>
+            </td>
 
-            `;
+        `;
 
-        }
-    );
+    }
+);
 
 
     html += `
@@ -2862,11 +2866,6 @@ function updateMultiPlayerPreview() {
                 );
 
 
-            const netElement =
-                document.getElementById(
-                    `net-${player.player_id}`
-                );
-
 
             if (complete) {
 
@@ -2887,9 +2886,6 @@ function updateMultiPlayerPreview() {
                 grossElement.textContent =
                     gross;
 
-
-                netElement.textContent =
-                    net.toFixed(1);
 
             }
 
