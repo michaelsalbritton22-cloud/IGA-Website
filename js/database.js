@@ -1802,6 +1802,62 @@ async function getOpenEvents() {
 }
 
 // ==========================================
+// GET ACTIVE PLAYERS
+// ==========================================
+
+async function getActivePlayers() {
+
+    const {
+        data: players,
+        error
+    } = await supabaseClient
+
+        .from("Players")
+
+        .select(`
+            player_id,
+            "Name",
+            "Home Town",
+            "Handicap",
+            "Active"
+        `)
+
+        .eq(
+            "Active",
+            true
+        )
+
+        .order(
+            "Name",
+            {
+                ascending: true
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            "ERROR LOADING PLAYERS:",
+            error
+        );
+
+        throw error;
+
+    }
+
+
+    console.log(
+        "Active IGA Players:",
+        players
+    );
+
+
+    return players || [];
+
+}
+
+// ==========================================
 // GET OPEN EVENT ROSTER
 // ==========================================
 
