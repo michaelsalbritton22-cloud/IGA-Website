@@ -329,350 +329,126 @@
 
         </div>
 
+<!-- ==========================================
+     MULTI-PLAYER SCORECARD
+========================================== -->
 
-        <!-- ==========================================
-             SCORECARD
-        =========================================== -->
+<div
+    id="entryScorecard"
+    style="display:none;"
+>
+
+    <h3>
+        Round Scorecard
+    </h3>
+
+    <p>
+        Enter the gross score for each player on each hole.
+    </p>
+
+
+    <!-- ==========================================
+         SELECTED PLAYERS
+    =========================================== -->
+
+    <div
+        id="entrySelectedPlayers"
+        class="selected-players-summary"
+        style="margin-bottom:20px;"
+    ></div>
+
+
+    <!-- ==========================================
+         SCORECARD TABLE
+    =========================================== -->
+
+    <div
+        id="multiPlayerScorecard"
+        class="scorecard-wrapper"
+    ></div>
+
+
+    <!-- ==========================================
+         ROUND PREVIEW
+    =========================================== -->
+
+    <div
+        id="entryPreview"
+        class="review-summary"
+        style="margin-top:25px;"
+    >
+
+        <strong>
+            Round Preview
+        </strong>
 
         <div
-            id="entryScorecard"
-            style="display:none;"
+            id="entryPreviewText"
+            style="margin-top:10px;"
+        >
+            Enter scores for all players.
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         NOTES
+    =========================================== -->
+
+    <div style="margin-top:20px;">
+
+        <label for="entryNotes">
+
+            <strong>
+                Notes
+            </strong>
+
+        </label>
+
+        <br>
+
+        <textarea
+            id="entryNotes"
+            rows="3"
+            style="width:100%; margin-top:8px;"
+            placeholder="Optional commissioner notes"
+        ></textarea>
+
+    </div>
+
+
+    <!-- ==========================================
+         ACTIONS
+    =========================================== -->
+
+    <div
+        class="approval-actions"
+        style="margin-top:25px;"
+    >
+
+        <button
+            class="button"
+            onclick="closeRoundEntry()"
         >
 
-            <h3>
-                Gross Scores
-            </h3>
+            Cancel
 
-            <p>
-                Enter the score shown by 18Birdies
-                for each hole.
-            </p>
+        </button>
 
 
-            <!-- FRONT NINE -->
+        <button
+            class="button"
+            onclick="saveRoundEntry()"
+        >
 
-            <h4>
-                Front Nine
-            </h4>
+            Save Round
 
-            <div class="round-players">
+        </button>
 
-                <div class="round-player">
+    </div>
 
-                    <div>
-                        <strong>Hole 1</strong>
-                    </div>
-
-                    <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        id="hole1"
-                        class="score-input"
-                    >
-
-                </div>
-
-
-                <div class="round-player">
-
-                    <div>
-                        <strong>Hole 2</strong>
-                    </div>
-
-                    <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        id="hole2"
-                        class="score-input"
-                    >
-
-                </div>
-
-
-                <div class="round-player">
-
-                    <div>
-                        <strong>Hole 3</strong>
-                    </div>
-
-                    <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        id="hole3"
-                        class="score-input"
-                    >
-
-                </div>
-
-
-                <div class="round-player">
-
-                    <div>
-                        <strong>Hole 4</strong>
-                    </div>
-
-                    <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        id="hole4"
-                        class="score-input"
-                    >
-
-                </div>
-
-
-                <div class="round-player">
-
-                    <div>
-                        <strong>Hole 5</strong>
-                    </div>
-
-                    <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        id="hole5"
-                        class="score-input"
-                    >
-
-                </div>
-
-
-                <div class="round-player">
-
-                    <div>
-                        <strong>Hole 6</strong>
-                    </div>
-
-                    <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        id="hole6"
-                        class="score-input"
-                    >
-
-                </div>
-
-
-                <div class="round-player">
-
-                    <div>
-                        <strong>Hole 7</strong>
-                    </div>
-
-                    <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        id="hole7"
-                        class="score-input"
-                    >
-
-                </div>
-
-
-                <div class="round-player">
-
-                    <div>
-                        <strong>Hole 8</strong>
-                    </div>
-
-                    <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        id="hole8"
-                        class="score-input"
-                    >
-
-                </div>
-
-
-                <div class="round-player">
-
-                    <div>
-                        <strong>Hole 9</strong>
-                    </div>
-
-                    <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        id="hole9"
-                        class="score-input"
-                    >
-
-                </div>
-
-            </div>
-
-
-            <!-- BACK NINE -->
-
-            <h4 style="margin-top:25px;">
-                Back Nine
-            </h4>
-
-            <div class="round-players">
-
-                <div class="round-player">
-
-                    <div>
-                        <strong>Hole 10</strong>
-                    </div>
-
-                    <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        id="hole10"
-                        class="score-input"
-                    >
-
-                </div>
-
-
-                <div class="round-player">
-
-                    <div>
-                        <strong>Hole 11</strong>
-                    </div>
-
-                    <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        id="hole11"
-                        class="score-input"
-                    >
-
-                </div>
-
-
-                <div class="round-player">
-
-                    <div>
-                        <strong>Hole 12</strong>
-                    </div>
-
-                    <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        id="hole12"
-                        class="score-input"
-                    >
-
-                </div>
-
-
-                <div class="round-player">
-
-                    <div>
-                        <strong>Hole 13</strong>
-                    </div>
-
-                    <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        id="hole13"
-                        class="score-input"
-                    >
-
-                </div>
-
-
-                <div class="round-player">
-
-                    <div>
-                        <strong>Hole 14</strong>
-                    </div>
-
-                    <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        id="hole14"
-                        class="score-input"
-                    >
-
-                </div>
-
-
-                <div class="round-player">
-
-                    <div>
-                        <strong>Hole 15</strong>
-                    </div>
-
-                    <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        id="hole15"
-                        class="score-input"
-                    >
-
-                </div>
-
-
-                <div class="round-player">
-
-                    <div>
-                        <strong>Hole 16</strong>
-                    </div>
-
-                    <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        id="hole16"
-                        class="score-input"
-                    >
-
-                </div>
-
-
-                <div class="round-player">
-
-                    <div>
-                        <strong>Hole 17</strong>
-                    </div>
-
-                    <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        id="hole17"
-                        class="score-input"
-                    >
-
-                </div>
-
-
-                <div class="round-player">
-
-                    <div>
-                        <strong>Hole 18</strong>
-                    </div>
-
-                    <input
-                        type="number"
-                        min="1"
-                        max="20"
-                        id="hole18"
-                        class="score-input"
-                    >
-
-                </div>
-
-            </div>
+</div>
 
 
             <!-- ==========================================
@@ -2690,6 +2466,474 @@ function updateSelectedEntryPlayers() {
     // ==========================================
 
     buildMultiPlayerScorecard();
+
+}
+
+// ==========================================
+// BUILD MULTI-PLAYER SCORECARD
+// ==========================================
+
+async function buildMultiPlayerScorecard() {
+
+    const scorecard =
+        document.getElementById(
+            "multiPlayerScorecard"
+        );
+
+    const selectedPlayers =
+        selectedEntryPlayers;
+
+
+    if (
+        !selectedPlayers.length
+    ) {
+
+        scorecard.innerHTML = "";
+
+        return;
+
+    }
+
+
+    // ==========================================
+    // SHOW SELECTED PLAYERS
+    // ==========================================
+
+    const selectedPlayersDisplay =
+        document.getElementById(
+            "entrySelectedPlayers"
+        );
+
+
+    selectedPlayersDisplay.innerHTML = `
+
+        <strong>
+            Players Entering This Round:
+        </strong>
+
+        <div style="margin-top:10px;">
+
+            ${
+                selectedPlayers
+                    .map(
+                        player =>
+                            `<span class="player-badge">
+                                ${player.Name}
+                            </span>`
+                    )
+                    .join("")
+            }
+
+        </div>
+
+    `;
+
+
+    // ==========================================
+    // GET COURSE HOLES
+    // ==========================================
+
+    let holes;
+
+
+    try {
+
+        holes =
+            await getCourseHoles(
+                selectedEntryEvent.course_id
+            );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "ERROR LOADING COURSE HOLES:",
+            error
+        );
+
+
+        scorecard.innerHTML = `
+
+            <p>
+                Could not load course hole information.
+            </p>
+
+        `;
+
+        return;
+
+    }
+
+
+    // ==========================================
+    // BUILD TABLE HEADER
+    // ==========================================
+
+    let html = `
+
+        <div class="scorecard-table-container">
+
+            <table class="scorecard-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Hole
+                        </th>
+
+                        <th>
+                            Par
+                        </th>
+
+    `;
+
+
+    selectedPlayers.forEach(
+        player => {
+
+            html += `
+
+                <th>
+                    ${player.Name}
+                </th>
+
+            `;
+
+        }
+    );
+
+
+    html += `
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+    `;
+
+
+    // ==========================================
+    // HOLE ROWS
+    // ==========================================
+
+    holes.forEach(
+        hole => {
+
+            html += `
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            ${hole.hole_number}
+                        </strong>
+                    </td>
+
+                    <td>
+                        ${hole.par}
+                    </td>
+
+            `;
+
+
+            selectedPlayers.forEach(
+                player => {
+
+                    html += `
+
+                        <td>
+
+                            <input
+                                type="number"
+                                min="1"
+                                max="20"
+                                class="multi-score-input"
+                                data-player-id="${player.player_id}"
+                                data-hole="${hole.hole_number}"
+                                onchange="updateMultiPlayerPreview()"
+                            >
+
+                        </td>
+
+                    `;
+
+                }
+            );
+
+
+            html += `
+
+                </tr>
+
+            `;
+
+        }
+    );
+
+
+    // ==========================================
+    // TOTAL ROW
+    // ==========================================
+
+    html += `
+
+                <tr class="scorecard-total">
+
+                    <td colspan="2">
+
+                        <strong>
+                            Gross
+                        </strong>
+
+                    </td>
+
+    `;
+
+
+    selectedPlayers.forEach(
+        player => {
+
+            html += `
+
+                <td>
+
+                    <strong
+                        id="gross-${player.player_id}"
+                    >
+                        —
+                    </strong>
+
+                </td>
+
+            `;
+
+        }
+    );
+
+
+    html += `
+
+                </tr>
+
+
+                <tr>
+
+                    <td colspan="2">
+
+                        <strong>
+                            Handicap
+                        </strong>
+
+                    </td>
+
+    `;
+
+
+    selectedPlayers.forEach(
+        player => {
+
+            html += `
+
+                <td>
+
+                    ${player.Handicap}
+
+                </td>
+
+            `;
+
+        }
+    );
+
+
+    html += `
+
+                </tr>
+
+
+                <tr>
+
+                    <td colspan="2">
+
+                        <strong>
+                            Net
+                        </strong>
+
+                    </td>
+
+    `;
+
+
+    selectedPlayers.forEach(
+        player => {
+
+            html += `
+
+                <td>
+
+                    <strong
+                        id="net-${player.player_id}"
+                    >
+                        —
+                    </strong>
+
+                </td>
+
+            `;
+
+        }
+    );
+
+
+    html += `
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    `;
+
+
+    scorecard.innerHTML =
+        html;
+
+
+    updateMultiPlayerPreview();
+
+}
+
+// ==========================================
+// UPDATE MULTI-PLAYER PREVIEW
+// ==========================================
+
+function updateMultiPlayerPreview() {
+
+    if (
+        !selectedEntryPlayers.length
+    ) {
+
+        return;
+
+    }
+
+
+    const preview =
+        document.getElementById(
+            "entryPreviewText"
+        );
+
+
+    let completePlayers = 0;
+
+
+    selectedEntryPlayers.forEach(
+        player => {
+
+            const inputs =
+                document.querySelectorAll(
+                    `.multi-score-input[data-player-id="${player.player_id}"]`
+                );
+
+
+            let gross = 0;
+
+            let complete = true;
+
+
+            inputs.forEach(
+                input => {
+
+                    if (
+                        input.value === ""
+                    ) {
+
+                        complete = false;
+
+                        return;
+
+                    }
+
+
+                    gross +=
+                        Number(
+                            input.value
+                        );
+
+                }
+            );
+
+
+            const grossElement =
+                document.getElementById(
+                    `gross-${player.player_id}`
+                );
+
+
+            const netElement =
+                document.getElementById(
+                    `net-${player.player_id}`
+                );
+
+
+            if (complete) {
+
+                completePlayers++;
+
+
+                const handicap =
+                    Number(
+                        player.Handicap
+                    );
+
+
+                const net =
+                    gross -
+                    handicap;
+
+
+                grossElement.textContent =
+                    gross;
+
+
+                netElement.textContent =
+                    net.toFixed(1);
+
+            }
+
+            else {
+
+                grossElement.textContent =
+                    "—";
+
+
+                netElement.textContent =
+                    "—";
+
+            }
+
+        }
+    );
+
+
+    preview.innerHTML = `
+
+        <strong>
+            ${completePlayers}
+            of
+            ${selectedEntryPlayers.length}
+            players have complete scorecards.
+        </strong>
+
+    `;
 
 }
 
