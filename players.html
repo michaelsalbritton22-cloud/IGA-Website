@@ -534,25 +534,14 @@ IGA Tour © 2027 | Internal Golf Association
 async function loadPlayersPage() {
 
     const container =
-        document.getElementById(
-            "playersContainer"
-        );
-
+        document.getElementById("playersContainer");
 
     try {
 
-        console.log(
-            "Loading IGA players..."
-        );
-
-
-        // ==================================
-        // GET ACTIVE PLAYERS
-        // ==================================
+        console.log("Loading IGA players...");
 
         const players =
             await getActivePlayers();
-
 
         console.log(
             "Players loaded:",
@@ -592,7 +581,7 @@ async function loadPlayersPage() {
 
 
         // ==================================
-        // CLEAR LOADING
+        // CLEAR LOADING MESSAGE
         // ==================================
 
         container.innerHTML = "";
@@ -603,8 +592,7 @@ async function loadPlayersPage() {
         // ==================================
 
         for (
-            const player
-            of players
+            const player of players
         ) {
 
             console.log(
@@ -622,29 +610,21 @@ async function loadPlayersPage() {
                     player.player_id
                 );
 
-                const profile =
-    await getPlayerProfile(
-        player.player_id
-    );
-
-console.log(
-    `Profile for ${player.Name}:`,
-    profile
-);
 
             // ==================================
-            // GET PROFILE
+            // GET PLAYER PROFILE
             // ==================================
 
-         const playerProfile =
-    await getPlayerProfile(
-        player.player_id
-    );
+            const playerProfile =
+                await getPlayerProfile(
+                    player.player_id
+                );
 
-console.log(
-    `Profile for ${player.Name}:`,
-    playerProfile
-);
+
+            console.log(
+                `Profile for ${player.Name}:`,
+                playerProfile
+            );
 
 
             // ==================================
@@ -661,27 +641,46 @@ console.log(
                                 .toUpperCase()
                     )
                     .join("")
-                    .substring(0, 2);
+                    .substring(
+                        0,
+                        2
+                    );
 
 
             // ==================================
-            // PROFILE PHOTO
+            // CREATE PHOTO HTML
             // ==================================
 
-            let photoHTML = initials;
+            let playerPhotoHTML = `
+
+                <div class="photo">
+                    ${initials}
+                </div>
+
+            `;
 
 
             if (
-                profile &&
-                profile.profile_image_url
+                playerProfile &&
+                playerProfile.profile_image_url
             ) {
 
-                photoHTML = `
+                playerPhotoHTML = `
 
-                    <img
-                        src="${profile.profile_image_url}"
-                        alt="${player.Name}"
-                    >
+                    <div class="photo">
+
+                        <img
+                            src="${playerProfile.profile_image_url}"
+                            alt="${player.Name}"
+                            style="
+                                width:100%;
+                                height:100%;
+                                object-fit:cover;
+                                border-radius:50%;
+                            "
+                        >
+
+                    </div>
 
                 `;
 
@@ -689,40 +688,11 @@ console.log(
 
 
             // ==================================
-            // CREATE CARD
+            // CREATE PLAYER CARD
             // ==================================
-let photoHTML = `
-    <div class="photo">
-        ${photoHTML}
-    </div>
-`;
-
-if (
-    profile &&
-    profile.profile_image_url
-) {
-
-    photoHTML = `
-        <div class="photo">
-            <img
-                src="${profile.profile_image_url}"
-                alt="${player.Name}"
-                style="
-                    width:100%;
-                    height:100%;
-                    object-fit:cover;
-                    border-radius:50%;
-                "
-            >
-        </div>
-    `;
-
-}
 
             const card =
-                document.createElement(
-                    "div"
-                );
+                document.createElement("div");
 
 
             card.className =
@@ -731,222 +701,109 @@ if (
 
             card.innerHTML = `
 
-                <div class="card-top">
+                ${playerPhotoHTML}
 
-                    <div class="photo">
 
-                        ${photoHTML}
+                <h2>
+                    ${player.Name}
+                </h2>
 
-                    </div>
 
+                <span class="rank">
+                    IGA Player
+                </span>
+
+
+                <p>
+                    ${player["Home Town"] || "Oklahoma"}
+                </p>
+
+
+                <div class="stat">
+                    <span>Handicap</span>
+                    <b>
+                        ${player.Handicap ?? "—"}
+                    </b>
                 </div>
 
 
-                <div class="card-content">
-
-
-                    <h2>
-                        ${player.Name}
-                    </h2>
-
-
-                    <div class="hometown">
-
-                        ${profile?.hometown ||
-                          player["Home Town"] ||
-                          "Oklahoma"}
-
-                    </div>
-
-
-                    <span class="rank">
-                        IGA PLAYER
-                    </span>
-
-
-                    <!-- MAIN STATS -->
-
-                    <div class="main-stats">
-
-
-                        <div class="main-stat">
-
-                            <div class="main-stat-value">
-
-                                ${player.Handicap ?? "—"}
-
-                            </div>
-
-                            <div class="main-stat-label">
-
-                                Handicap
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="main-stat">
-
-                            <div class="main-stat-value">
-
-                                ${stats.points}
-
-                            </div>
-
-                            <div class="main-stat-label">
-
-                                Points
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="main-stat">
-
-                            <div class="main-stat-value">
-
-                                ${stats.wins}
-
-                            </div>
-
-                            <div class="main-stat-label">
-
-                                Wins
-
-                            </div>
-
-                        </div>
-
-
-                    </div>
-
-
-                    <!-- DETAILED STATS -->
-
-                    <div class="stats">
-
-
-                        <div class="stat">
-
-                            <span>
-                                Rounds Played
-                            </span>
-
-                            <b>
-                                ${stats.roundsPlayed}
-                            </b>
-
-                        </div>
-
-
-                        <div class="stat">
-
-                            <span>
-                                Average Gross
-                            </span>
-
-                            <b>
-                                ${stats.averageGross}
-                            </b>
-
-                        </div>
-
-
-                        <div class="stat">
-
-                            <span>
-                                Average Net
-                            </span>
-
-                            <b>
-                                ${stats.averageNet}
-                            </b>
-
-                        </div>
-
-
-                        <div class="stat">
-
-                            <span>
-                                Birdies
-                            </span>
-
-                            <b>
-                                ${stats.birdies}
-                            </b>
-
-                        </div>
-
-
-                        <div class="stat">
-
-                            <span>
-                                Eagles
-                            </span>
-
-                            <b>
-                                ${stats.eagles}
-                            </b>
-
-                        </div>
-
-
-                        <div class="stat">
-
-                            <span>
-                                Pars
-                            </span>
-
-                            <b>
-                                ${stats.pars}
-                            </b>
-
-                        </div>
-
-
-                        <div class="stat">
-
-                            <span>
-                                Bogeys
-                            </span>
-
-                            <b>
-                                ${stats.bogeys}
-                            </b>
-
-                        </div>
-
-
-                        <div class="stat">
-
-                            <span>
-                                Double Bogeys
-                            </span>
-
-                            <b>
-                                ${stats.doubleBogeys}
-                            </b>
-
-                        </div>
-
-
-                    </div>
-
-
-                    <!-- PROFILE BUTTON -->
-
-                    <a
-                        class="profile-button"
-                        href="player.html?id=${player.player_id}"
-                    >
-
-                        VIEW PROFILE
-
-                    </a>
-
-
+                <div class="stat">
+                    <span>Rounds Played</span>
+                    <b>
+                        ${stats.roundsPlayed}
+                    </b>
+                </div>
+
+
+                <div class="stat">
+                    <span>Average Gross</span>
+                    <b>
+                        ${stats.averageGross}
+                    </b>
+                </div>
+
+
+                <div class="stat">
+                    <span>Average Net</span>
+                    <b>
+                        ${stats.averageNet}
+                    </b>
+                </div>
+
+
+                <div class="stat">
+                    <span>Birdies</span>
+                    <b>
+                        ${stats.birdies}
+                    </b>
+                </div>
+
+
+                <div class="stat">
+                    <span>Eagles</span>
+                    <b>
+                        ${stats.eagles}
+                    </b>
+                </div>
+
+
+                <div class="stat">
+                    <span>Pars</span>
+                    <b>
+                        ${stats.pars}
+                    </b>
+                </div>
+
+
+                <div class="stat">
+                    <span>Bogeys</span>
+                    <b>
+                        ${stats.bogeys}
+                    </b>
+                </div>
+
+
+                <div class="stat">
+                    <span>Double Bogeys</span>
+                    <b>
+                        ${stats.doubleBogeys}
+                    </b>
+                </div>
+
+
+                <div class="stat">
+                    <span>Season Points</span>
+                    <b>
+                        ${stats.points}
+                    </b>
+                </div>
+
+
+                <div class="stat">
+                    <span>Career Wins</span>
+                    <b>
+                        ${stats.wins}
+                    </b>
                 </div>
 
             `;
