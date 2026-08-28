@@ -3107,7 +3107,7 @@ async function getPlayerStats(playerId) {
 // GET PLAYER PROFILE
 // ==========================================
 
-aasync function getPlayerProfile(playerId) {
+async function getPlayerProfile(playerId) {
 
     console.log(
         "Getting profile for player:",
