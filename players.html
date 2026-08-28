@@ -640,20 +640,39 @@ async function loadPlayersPage() {
             // CREATE INITIALS
             // ==================================
 
-            const initials =
-                player.Name
-                    .split(" ")
-                    .map(
-                        part =>
-                            part
-                                .charAt(0)
-                                .toUpperCase()
-                    )
-                    .join("")
-                    .substring(
-                        0,
-                        2
-                    );
+          const initials =
+    player.Name
+        .split(" ")
+        .map(
+            part =>
+                part
+                    .charAt(0)
+                    .toUpperCase()
+        )
+        .join("")
+        .substring(
+            0,
+            2
+        );
+
+
+const photoHTML =
+    profile.profile_image_url
+
+        ? `
+            <div class="photo">
+                <img
+                    src="${profile.profile_image_url}"
+                    alt="${player.Name}"
+                >
+            </div>
+        `
+
+        : `
+            <div class="photo">
+                ${initials}
+            </div>
+        `;
 
 
             // ==================================
