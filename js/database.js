@@ -3107,18 +3107,24 @@ async function getPlayerStats(playerId) {
 // GET PLAYER PROFILE
 // ==========================================
 
-async function getPlayerProfile(playerId) {
+aasync function getPlayerProfile(playerId) {
 
     console.log(
         "Getting profile for player:",
         playerId
     );
 
+    // ==========================================
+    // GET PROFILE INFORMATION
+    // ==========================================
+
     const {
         data,
         error
     } = await supabaseClient
+
         .from("player_profiles")
+
         .select(`
             id,
             player_id,
@@ -3128,8 +3134,14 @@ async function getPlayerProfile(playerId) {
             favorite_club,
             hometown
         `)
-        .eq("player_id", playerId)
+
+        .eq(
+            "player_id",
+            playerId
+        )
+
         .maybeSingle();
+
 
     if (error) {
 
@@ -3142,7 +3154,108 @@ async function getPlayerProfile(playerId) {
 
     }
 
-    return data || null;
+
+    // ==========================================
+    // FIND PROFILE PHOTO IN STORAGE
+    // ==========================================
+
+    let profileImageUrl =
+        data?.profile_image_url || null;
+
+
+    try {
+
+        const {
+            data: files,
+            error: storageError
+        } = await supabaseClient
+
+            .storage
+
+            .from("Player-profiles")
+
+            .list(
+                String(playerId)
+            );
+
+
+        if (!storageError && files && files.length > 0) {
+
+            // ----------------------------------
+            // FIND IMAGE FILE
+            // ----------------------------------
+
+            const imageFile =
+                files.find(file => {
+
+                    const name =
+                        file.name.toLowerCase();
+
+                    return (
+                        name.endsWith(".jpg") ||
+                        name.endsWith(".jpeg") ||
+                        name.endsWith(".png") ||
+                        name.endsWith(".webp")
+                    );
+
+                });
+
+
+            if (imageFile) {
+
+                const filePath =
+                    `${playerId}/${imageFile.name}`;
+
+
+                const {
+                    data: publicUrl
+                } =
+                    supabaseClient
+
+                        .storage
+
+                        .from("Player-profiles")
+
+                        .getPublicUrl(
+                            filePath
+                        );
+
+
+                profileImageUrl =
+                    publicUrl.publicUrl;
+
+            }
+
+        }
+
+    }
+
+    catch (storageError) {
+
+        console.warn(
+            "Could not load profile image for player:",
+            playerId,
+            storageError
+        );
+
+    }
+
+
+    // ==========================================
+    // RETURN PROFILE
+    // ==========================================
+
+    return {
+
+        ...(data || {}),
+
+        player_id:
+            playerId,
+
+        profile_image_url:
+            profileImageUrl
+
+    };
 
 }
 
