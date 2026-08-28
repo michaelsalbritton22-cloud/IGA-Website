@@ -622,6 +622,15 @@ async function loadPlayersPage() {
                     player.player_id
                 );
 
+                const profile =
+    await getPlayerProfile(
+        player.player_id
+    );
+
+console.log(
+    `Profile for ${player.Name}:`,
+    profile
+);
 
             // ==================================
             // GET PROFILE
@@ -683,6 +692,33 @@ async function loadPlayersPage() {
             // ==================================
             // CREATE CARD
             // ==================================
+let photoHTML = `
+    <div class="photo">
+        ${photoHTML}
+    </div>
+`;
+
+if (
+    profile &&
+    profile.profile_image_url
+) {
+
+    photoHTML = `
+        <div class="photo">
+            <img
+                src="${profile.profile_image_url}"
+                alt="${player.Name}"
+                style="
+                    width:100%;
+                    height:100%;
+                    object-fit:cover;
+                    border-radius:50%;
+                "
+            >
+        </div>
+    `;
+
+}
 
             const card =
                 document.createElement(
