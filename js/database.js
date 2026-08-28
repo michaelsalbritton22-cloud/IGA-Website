@@ -3097,3 +3097,165 @@ async function getPlayerStats(playerId) {
     return stats;
 
 }
+
+/* ==========================================
+PLAYER PROFILES
+========================================== */
+
+/* ==========================================
+GET PLAYER PROFILE
+========================================== */
+
+async function getPlayerProfile(playerId) {
+
+```
+console.log(
+    "Getting profile for player:",
+    playerId
+);
+
+
+const {
+    data,
+    error
+} = await supabaseClient
+
+    .from("player_profiles")
+
+    .select(`
+        id,
+        player_id,
+        profile_image_url,
+        bio,
+        favorite_course,
+        favorite_club,
+        hometown
+    `)
+
+    .eq(
+        "player_id",
+        playerId
+    )
+
+    .maybeSingle();
+
+
+if (error) {
+
+    console.error(
+        "ERROR LOADING PLAYER PROFILE:",
+        error
+    );
+
+    throw error;
+
+}
+
+
+return data || null;
+```
+
+}
+
+/* ==========================================
+CREATE / UPDATE PLAYER PROFILE
+========================================== */
+
+async function savePlayerProfile({
+
+```
+playerId,
+
+profileImageUrl = null,
+
+bio = null,
+
+favoriteCourse = null,
+
+favoriteClub = null,
+
+hometown = null
+```
+
+}) {
+
+```
+console.log(
+    "Saving player profile:",
+    playerId
+);
+
+
+if (!playerId) {
+
+    throw new Error(
+        "Player ID is required."
+    );
+
+}
+
+
+const {
+    data,
+    error
+} = await supabaseClient
+
+    .from("player_profiles")
+
+    .upsert({
+
+        player_id:
+            playerId,
+
+        profile_image_url:
+            profileImageUrl,
+
+        bio:
+            bio,
+
+        favorite_course:
+            favoriteCourse,
+
+        favorite_club:
+            favoriteClub,
+
+        hometown:
+            hometown,
+
+        updated_at:
+            new Date().toISOString()
+
+    }, {
+
+        onConflict:
+            "player_id"
+
+    })
+
+    .select()
+
+    .single();
+
+
+if (error) {
+
+    console.error(
+        "ERROR SAVING PLAYER PROFILE:",
+        error
+    );
+
+    throw error;
+
+}
+
+
+console.log(
+    "Player profile saved:",
+    data
+);
+
+
+return data;
+```
+
+}
