@@ -3098,114 +3098,84 @@ async function getPlayerStats(playerId) {
 
 }
 
-/* ==========================================
-PLAYER PROFILES
-========================================== */
+// ==========================================
+// PLAYER PROFILES
+// ==========================================
 
-/* ==========================================
-GET PLAYER PROFILE
-========================================== */
+
+// ==========================================
+// GET PLAYER PROFILE
+// ==========================================
 
 async function getPlayerProfile(playerId) {
 
-```
-console.log(
-    "Getting profile for player:",
-    playerId
-);
-
-
-const {
-    data,
-    error
-} = await supabaseClient
-
-    .from("player_profiles")
-
-    .select(`
-        id,
-        player_id,
-        profile_image_url,
-        bio,
-        favorite_course,
-        favorite_club,
-        hometown
-    `)
-
-    .eq(
-        "player_id",
+    console.log(
+        "Getting profile for player:",
         playerId
-    )
-
-    .maybeSingle();
-
-
-if (error) {
-
-    console.error(
-        "ERROR LOADING PLAYER PROFILE:",
-        error
     );
 
-    throw error;
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("player_profiles")
+        .select(`
+            id,
+            player_id,
+            profile_image_url,
+            bio,
+            favorite_course,
+            favorite_club,
+            hometown
+        `)
+        .eq("player_id", playerId)
+        .maybeSingle();
+
+    if (error) {
+
+        console.error(
+            "ERROR LOADING PLAYER PROFILE:",
+            error
+        );
+
+        throw error;
+
+    }
+
+    return data || null;
 
 }
 
 
-return data || null;
-```
-
-}
-
-/* ==========================================
-CREATE / UPDATE PLAYER PROFILE
-========================================== */
+// ==========================================
+// SAVE PLAYER PROFILE
+// ==========================================
 
 async function savePlayerProfile({
-
-```
-playerId,
-
-profileImageUrl = null,
-
-bio = null,
-
-favoriteCourse = null,
-
-favoriteClub = null,
-
-hometown = null
-```
-
+    playerId,
+    profileImageUrl = null,
+    bio = null,
+    favoriteCourse = null,
+    favoriteClub = null,
+    hometown = null
 }) {
 
-```
-console.log(
-    "Saving player profile:",
-    playerId
-);
-
-
-if (!playerId) {
-
-    throw new Error(
-        "Player ID is required."
+    console.log(
+        "Saving player profile:",
+        playerId
     );
 
-}
+    if (!playerId) {
 
+        throw new Error(
+            "Player ID is required."
+        );
 
-const {
-    data,
-    error
-} = await supabaseClient
+    }
 
-    .from("player_profiles")
+    const profileData = {
 
-    .upsert({
-
-        player_id:
-            playerId,
+        player_id: playerId,
 
         profile_image_url:
             profileImageUrl,
@@ -3225,37 +3195,38 @@ const {
         updated_at:
             new Date().toISOString()
 
-    }, {
+    };
 
-        onConflict:
-            "player_id"
-
-    })
-
-    .select()
-
-    .single();
-
-
-if (error) {
-
-    console.error(
-        "ERROR SAVING PLAYER PROFILE:",
+    const {
+        data,
         error
+    } = await supabaseClient
+        .from("player_profiles")
+        .upsert(
+            profileData,
+            {
+                onConflict: "player_id"
+            }
+        )
+        .select()
+        .single();
+
+    if (error) {
+
+        console.error(
+            "ERROR SAVING PLAYER PROFILE:",
+            error
+        );
+
+        throw error;
+
+    }
+
+    console.log(
+        "Player profile saved:",
+        data
     );
 
-    throw error;
-
-}
-
-
-console.log(
-    "Player profile saved:",
-    data
-);
-
-
-return data;
-```
+    return data;
 
 }
