@@ -3098,6 +3098,334 @@ async function getPlayerStats(playerId) {
 
 }
 
+
+// ==========================================
+// GET ALL PLAYER STATS (BATCH)
+// ==========================================
+
+// ==========================================
+// GET ALL PLAYER STATS (BATCH)
+// ==========================================
+
+async function getAllPlayerStats(playerIds) {
+
+    console.log(
+        "Getting stats for all players (batch):",
+        playerIds
+    );
+
+
+    const {
+        data: rounds,
+        error
+    } = await supabaseClient
+
+        .from("rounds")
+
+        .select(`
+            id,
+            player_id,
+            gross_score,
+            net_score,
+            points_earned,
+            birdies,
+            eagles,
+            pars,
+            bogeys,
+            double_bogeys,
+            approval_status,
+            finish_position
+        `)
+
+        .in(
+            "player_id",
+            playerIds
+        )
+
+        .eq(
+            "approval_status",
+            "Approved"
+        );
+
+
+    if (error) {
+
+        console.error(
+            "ERROR LOADING BATCH PLAYER STATS:",
+            error
+        );
+
+        throw error;
+
+    }
+
+
+    console.log(
+        "Batch rounds loaded:",
+        rounds ? rounds.length : 0
+    );
+
+
+    // ==========================================
+    // GROUP ROUNDS BY PLAYER ID
+    // ==========================================
+
+    const roundsByPlayer = {};
+
+    for (
+        const round of (rounds || [])
+    ) {
+
+        const pid = round.player_id;
+
+        if (!roundsByPlayer[pid]) {
+
+            roundsByPlayer[pid] = [];
+
+        }
+
+        roundsByPlayer[pid].push(round);
+
+    }
+
+
+    // ==========================================
+    // CALCULATE STATS FOR EACH PLAYER
+    // ==========================================
+
+    const statsMap = {};
+
+    for (
+        const playerId of playerIds
+    ) {
+
+        const playerRounds =
+            roundsByPlayer[playerId] || [];
+
+
+        // ==========================================
+        // NO ROUNDS
+        // ==========================================
+
+        if (playerRounds.length === 0) {
+
+            statsMap[playerId] = {
+
+                roundsPlayed: 0,
+
+                averageGross: 0,
+
+                averageNet: 0,
+
+                birdies: 0,
+
+                eagles: 0,
+
+                pars: 0,
+
+                bogeys: 0,
+
+                doubleBogeys: 0,
+
+                points: 0,
+
+                wins: 0
+
+            };
+
+            continue;
+
+        }
+
+
+        // ==========================================
+        // TOTALS
+        // ==========================================
+
+        const roundsPlayed =
+            playerRounds.length;
+
+
+        const totalGross =
+            playerRounds.reduce(
+                (total, round) =>
+                    total +
+                    Number(
+                        round.gross_score || 0
+                    ),
+                0
+            );
+
+
+        const totalNet =
+            playerRounds.reduce(
+                (total, round) =>
+                    total +
+                    Number(
+                        round.net_score || 0
+                    ),
+                0
+            );
+
+
+        const birdies =
+            playerRounds.reduce(
+                (total, round) =>
+                    total +
+                    Number(
+                        round.birdies || 0
+                    ),
+                0
+            );
+
+
+        const eagles =
+            playerRounds.reduce(
+                (total, round) =>
+                    total +
+                    Number(
+                        round.eagles || 0
+                    ),
+                0
+            );
+
+
+        const pars =
+            playerRounds.reduce(
+                (total, round) =>
+                    total +
+                    Number(
+                        round.pars || 0
+                    ),
+                0
+            );
+
+
+        const bogeys =
+            playerRounds.reduce(
+                (total, round) =>
+                    total +
+                    Number(
+                        round.bogeys || 0
+                    ),
+                0
+            );
+
+
+        const doubleBogeys =
+            playerRounds.reduce(
+                (total, round) =>
+                    total +
+                    Number(
+                        round.double_bogeys || 0
+                    ),
+                0
+            );
+
+
+        const points =
+            playerRounds.reduce(
+                (total, round) =>
+                    total +
+                    Number(
+                        round.points_earned || 0
+                    ),
+                0
+            );
+
+
+        // ==========================================
+        // WINS
+        // ==========================================
+
+        const wins =
+            playerRounds.filter(
+                round =>
+                    Number(
+                        round.finish_position
+                    ) === 1
+            ).length;
+
+
+        // ==========================================
+        // STORE STATS
+        // ==========================================
+
+        const stats = {
+
+            roundsPlayed:
+
+                roundsPlayed,
+
+
+            averageGross:
+
+                (
+                    totalGross /
+                    roundsPlayed
+                ).toFixed(1),
+
+
+            averageNet:
+
+                (
+                    totalNet /
+                    roundsPlayed
+                ).toFixed(1),
+
+
+            birdies:
+
+                birdies,
+
+
+            eagles:
+
+                eagles,
+
+
+            pars:
+
+                pars,
+
+
+            bogeys:
+
+                bogeys,
+
+
+            doubleBogeys:
+
+                doubleBogeys,
+
+
+            points:
+
+                points,
+
+
+            wins:
+
+                wins
+
+        };
+
+
+        statsMap[playerId] = stats;
+
+    }
+
+
+    console.log(
+        "Batch stats calculated for all players"
+    );
+
+
+    return statsMap;
+
+}
+
+
 // ==========================================
 // PLAYER PROFILES
 // ==========================================
@@ -3297,6 +3625,266 @@ async function getPlayerProfile(playerId) {
             profileImageUrl
 
     };
+
+}
+
+
+// ==========================================
+// GET ALL PLAYER PROFILES (BATCH)
+// ==========================================
+
+// ==========================================
+// GET ALL PLAYER PROFILES (BATCH)
+// ==========================================
+
+async function getAllPlayerProfiles(playerIds) {
+
+    console.log(
+        "Getting profiles for all players (batch):",
+        playerIds
+    );
+
+
+    // ==========================================
+    // GET ALL PROFILE RECORDS
+    // ==========================================
+
+    const {
+        data: profiles,
+        error: profileError
+    } = await supabaseClient
+
+        .from("player_profiles")
+
+        .select(`
+            id,
+            player_id,
+            profile_image_url,
+            bio,
+            favorite_course,
+            favorite_club,
+            hometown
+        `)
+
+        .in(
+            "player_id",
+            playerIds
+        );
+
+
+    if (profileError) {
+
+        console.error(
+            "ERROR LOADING BATCH PLAYER PROFILES:",
+            profileError
+        );
+
+        throw profileError;
+
+    }
+
+
+    console.log(
+        "Batch profiles loaded:",
+        profiles ? profiles.length : 0
+    );
+
+
+    // ==========================================
+    // INDEX PROFILES BY PLAYER ID
+    // ==========================================
+
+    const profilesByPlayer = {};
+
+    for (
+        const profile of (profiles || [])
+    ) {
+
+        profilesByPlayer[profile.player_id] =
+            profile;
+
+    }
+
+
+    // ==========================================
+    // FIND PHOTOS IN STORAGE (PARALLEL)
+    // ==========================================
+
+    const storagePromises =
+        playerIds.map(
+            playerId => {
+
+                console.log(
+                    "Checking Player-profiles folder:",
+                    playerId
+                );
+
+                return supabaseClient
+
+                    .storage
+
+                    .from("player-profiles")
+
+                    .list(
+                        String(playerId),
+                        {
+                            limit: 100
+                        }
+                    )
+
+                    .then(result => ({
+                        playerId,
+                        data: result.data,
+                        error: result.error
+                    }));
+
+            }
+        );
+
+
+    const storageResults =
+        await Promise.all(
+            storagePromises
+        );
+
+
+    // ==========================================
+    // BUILD PROFILE MAP
+    // ==========================================
+
+    const profileMap = {};
+
+    for (
+        const result of storageResults
+    ) {
+
+        const playerId =
+            result.playerId;
+
+        const profile =
+            profilesByPlayer[playerId] || null;
+
+        let profileImageUrl =
+            profile?.profile_image_url || null;
+
+
+        if (result.error) {
+
+            console.error(
+                "ERROR READING PLAYER PHOTO FOLDER:",
+                playerId,
+                result.error
+            );
+
+        }
+
+        else {
+
+            console.log(
+                `Files found for player ${playerId}:`,
+                result.data
+            );
+
+
+            // ==========================================
+            // FIND IMAGE
+            // ==========================================
+
+            const imageFile =
+                (result.data || []).find(
+                    file => {
+
+                        const fileName =
+                            file.name.toLowerCase();
+
+                        return (
+                            fileName.endsWith(".jpg") ||
+                            fileName.endsWith(".jpeg") ||
+                            fileName.endsWith(".png") ||
+                            fileName.endsWith(".webp")
+                        );
+
+                    }
+                );
+
+
+            // ==========================================
+            // CREATE PUBLIC URL
+            // ==========================================
+
+            if (imageFile) {
+
+                const filePath =
+                    `${playerId}/${imageFile.name}`;
+
+
+                console.log(
+                    "PLAYER PHOTO PATH:",
+                    filePath
+                );
+
+
+                const {
+                    data: publicUrl
+                } =
+                    supabaseClient
+
+                        .storage
+
+                        .from("player-profiles")
+
+                        .getPublicUrl(
+                            filePath
+                        );
+
+
+                profileImageUrl =
+                    publicUrl.publicUrl;
+
+
+                console.log(
+                    "PLAYER PHOTO URL:",
+                    profileImageUrl
+                );
+
+            }
+
+            else {
+
+                console.log(
+                    `No image found for player ${playerId}`
+                );
+
+            }
+
+        }
+
+
+        // ==========================================
+        // STORE PROFILE
+        // ==========================================
+
+        profileMap[playerId] = {
+
+            ...(profile || {}),
+
+            player_id:
+                playerId,
+
+            profile_image_url:
+                profileImageUrl
+
+        };
+
+    }
+
+
+    console.log(
+        "Batch profiles built for all players"
+    );
+
+
+    return profileMap;
 
 }
 
