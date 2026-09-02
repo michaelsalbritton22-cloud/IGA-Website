@@ -3180,7 +3180,7 @@ async function getPlayerProfile(playerId) {
 
         .storage
 
-        .from("Player-profiles")
+        .from("player-profiles")
 
         .list(
             String(playerId),
@@ -3253,7 +3253,7 @@ async function getPlayerProfile(playerId) {
 
                     .storage
 
-                    .from("Player-profiles")
+                    .from("player-profiles")
 
                     .getPublicUrl(
                         filePath
