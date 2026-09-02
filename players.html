@@ -590,6 +590,41 @@ async function loadPlayersPage() {
 
 
         // ==================================
+        // COLLECT PLAYER IDS
+        // ==================================
+
+        const playerIds =
+            players.map(
+                player => player.player_id
+            );
+
+        console.log(
+            "Player IDs collected:",
+            playerIds
+        );
+
+
+        // ==================================
+        // BATCH FETCH STATS AND PROFILES
+        // ==================================
+
+        const [
+            allStats,
+            allProfiles
+        ] = await Promise.all([
+
+            getAllPlayerStats(playerIds),
+
+            getAllPlayerProfiles(playerIds)
+
+        ]);
+
+        console.log(
+            "Batch stats and profiles loaded"
+        );
+
+
+        // ==================================
         // CLEAR LOADING MESSAGE
         // ==================================
 
@@ -611,23 +646,29 @@ async function loadPlayersPage() {
 
 
             // ==================================
-            // GET PLAYER STATS
+            // LOOK UP STATS AND PROFILE
             // ==================================
 
             const stats =
-                await getPlayerStats(
-                    player.player_id
-                );
+                allStats[player.player_id] || {
+                    roundsPlayed: 0,
+                    averageGross: 0,
+                    averageNet: 0,
+                    birdies: 0,
+                    eagles: 0,
+                    pars: 0,
+                    bogeys: 0,
+                    doubleBogeys: 0,
+                    points: 0,
+                    wins: 0
+                };
 
-
-            // ==================================
-            // GET PLAYER PROFILE
-            // ==================================
 
             const playerProfile =
-                await getPlayerProfile(
-                    player.player_id
-                );
+                allProfiles[player.player_id] || {
+                    player_id: player.player_id,
+                    profile_image_url: null
+                };
 
 
             console.log(
