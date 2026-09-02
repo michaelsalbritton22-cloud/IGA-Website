@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
 
 <head>
 
-<title>
-Internal Golf Association
-</title>
+    <meta charset="UTF-8">
 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet" href="css/style.css">
+    <title>Internal Golf Association | IGA Tour</title>
 
+    <link rel="stylesheet" href="css/style.css">
 
 </head>
 
@@ -18,24 +18,39 @@ Internal Golf Association
 <body>
 
 
+<!-- ==========================================
+     HEADER
+=========================================== -->
+
 <div id="header"></div>
 
 
 
-<section class="hero">
+<!-- ==========================================
+     HERO
+=========================================== -->
 
-<div>
+<section class="iga-home-hero">
 
-<h2>
-Internal Golf Association
-</h2>
+    <div class="iga-hero-content">
 
-<p>
-Where Every Round Counts
-</p>
+        <div class="iga-season-label">
+            INTERNAL GOLF ASSOCIATION
+        </div>
 
+        <h1>
+            IGA TOUR
+        </h1>
 
-</div>
+        <p>
+            Where Every Round Counts
+        </p>
+
+        <div id="currentSeasonName" class="iga-current-season">
+            Loading season...
+        </div>
+
+    </div>
 
 </section>
 
@@ -44,123 +59,375 @@ Where Every Round Counts
 <div class="container">
 
 
-<div class="cards">
+<!-- ==========================================
+     TOP FEATURE ROW
+=========================================== -->
+
+<section class="home-feature-grid">
 
 
-<div class="card">
+    <!-- CURRENT LEADER -->
 
-<h3>
-Current Leader
-</h3>
+    <div class="home-feature-card leader-card">
 
-<h2>
-🥇 Michael Albritton
-</h2>
+        <div class="section-label">
+            CURRENT IGA LEADER
+        </div>
 
-<p>
-186 Points
-</p>
+        <div id="currentLeader">
 
-<p>
-8.3 Handicap
-</p>
+            <div class="home-loading">
+                Loading leaderboard...
+            </div>
+
+        </div>
+
+        <a
+            class="button"
+            href="leaderboard.html"
+        >
+            View Leaderboard
+        </a>
+
+    </div>
 
 
-<a class="button" href="leaderboard.html">
-View Leaderboard
-</a>
+
+    <!-- OPEN IGA ROUNDS -->
+
+    <div class="home-feature-card open-rounds-card">
+
+        <div class="section-label">
+            OPEN IGA ROUNDS
+        </div>
+
+        <div id="openRounds">
+
+            <div class="home-loading">
+                Loading open rounds...
+            </div>
+
+        </div>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- ==========================================
+     FROM THE COURSE
+=========================================== -->
+
+<section class="home-section">
+
+    <div class="home-section-header">
+
+        <div>
+
+            <div class="section-label">
+                FROM THE COURSE
+            </div>
+
+            <h2>
+                IGA Round Gallery
+            </h2>
+
+        </div>
+
+        <a href="players.html">
+            Player Profiles →
+        </a>
+
+    </div>
+
+
+    <div id="roundGallery" class="round-gallery">
+
+        <div class="home-empty">
+
+            Player photos from submitted rounds
+            will appear here.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ==========================================
+     RECENT ROUNDS + RECORDS
+=========================================== -->
+
+<section class="home-two-column">
+
+
+    <!-- RECENT ROUNDS -->
+
+    <div class="home-panel">
+
+        <div class="section-label">
+            RECENT ROUNDS
+        </div>
+
+        <h2>
+            Around the IGA
+        </h2>
+
+
+        <div id="recentRounds">
+
+            <div class="home-loading">
+                Loading recent rounds...
+            </div>
+
+        </div>
+
+
+        <a
+            class="text-link"
+            href="stats.html"
+        >
+            View Full Statistics →
+        </a>
+
+    </div>
+
+
+
+    <!-- LEAGUE RECORDS -->
+
+    <div class="home-panel">
+
+        <div class="section-label">
+            IGA RECORDS
+        </div>
+
+        <h2>
+            League Records
+        </h2>
+
+
+        <div id="leagueRecords">
+
+            <div class="home-loading">
+                Loading league records...
+            </div>
+
+        </div>
+
+
+        <a
+            class="text-link"
+            href="stats.html"
+        >
+            View Full Statistics →
+        </a>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- ==========================================
+     CHAMPIONSHIP WATCH
+=========================================== -->
+
+<section class="home-section championship-watch">
+
+    <div class="home-section-header">
+
+        <div>
+
+            <div class="section-label">
+                CHAMPIONSHIP WATCH
+            </div>
+
+            <h2>
+                The Race for IGA Glory
+            </h2>
+
+        </div>
+
+        <a href="championships.html">
+            Championships →
+        </a>
+
+    </div>
+
+
+    <div class="championship-grid">
+
+
+        <div class="championship-mini-card">
+
+            <div class="mini-trophy">
+                🏆
+            </div>
+
+            <h3>
+                IGA League Champion
+            </h3>
+
+            <div id="leagueChampionWatch">
+                Loading...
+            </div>
+
+        </div>
+
+
+
+        <div class="championship-mini-card">
+
+            <div class="mini-trophy">
+                👑
+            </div>
+
+            <h3>
+                Kings of the Courses
+            </h3>
+
+            <div id="courseKingsWatch">
+                Loading...
+            </div>
+
+        </div>
+
+
+
+        <div class="championship-mini-card">
+
+            <div class="mini-trophy">
+                🏆
+            </div>
+
+            <h3>
+                Audit Master
+            </h3>
+
+            <div id="auditMasterWatch">
+                Coming Soon
+            </div>
+
+        </div>
+
+
+
+        <div class="championship-mini-card">
+
+            <div class="mini-trophy">
+                🏆
+            </div>
+
+            <h3>
+                Folger's Redline Cup
+            </h3>
+
+            <div id="redlineWatch">
+                Coming Soon
+            </div>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- ==========================================
+     IGA NEWS
+=========================================== -->
+
+<section class="home-section">
+
+    <div class="home-section-header">
+
+        <div>
+
+            <div class="section-label">
+                AROUND THE IGA
+            </div>
+
+            <h2>
+                Latest News & Announcements
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <div id="igaNews" class="news-list">
+
+        <div class="home-empty">
+
+            IGA announcements will appear here.
+
+        </div>
+
+    </div>
+
+</section>
 
 
 </div>
 
 
 
-<div class="card">
-
-<h3>
-Upcoming Event
-</h3>
-
-<h2>
-Audit Master Championship
-</h2>
-
-<p>
-October 2027
-</p>
-
-
-</div>
-
-
-
-<div class="card">
-
-<h3>
-Recent Round
-</h3>
-
-<p>
-Firelake Golf Course
-</p>
-
-<p>
-Michael - 78
-</p>
-
-
-</div>
-
-
-
-<div class="card">
-
-<h3>
-League Records
-</h3>
-
-<p>
-Lowest Round
-</p>
-
-<p>
-Most Birdies
-</p>
-
-<p>
-Most Points
-</p>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
+<!-- ==========================================
+     FOOTER
+=========================================== -->
 
 <footer>
 
-Internal Golf Association © 2027
+    Internal Golf Association © 2027
 
 </footer>
 
 
 
+<!-- ==========================================
+     SUPABASE
+=========================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<!-- ==========================================
+     IGA DATABASE
+=========================================== -->
+
+<script src="js/database.js"></script>
+
+
+<!-- ==========================================
+     SITE COMPONENTS
+=========================================== -->
+
 <script src="js/components.js"></script>
+
+
+<!-- ==========================================
+     HOMEPAGE JAVASCRIPT
+=========================================== -->
+
+<script src="js/home.js"></script>
 
 
 <script>
 
-loadHeader();
+    loadHeader();
 
 </script>
 
 
 </body>
-
 
 </html>
