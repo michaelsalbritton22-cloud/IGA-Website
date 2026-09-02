@@ -729,6 +729,85 @@ async function loadEventLeaderboards() {
     }
 
 
+    // ------------------------------------------
+    // BATCH FETCH ALL ROUNDS FOR ALL EVENTS
+    // ------------------------------------------
+
+    const eventIds =
+        events.map(
+            event =>
+                event.id
+        );
+
+
+    const {
+        data: allRounds,
+        error: roundError
+    } = await supabaseClient
+
+        .from("rounds")
+
+        .select(`
+            id,
+            player_id,
+            event_id,
+            gross_score,
+            net_score,
+            approval_status,
+
+            "Players" (
+                "Name"
+            )
+        `)
+
+        .in(
+            "event_id",
+            eventIds
+        );
+
+
+    if (roundError) {
+
+        throw roundError;
+
+    }
+
+
+    // ------------------------------------------
+    // GROUP ROUNDS BY EVENT ID
+    // ------------------------------------------
+
+    const roundsByEvent = {};
+
+    (allRounds || []).forEach(
+        round => {
+
+            if (
+                !roundsByEvent[
+                    round.event_id
+                ]
+            ) {
+
+                roundsByEvent[
+                    round.event_id
+                ] = [];
+
+            }
+
+            roundsByEvent[
+                round.event_id
+            ].push(
+                round
+            );
+
+        }
+    );
+
+
+    // ------------------------------------------
+    // RENDER EACH EVENT LEADERBOARD
+    // ------------------------------------------
+
     let html = "";
 
 
@@ -738,40 +817,14 @@ async function loadEventLeaderboards() {
     ) {
 
 
-        const {
-            data: rounds,
-            error: roundError
-        } = await supabaseClient
-
-            .from("rounds")
-
-            .select(`
-                id,
-                player_id,
-                gross_score,
-                net_score,
-                approval_status,
-
-                "Players" (
-                    "Name"
-                )
-            `)
-
-            .eq(
-                "event_id",
+        const rounds =
+            roundsByEvent[
                 event.id
-            );
-
-
-        if (roundError) {
-
-            throw roundError;
-
-        }
+            ] || [];
 
 
         const sorted =
-            (rounds || [])
+            rounds
                 .slice()
                 .sort(
                     (
