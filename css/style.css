@@ -845,3 +845,912 @@ footer {
 }
 
 }
+
+/* ==========================================
+   IGA HOMEPAGE
+========================================== */
+
+
+/* ==========================================
+   HERO
+========================================== */
+
+.iga-home-hero {
+
+    background:
+        linear-gradient(
+            rgba(0, 59, 36, 0.94),
+            rgba(0, 59, 36, 0.94)
+        );
+
+    color: white;
+
+    padding: 75px 50px;
+
+    text-align: center;
+
+}
+
+
+.iga-hero-content {
+
+    max-width: 1100px;
+
+    margin: 0 auto;
+
+}
+
+
+.iga-season-label {
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+    letter-spacing: 4px;
+
+    margin-bottom: 15px;
+
+    opacity: 0.85;
+
+}
+
+
+.iga-home-hero h1 {
+
+    font-size: 64px;
+
+    margin: 0;
+
+    letter-spacing: 2px;
+
+}
+
+
+.iga-home-hero p {
+
+    font-size: 24px;
+
+    margin: 10px 0 20px;
+
+}
+
+
+.iga-current-season {
+
+    display: inline-block;
+
+    background: #d4af37;
+
+    color: #111;
+
+    padding: 8px 22px;
+
+    border-radius: 30px;
+
+    font-weight: bold;
+
+    font-size: 14px;
+
+    letter-spacing: 1px;
+
+}
+
+
+
+/* ==========================================
+   FEATURE GRID
+========================================== */
+
+.home-feature-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1.4fr);
+
+    gap: 25px;
+
+    margin-top: 35px;
+
+}
+
+
+.home-feature-card {
+
+    background: white;
+
+    border-radius: 12px;
+
+    padding: 30px;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.08);
+
+    border-top: 5px solid #003b24;
+
+}
+
+
+.leader-card {
+
+    text-align: center;
+
+}
+
+
+.section-label {
+
+    font-size: 12px;
+
+    font-weight: bold;
+
+    letter-spacing: 2px;
+
+    color: #777;
+
+    margin-bottom: 12px;
+
+}
+
+
+.leader-rank {
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    color: #d4af37;
+
+    margin-top: 10px;
+
+}
+
+
+.leader-name {
+
+    font-size: 30px;
+
+    font-weight: bold;
+
+    color: #003b24;
+
+    margin-top: 5px;
+
+}
+
+
+.leader-points {
+
+    font-size: 54px;
+
+    font-weight: bold;
+
+    line-height: 1;
+
+    margin-top: 20px;
+
+}
+
+
+.leader-points-label {
+
+    font-size: 11px;
+
+    font-weight: bold;
+
+    letter-spacing: 2px;
+
+    color: #777;
+
+}
+
+
+.leader-stats {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 10px;
+
+    margin: 25px 0;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #ddd;
+
+}
+
+
+.leader-stats div {
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+
+.leader-stats strong {
+
+    font-size: 18px;
+
+}
+
+
+.leader-stats span {
+
+    font-size: 11px;
+
+    color: #777;
+
+    margin-top: 3px;
+
+}
+
+
+
+/* ==========================================
+   OPEN ROUNDS
+========================================== */
+
+.open-rounds-card {
+
+    min-height: 250px;
+
+}
+
+
+.open-round-item {
+
+    padding: 18px 0;
+
+    border-bottom: 1px solid #ddd;
+
+}
+
+
+.open-round-item:last-child {
+
+    border-bottom: none;
+
+}
+
+
+.open-round-top {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: 20px;
+
+}
+
+
+.open-round-name {
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    color: #003b24;
+
+}
+
+
+.open-round-date {
+
+    font-size: 13px;
+
+    color: #777;
+
+    margin-top: 4px;
+
+}
+
+
+.open-round-count {
+
+    font-weight: bold;
+
+    font-size: 18px;
+
+    white-space: nowrap;
+
+}
+
+
+.open-round-course {
+
+    font-size: 13px;
+
+    margin-top: 8px;
+
+    color: #555;
+
+}
+
+
+.open-round-status {
+
+    margin-top: 12px;
+
+    font-size: 13px;
+
+}
+
+
+.open-round-status strong {
+
+    color: #003b24;
+
+    font-size: 18px;
+
+}
+
+
+.open-round-status.pending {
+
+    color: #9a7610;
+
+}
+
+
+.open-round-status.complete {
+
+    color: #003b24;
+
+}
+
+
+.open-rounds-empty {
+
+    text-align: center;
+
+    padding: 35px 15px;
+
+}
+
+
+.open-rounds-icon {
+
+    font-size: 35px;
+
+    margin-bottom: 10px;
+
+}
+
+
+
+/* ==========================================
+   GENERAL HOMEPAGE SECTIONS
+========================================== */
+
+.home-section {
+
+    background: white;
+
+    border-radius: 12px;
+
+    padding: 30px;
+
+    margin-top: 30px;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.06);
+
+}
+
+
+.home-section-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-end;
+
+    margin-bottom: 25px;
+
+}
+
+
+.home-section-header h2 {
+
+    margin: 0;
+
+    color: #003b24;
+
+}
+
+
+.home-section-header a {
+
+    color: #003b24;
+
+    font-weight: bold;
+
+    text-decoration: none;
+
+}
+
+
+.home-section-header a:hover {
+
+    text-decoration: underline;
+
+}
+
+
+
+/* ==========================================
+   TWO COLUMN AREA
+========================================== */
+
+.home-two-column {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 25px;
+
+    margin-top: 30px;
+
+}
+
+
+.home-panel {
+
+    background: white;
+
+    border-radius: 12px;
+
+    padding: 30px;
+
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.06);
+
+}
+
+
+.home-panel h2 {
+
+    color: #003b24;
+
+    margin-top: 0;
+
+}
+
+
+
+/* ==========================================
+   RECENT ROUNDS
+========================================== */
+
+.recent-round-item {
+
+    display: grid;
+
+    grid-template-columns:
+        1.2fr
+        1fr
+        auto;
+
+    gap: 10px;
+
+    padding: 16px 0;
+
+    border-bottom: 1px solid #ddd;
+
+}
+
+
+.recent-round-item:last-child {
+
+    border-bottom: none;
+
+}
+
+
+.recent-round-player {
+
+    font-weight: bold;
+
+}
+
+
+.recent-round-course {
+
+    font-size: 13px;
+
+    color: #666;
+
+}
+
+
+.recent-round-score {
+
+    display: flex;
+
+    gap: 12px;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+}
+
+
+.recent-round-date {
+
+    grid-column: 1 / -1;
+
+    font-size: 11px;
+
+    color: #888;
+
+}
+
+
+
+/* ==========================================
+   LEAGUE RECORDS
+========================================== */
+
+.record-row {
+
+    display: grid;
+
+    grid-template-columns:
+        1.5fr
+        auto
+        1fr;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 15px 0;
+
+    border-bottom: 1px solid #ddd;
+
+}
+
+
+.record-row:last-child {
+
+    border-bottom: none;
+
+}
+
+
+.record-title {
+
+    font-size: 13px;
+
+}
+
+
+.record-value {
+
+    font-size: 26px;
+
+    font-weight: bold;
+
+    color: #003b24;
+
+}
+
+
+.record-player {
+
+    font-size: 12px;
+
+    color: #777;
+
+    text-align: right;
+
+}
+
+
+
+/* ==========================================
+   CHAMPIONSHIP WATCH
+========================================== */
+
+.championship-watch {
+
+    background:
+        linear-gradient(
+            135deg,
+            #003b24,
+            #002b1b
+        );
+
+    color: white;
+
+}
+
+
+.championship-watch .section-label {
+
+    color: #d4af37;
+
+}
+
+
+.championship-watch h2 {
+
+    color: white;
+
+}
+
+
+.championship-watch
+.home-section-header a {
+
+    color: #d4af37;
+
+}
+
+
+.championship-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 15px;
+
+}
+
+
+.championship-mini-card {
+
+    background: rgba(255,255,255,0.08);
+
+    border: 1px solid
+        rgba(255,255,255,0.15);
+
+    border-radius: 10px;
+
+    padding: 25px;
+
+    text-align: center;
+
+}
+
+
+.mini-trophy {
+
+    font-size: 35px;
+
+}
+
+
+.championship-mini-card h3 {
+
+    font-size: 15px;
+
+    margin: 12px 0;
+
+}
+
+
+.championship-mini-card > div:last-child {
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+}
+
+
+
+/* ==========================================
+   ROUND GALLERY
+========================================== */
+
+.round-gallery {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 15px;
+
+}
+
+
+.home-empty {
+
+    color: #777;
+
+    font-size: 14px;
+
+    padding: 20px 0;
+
+}
+
+
+.home-loading {
+
+    color: #777;
+
+    font-size: 14px;
+
+    padding: 20px 0;
+
+}
+
+
+.home-error {
+
+    color: #9b1c1c;
+
+    font-size: 14px;
+
+    padding: 20px 0;
+
+}
+
+
+
+/* ==========================================
+   NEWS
+========================================== */
+
+.news-list {
+
+    display: grid;
+
+    gap: 10px;
+
+}
+
+
+.text-link {
+
+    display: inline-block;
+
+    margin-top: 15px;
+
+    color: #003b24;
+
+    font-weight: bold;
+
+    text-decoration: none;
+
+}
+
+
+.text-link:hover {
+
+    text-decoration: underline;
+
+}
+
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (
+    max-width: 900px
+) {
+
+    .home-feature-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .home-two-column {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .championship-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+
+    .round-gallery {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
+}
+
+
+@media (
+    max-width: 600px
+) {
+
+    .iga-home-hero {
+
+        padding: 50px 20px;
+
+    }
+
+
+    .iga-home-hero h1 {
+
+        font-size: 42px;
+
+    }
+
+
+    .iga-home-hero p {
+
+        font-size: 19px;
+
+    }
+
+
+    .container {
+
+        padding-left: 20px;
+
+        padding-right: 20px;
+
+    }
+
+
+    .championship-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .round-gallery {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .recent-round-item {
+
+        grid-template-columns: 1fr;
+
+    }
+
+
+    .record-row {
+
+        grid-template-columns:
+            1fr auto;
+
+    }
+
+
+    .record-player {
+
+        grid-column: 1 / -1;
+
+        text-align: left;
+
+    }
+
+}
