@@ -564,131 +564,192 @@ if (eventsWithSubmissions.length === 0) {
 eventsWithSubmissions.forEach(
     event => {
 
+        // ------------------------------------------
+        // GET ROUNDS FOR THIS EVENT
+        // ------------------------------------------
 
-            // ------------------------------------------
-            // COURSE NAME
-            // ------------------------------------------
-
-            let courseName =
-                "IGA Golf Course";
-
-
-            // ------------------------------------------
-            // CREATE CARD
-            // ------------------------------------------
-
-            const card =
-                document.createElement(
-                    "div"
+        const eventRounds =
+            (rounds || [])
+                .filter(
+                    round =>
+                        round.event_id ===
+                        event.id
                 );
 
 
-            card.className =
-                "open-round-item";
+        // ------------------------------------------
+        // GET UNIQUE PLAYERS WHO SUBMITTED
+        // ------------------------------------------
+
+        const submittedPlayers =
+            new Set(
+                eventRounds.map(
+                    round =>
+                        round.player_id
+                )
+            );
 
 
-            let statusText = "";
+        const submittedCount =
+            submittedPlayers.size;
 
 
-            if (
-                remainingPlayers > 0
-            ) {
+        // ------------------------------------------
+        // CALCULATE REMAINING PLAYERS
+        // ------------------------------------------
 
-                statusText = `
-
-                    <div class="open-round-status">
-
-                        <strong>
-                            ${remainingPlayers}
-                        </strong>
-
-                        player${remainingPlayers === 1 ? "" : "s"}
-                        still need${remainingPlayers === 1 ? "s" : ""} to play
-
-                    </div>
-
-                `;
-
-            } else if (
-                pendingApproval > 0
-            ) {
-
-                statusText = `
-
-                    <div class="open-round-status pending">
-
-                        Scores awaiting Commissioner approval
-
-                    </div>
-
-                `;
-
-            } else {
-
-                statusText = `
-
-                    <div class="open-round-status complete">
-
-                        All players submitted
-
-                    </div>
-
-                `;
-
-            }
+        const remainingPlayers =
+            Math.max(
+                totalPlayers -
+                submittedCount,
+                0
+            );
 
 
-            card.innerHTML = `
+        // ------------------------------------------
+        // PENDING APPROVAL COUNT
+        // ------------------------------------------
 
-                <div class="open-round-top">
-
-                    <div>
-
-                        <div class="open-round-name">
-                            ${event.event_name}
-                        </div>
-
-                        <div class="open-round-date">
-                            ${
-                                event.event_date
-                                    ? formatHomeDate(
-                                        event.event_date
-                                    )
-                                    : "Date TBD"
-                            }
-                        </div>
-
-                    </div>
-
-                    <div class="open-round-count">
-
-                        ${submittedCount}
-                        /
-                        ${totalPlayers}
-
-                    </div>
-
-                </div>
+        const pendingApproval =
+            eventRounds.filter(
+                round =>
+                    round.approval_status ===
+                    "Pending"
+            ).length;
 
 
-                <div class="open-round-course">
+        // ------------------------------------------
+        // COURSE NAME
+        // ------------------------------------------
 
-                    ${courseName}
+        let courseName =
+            "IGA Golf Course";
+
+
+        // ------------------------------------------
+        // CREATE CARD
+        // ------------------------------------------
+
+        const card =
+            document.createElement(
+                "div"
+            );
+
+
+        card.className =
+            "open-round-item";
+
+
+        // ------------------------------------------
+        // STATUS TEXT
+        // ------------------------------------------
+
+        let statusText = "";
+
+
+        if (
+            remainingPlayers > 0
+        ) {
+
+            statusText = `
+
+                <div class="open-round-status">
+
+                    <strong>
+                        ${remainingPlayers}
+                    </strong>
+
+                    player${remainingPlayers === 1 ? "" : "s"}
+                    still need${remainingPlayers === 1 ? "s" : ""} to play
 
                 </div>
-
-
-                ${statusText}
 
             `;
 
+        } else if (
+            pendingApproval > 0
+        ) {
 
-            container.appendChild(
-                card
-            );
+            statusText = `
+
+                <div class="open-round-status pending">
+
+                    Scores awaiting Commissioner approval
+
+                </div>
+
+            `;
+
+        } else {
+
+            statusText = `
+
+                <div class="open-round-status complete">
+
+                    All players submitted
+
+                </div>
+
+            `;
 
         }
-    );
+
+
+        // ------------------------------------------
+        // DISPLAY CARD
+        // ------------------------------------------
+
+        card.innerHTML = `
+
+            <div class="open-round-top">
+
+                <div>
+
+                    <div class="open-round-name">
+                        ${event.event_name}
+                    </div>
+
+                    <div class="open-round-date">
+                        ${
+                            event.event_date
+                                ? formatHomeDate(
+                                    event.event_date
+                                )
+                                : "Date TBD"
+                        }
+                    </div>
+
+                </div>
+
+                <div class="open-round-count">
+
+                    ${submittedCount}
+                    /
+                    ${totalPlayers}
+
+                </div>
+
+            </div>
+
+
+            <div class="open-round-course">
+
+                ${courseName}
+
+            </div>
+
+
+            ${statusText}
+
+        `;
+
+
+        container.appendChild(
+            card
+        );
+
+    }
+);
 
 }
 
