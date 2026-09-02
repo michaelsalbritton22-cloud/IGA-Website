@@ -511,6 +511,7 @@ async function loadOpenRounds(
             id,
             event_id,
             player_id,
+            round_date,
             approval_status
         `)
 
@@ -616,6 +617,26 @@ async function loadOpenRounds(
                             round.event_id ===
                             event.id
                     );
+  
+// ------------------------------------------
+// FIRST ROUND SUBMITTED DATE
+// ------------------------------------------
+
+const firstSubmittedRound =
+    eventRounds
+        .filter(
+            round =>
+                round.round_date
+        )
+        .sort(
+            (a, b) =>
+                new Date(a.round_date) -
+                new Date(b.round_date)
+        )[0];
+
+
+const firstSubmittedDate =
+    firstSubmittedRound?.round_date || null;
 
 
             // ------------------------------------------
@@ -747,14 +768,14 @@ async function loadOpenRounds(
                         </div>
 
                         <div class="open-round-date">
-                            ${
-                                event.event_date
-                                    ? formatHomeDate(
-                                        event.event_date
-                                    )
-                                    : "Date TBD"
-                            }
-                        </div>
+    ${
+        firstSubmittedDate
+            ? formatHomeDate(
+                firstSubmittedDate
+            )
+            : "Date TBD"
+    }
+</div>
 
                     </div>
 
