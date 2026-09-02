@@ -516,52 +516,53 @@ async function loadOpenRounds(
     }
 
 
-    // ------------------------------------------
-    // BUILD EVENT DISPLAY
-    // ------------------------------------------
+   // ------------------------------------------
+// ONLY SHOW EVENTS WITH AT LEAST 1 SUBMISSION
+// ------------------------------------------
 
-    container.innerHTML = "";
-
-
-    events.forEach(
-        event => {
-
-            const eventRounds =
-                (rounds || [])
-                    .filter(
-                        round =>
-                            round.event_id ===
-                            event.id
-                    );
+const eventsWithSubmissions =
+    events.filter(
+        event =>
+            (rounds || []).some(
+                round =>
+                    round.event_id === event.id
+            )
+    );
 
 
-            const submittedPlayers =
-                new Set(
-                    eventRounds.map(
-                        round =>
-                            round.player_id
-                    )
-                );
+// ------------------------------------------
+// BUILD EVENT DISPLAY
+// ------------------------------------------
+
+container.innerHTML = "";
+
+if (eventsWithSubmissions.length === 0) {
+
+    container.innerHTML = `
+        <div class="open-rounds-empty">
+
+            <div class="open-rounds-icon">
+                ✓
+            </div>
+
+            <strong>
+                No Active Rounds
+            </strong>
+
+            <p>
+                No IGA rounds have been submitted yet.
+            </p>
+
+        </div>
+    `;
+
+    return;
+
+}
 
 
-            const submittedCount =
-                submittedPlayers.size;
-
-
-            const remainingPlayers =
-                Math.max(
-                    totalPlayers -
-                    submittedCount,
-                    0
-                );
-
-
-            const pendingApproval =
-                eventRounds.filter(
-                    round =>
-                        round.approval_status ===
-                        "Pending"
-                ).length;
+eventsWithSubmissions.forEach(
+    event => {
 
 
             // ------------------------------------------
