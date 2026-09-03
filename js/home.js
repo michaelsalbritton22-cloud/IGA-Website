@@ -370,14 +370,17 @@ async function loadOpenRounds(
         .from("events_table")
 
         .select(`
-            id,
-            event_name,
-            event_type,
-            season_id,
-            status,
-            course_id,
-            event_date
-        `)
+    id,
+    event_name,
+    event_type,
+    season_id,
+    status,
+    course_id,
+    event_date,
+    courses (
+        "Course_name"
+    )
+`)
 
         .eq(
             "season_id",
@@ -684,8 +687,9 @@ const firstSubmittedDate =
             // COURSE NAME
             // ------------------------------------------
 
-            const courseName =
-                "IGA Golf Course";
+const courseName =
+    event.courses?.Course_name ||
+    "IGA Golf Course";
 
 
             // ------------------------------------------
