@@ -1996,20 +1996,6 @@ footer {
 
 
 /* ------------------------------------------
-   EVENT CARD
------------------------------------------- */
-
-.event-leaderboard {
-    background: #ffffff;
-    border: 1px solid #d9d9d9;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    overflow: hidden;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
-}
-
-
-/* ------------------------------------------
    EVENT HEADER
 ------------------------------------------ */
 
@@ -2017,9 +2003,10 @@ footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 24px 18px;
+    padding: 18px 20px;
     border-left: 6px solid transparent;
     transition: background 0.3s ease;
+    color: #ffffff;
 }
 
 
@@ -2037,16 +2024,16 @@ footer {
 
 .event-header h3 {
     margin: 0;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 700;
     letter-spacing: 0.3px;
 }
 
 
 .event-date {
-    margin: 5px 0 0;
-    color: #777;
-    font-size: 13px;
+    margin: 4px 0 0;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 12px;
 }
 
 
@@ -2056,90 +2043,77 @@ footer {
 
 .event-status {
     flex-shrink: 0;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 800;
     letter-spacing: 0.7px;
     text-align: right;
+    color: #ffffff;
 }
 
 
 /* ------------------------------------------
-   OPEN
+   OPEN — SOLID GREEN
 ------------------------------------------ */
 
 .event-status-open .event-header {
-    background: linear-gradient(
-        135deg,
-        #eef8ef,
-        #ffffff
-    );
-
-    border-left-color: #3c8f4a;
+    background: #287a3a;
+    border-left-color: #1d5c2a;
 }
 
 
 .event-status-open .event-status {
-    color: #2e7d32;
+    color: #ffffff;
 }
 
 
 /* ------------------------------------------
-   IN PROGRESS
+   IN PROGRESS — GREEN / GOLD
 ------------------------------------------ */
 
 .event-status-progress .event-header {
     background: linear-gradient(
-        135deg,
-        #f2f8ed,
-        #fff9e8
+        90deg,
+        #287a3a 0%,
+        #5f8132 45%,
+        #a88a24 100%
     );
 
-    border-left-color: #a5a23a;
+    border-left-color: #1d5c2a;
 }
 
 
 .event-status-progress .event-status {
-    color: #8a7415;
+    color: #ffffff;
 }
 
 
 /* ------------------------------------------
-   NEARLY COMPLETE
+   NEARLY COMPLETE — GOLD
 ------------------------------------------ */
 
 .event-status-nearly-complete .event-header {
-    background: linear-gradient(
-        135deg,
-        #fff8df,
-        #fff1bd
-    );
-
-    border-left-color: #c59a27;
+    background: #b99528;
+    border-left-color: #8c6d16;
 }
 
 
 .event-status-nearly-complete .event-status {
-    color: #9b7410;
+    color: #ffffff;
 }
 
 
 /* ------------------------------------------
-   COMPLETE
+   COMPLETE — STRONG CHAMPIONSHIP GOLD
 ------------------------------------------ */
 
 .event-status-complete .event-header {
-    background: linear-gradient(
-        135deg,
-        #f8edc7,
-        #d9b85b
-    );
-
-    border-left-color: #a77b16;
+    background: #a77b16;
+    border-left-color: #76550d;
 }
 
 
 .event-status-complete .event-status {
-    color: #6f4e0b;
+    color: #ffffff;
 }
 
 
@@ -2156,7 +2130,7 @@ footer {
 
 .event-progress-bar {
     height: 100%;
-    background: #3c8f4a;
+    background: #287a3a;
     transition:
         width 0.4s ease,
         background 0.4s ease;
@@ -2264,6 +2238,43 @@ footer {
 
     .event-leaderboard .leaderboard-row {
         min-height: 44px;
+    }
+
+}
+
+/* ==========================================
+   EVENT LEADERBOARD GRID
+========================================== */
+
+#eventLeaderboards {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    align-items: start;
+}
+
+#eventLeaderboards .event-leaderboard {
+    margin-bottom: 0;
+    height: 100%;
+}
+
+
+/* ==========================================
+   EVENT LEADERBOARD RESPONSIVE GRID
+========================================== */
+
+@media (max-width: 1100px) {
+
+    #eventLeaderboards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+@media (max-width: 700px) {
+
+    #eventLeaderboards {
+        grid-template-columns: 1fr;
     }
 
 }
