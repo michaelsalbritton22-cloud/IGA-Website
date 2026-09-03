@@ -695,7 +695,7 @@ footer {
 .event-header h3 {
     margin: 0;
 
-    color: #0B3D2E;
+    color: #ffffff;
 
     font-size: 17px;
     font-weight: 700;
@@ -704,7 +704,7 @@ footer {
 .event-header p {
     margin: 4px 0 0;
 
-    color: #707070;
+    color: rgba(255, 255, 255, 0.85);
 
     font-size: 12px;
 }
@@ -2046,7 +2046,7 @@ footer {
     flex-shrink: 0;
     font-size: 11px;
     font-weight: 800;
-    letter-spacing: 0.7px;
+    letter-spacing: 0.8px;
     text-align: right;
     color: #ffffff;
 }
@@ -2123,18 +2123,15 @@ footer {
 ------------------------------------------ */
 
 .event-progress {
-    height: 4px;
-    background: #eeeeee;
+    height: 5px;
+    background: #287a3a;
     width: 100%;
 }
 
-
 .event-progress-bar {
     height: 100%;
-    background: #287a3a;
-    transition:
-        width 0.4s ease,
-        background 0.4s ease;
+    background: #b99528;
+    transition: width .5s ease;
 }
 
 
