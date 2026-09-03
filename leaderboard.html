@@ -785,7 +785,6 @@ async function loadEventLeaderboards() {
             gross_score,
             net_score,
             approval_status,
-
             "Players" (
                 "Name"
             )
@@ -858,6 +857,53 @@ async function loadEventLeaderboards() {
 
 
     // ------------------------------------------
+    // PUT CURRENT EVENT FIRST
+    // ------------------------------------------
+
+    events.sort(
+        (a, b) => {
+
+            const aFinalized =
+                a.status === "Finalized";
+
+            const bFinalized =
+                b.status === "Finalized";
+
+
+            // Non-finalized events come first
+
+            if (
+                !aFinalized &&
+                bFinalized
+            ) {
+
+                return -1;
+
+            }
+
+
+            if (
+                aFinalized &&
+                !bFinalized
+            ) {
+
+                return 1;
+
+            }
+
+
+            // Otherwise sort chronologically
+
+            return (
+                new Date(a.event_date) -
+                new Date(b.event_date)
+            );
+
+        }
+    );
+
+
+    // ------------------------------------------
     // RENDER EVENTS
     // ------------------------------------------
 
@@ -908,21 +954,6 @@ async function loadEventLeaderboards() {
 
 
         // --------------------------------------
-        // COMPLETION PERCENTAGE
-        // --------------------------------------
-
-        const completionPercent =
-            totalPlayers > 0
-                ? Math.round(
-                    (
-                        submittedPlayers /
-                        totalPlayers
-                    ) * 100
-                )
-                : 0;
-
-
-        // --------------------------------------
         // DETERMINE EVENT STATUS
         // --------------------------------------
 
@@ -933,8 +964,6 @@ async function loadEventLeaderboards() {
         if (
             event.status ===
             "Finalized"
-            ||
-            completionPercent >= 100
         ) {
 
             statusClass =
@@ -946,23 +975,11 @@ async function loadEventLeaderboards() {
         }
 
         else if (
-            completionPercent >= 76
+            submittedPlayers > 0
         ) {
 
             statusClass =
-                "event-status-nearly-complete";
-
-            statusText =
-                `NEARLY COMPLETE · ${submittedPlayers} OF ${totalPlayers}`;
-
-        }
-
-        else if (
-            completionPercent > 0
-        ) {
-
-            statusClass =
-                "event-status-progress";
+                "event-status-open";
 
             statusText =
                 `IN PROGRESS · ${submittedPlayers} OF ${totalPlayers}`;
@@ -1008,21 +1025,9 @@ async function loadEventLeaderboards() {
 
         html += `
 
-            <div class="event-leaderboard ${statusClass}">
+            <div class="event-leaderboard">
 
-                <div
-    class="event-header"
-    style="
-        background:
-            linear-gradient(
-                to right,
-                #b99528 0%,
-                #b99528 ${completionPercent}%,
-                #287a3a ${completionPercent}%,
-                #287a3a 100%
-            );
-    "
->
+                <div class="event-header">
 
                     <div class="event-header-info">
 
@@ -1054,16 +1059,6 @@ async function loadEventLeaderboards() {
                         ${statusText}
 
                     </div>
-
-                </div>
-
-
-                <div class="event-progress">
-
-                    <div
-                        class="event-progress-bar"
-                        style="width: ${completionPercent}%"
-                    ></div>
 
                 </div>
 
@@ -1169,42 +1164,43 @@ async function loadEventLeaderboards() {
 
                 html += `
 
-                 <div class="leaderboard-row">
+                    <div class="leaderboard-row">
 
-    <div class="position">
+                        <div class="position">
 
-        ${position}
+                            ${position}
 
-    </div>
-
-
-    <div class="player-name">
-
-        ${playerName}
-
-    </div>
-
-    <div>
-
-        ${round.gross_score}
-
-    </div>
+                        </div>
 
 
-    <div>
+                        <div class="player-name">
 
-        ${round.net_score}
+                            ${playerName}
 
-    </div>
+                        </div>
 
 
-    <div class="points">
+                        <div>
 
-        ${eventPoints}
+                            ${round.gross_score}
 
-    </div>
+                        </div>
 
-</div>
+
+                        <div>
+
+                            ${round.net_score}
+
+                        </div>
+
+
+                        <div class="points">
+
+                            ${eventPoints}
+
+                        </div>
+
+                    </div>
 
                 `;
 

@@ -2119,42 +2119,6 @@ footer {
 
 
 /* ------------------------------------------
-   PROGRESS BAR
------------------------------------------- */
-
-.event-progress {
-    height: 5px;
-    background: #287a3a;
-    width: 100%;
-}
-
-.event-progress-bar {
-    height: 100%;
-    background: #b99528;
-    transition: width .5s ease;
-}
-
-
-/* ------------------------------------------
-   PROGRESS BAR COLORS
------------------------------------------- */
-
-.event-status-progress .event-progress-bar {
-    background: #a5a23a;
-}
-
-
-.event-status-nearly-complete .event-progress-bar {
-    background: #c59a27;
-}
-
-
-.event-status-complete .event-progress-bar {
-    background: #a77b16;
-}
-
-
-/* ------------------------------------------
    EVENT TABLE
 ------------------------------------------ */
 
