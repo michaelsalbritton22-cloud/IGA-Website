@@ -718,10 +718,9 @@ footer {
     grid-template-columns:
         45px
         minmax(120px, 1fr)
-        80px
-        55px
-        55px
-        55px;
+        65px
+        65px
+        65px;
 
     min-height: 55px;
     padding: 0 15px;
@@ -835,13 +834,15 @@ footer {
         font-size: 16px;
     }
 
-    .event-leaderboard .leaderboard-row {
+.event-leaderboard .leaderboard-row {
     grid-template-columns:
-        45px
-        minmax(150px, 1fr)
-        80px
-        80px
-        70px;
+        40px
+        minmax(120px, 1fr)
+        55px
+        55px
+        55px;
+
+    padding: 0 10px;
 }
 
 }
