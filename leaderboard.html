@@ -1169,43 +1169,85 @@ async function loadEventLeaderboards() {
 
                 html += `
 
-                    <div class="leaderboard-row">
+                 <div class="leaderboard-row">
 
-                        <div class="position">
+    <div class="position">
 
-                            ${position}
+        ${position}
 
-                        </div>
-
-
-                        <div class="player-name">
-
-                            ${playerName}
-
-                        </div>
+    </div>
 
 
-                        <div>
+    <div class="player-name">
 
-                            ${round.gross_score}
+        ${playerName}
 
-                        </div>
-
-
-                        <div class="points">
-
-                            ${round.net_score}
-
-                        </div>
+    </div>
 
 
-                        <div class="points">
+    <div class="school">
 
-                            ${eventPoints}
+        ${round.Players?.School || ""}
 
-                        </div>
+    </div>
 
-                    </div>
+
+    <div>
+
+        ${round.gross_score}
+
+    </div>
+
+
+    <div>
+
+        ${round.net_score}
+
+    </div>
+
+
+    <div class="points">
+
+        ${eventPoints}
+
+    </div>
+
+</div>
+
+                `;
+
+            }
+        );
+
+
+        // --------------------------------------
+        // CLOSE TABLE / CARD
+        // --------------------------------------
+
+        if (sorted.length) {
+
+            html += `
+
+                            </div>
+
+            `;
+
+        }
+
+
+        html += `
+
+            </div>
+
+        `;
+
+    }
+
+
+    container.innerHTML =
+        html;
+
+}
 
                 `;
 

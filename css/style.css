@@ -666,14 +666,12 @@ footer {
    ========================================== */
 
 .event-leaderboard {
-    margin: 0 0 25px;
-
+    margin: 0;
     border: 1px solid #deded9;
-    border-radius: 4px;
-
+    border-radius: 12px;
     overflow: hidden;
-
     background: #ffffff;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
 }
 
 .event-leaderboard:last-child {
@@ -718,13 +716,15 @@ footer {
 
 .event-leaderboard .leaderboard-row {
     grid-template-columns:
-    70px
-    minmax(300px, 1fr)
-    130px
-    100px
-    90px;
+        45px
+        minmax(120px, 1fr)
+        80px
+        55px
+        55px
+        55px;
 
     min-height: 55px;
+    padding: 0 15px;
 }
 
 .event-leaderboard .leaderboard-header {
@@ -2248,8 +2248,8 @@ footer {
 
 #eventLeaderboards {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 18px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
     align-items: start;
 }
 
