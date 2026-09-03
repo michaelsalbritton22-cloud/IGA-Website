@@ -1984,3 +1984,286 @@ footer {
     }
 
 }
+
+/* ==========================================
+   EVENT LEADERBOARD CARDS
+========================================== */
+
+.event-leaderboards-title {
+    margin-top: 32px;
+    margin-bottom: 18px;
+}
+
+
+/* ------------------------------------------
+   EVENT CARD
+------------------------------------------ */
+
+.event-leaderboard {
+    background: #ffffff;
+    border: 1px solid #d9d9d9;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+}
+
+
+/* ------------------------------------------
+   EVENT HEADER
+------------------------------------------ */
+
+.event-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px 18px;
+    border-left: 6px solid transparent;
+    transition: background 0.3s ease;
+}
+
+
+.event-header-info {
+    min-width: 0;
+}
+
+
+.event-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.event-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+
+.event-date {
+    margin: 5px 0 0;
+    color: #777;
+    font-size: 13px;
+}
+
+
+/* ------------------------------------------
+   STATUS TEXT
+------------------------------------------ */
+
+.event-status {
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+    text-align: right;
+}
+
+
+/* ------------------------------------------
+   OPEN
+------------------------------------------ */
+
+.event-status-open .event-header {
+    background: linear-gradient(
+        135deg,
+        #eef8ef,
+        #ffffff
+    );
+
+    border-left-color: #3c8f4a;
+}
+
+
+.event-status-open .event-status {
+    color: #2e7d32;
+}
+
+
+/* ------------------------------------------
+   IN PROGRESS
+------------------------------------------ */
+
+.event-status-progress .event-header {
+    background: linear-gradient(
+        135deg,
+        #f2f8ed,
+        #fff9e8
+    );
+
+    border-left-color: #a5a23a;
+}
+
+
+.event-status-progress .event-status {
+    color: #8a7415;
+}
+
+
+/* ------------------------------------------
+   NEARLY COMPLETE
+------------------------------------------ */
+
+.event-status-nearly-complete .event-header {
+    background: linear-gradient(
+        135deg,
+        #fff8df,
+        #fff1bd
+    );
+
+    border-left-color: #c59a27;
+}
+
+
+.event-status-nearly-complete .event-status {
+    color: #9b7410;
+}
+
+
+/* ------------------------------------------
+   COMPLETE
+------------------------------------------ */
+
+.event-status-complete .event-header {
+    background: linear-gradient(
+        135deg,
+        #f8edc7,
+        #d9b85b
+    );
+
+    border-left-color: #a77b16;
+}
+
+
+.event-status-complete .event-status {
+    color: #6f4e0b;
+}
+
+
+/* ------------------------------------------
+   PROGRESS BAR
+------------------------------------------ */
+
+.event-progress {
+    height: 4px;
+    background: #eeeeee;
+    width: 100%;
+}
+
+
+.event-progress-bar {
+    height: 100%;
+    background: #3c8f4a;
+    transition:
+        width 0.4s ease,
+        background 0.4s ease;
+}
+
+
+/* ------------------------------------------
+   PROGRESS BAR COLORS
+------------------------------------------ */
+
+.event-status-progress .event-progress-bar {
+    background: #a5a23a;
+}
+
+
+.event-status-nearly-complete .event-progress-bar {
+    background: #c59a27;
+}
+
+
+.event-status-complete .event-progress-bar {
+    background: #a77b16;
+}
+
+
+/* ------------------------------------------
+   EVENT TABLE
+------------------------------------------ */
+
+.event-leaderboard .leaderboard-table {
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+
+.event-leaderboard .leaderboard-header {
+    background: #f5f5f5;
+    color: #666;
+    font-size: 11px;
+    letter-spacing: 0.6px;
+}
+
+
+.event-leaderboard .leaderboard-row {
+    min-height: 48px;
+}
+
+
+.event-leaderboard .leaderboard-row:not(.leaderboard-header):hover {
+    background: #fafafa;
+}
+
+
+/* ------------------------------------------
+   POSITION
+------------------------------------------ */
+
+.event-leaderboard .position {
+    font-weight: 700;
+}
+
+
+/* ------------------------------------------
+   PLAYER NAME
+------------------------------------------ */
+
+.event-leaderboard .player-name {
+    font-weight: 600;
+}
+
+
+/* ------------------------------------------
+   EMPTY EVENT
+------------------------------------------ */
+
+.event-empty {
+    padding: 28px 24px;
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+}
+
+
+/* ------------------------------------------
+   MOBILE
+------------------------------------------ */
+
+@media (max-width: 700px) {
+
+    .event-header {
+        padding: 16px 18px;
+    }
+
+
+    .event-header h3 {
+        font-size: 17px;
+    }
+
+
+    .event-status {
+        font-size: 10px;
+    }
+
+
+    .event-leaderboard .leaderboard-row {
+        min-height: 44px;
+    }
+
+}

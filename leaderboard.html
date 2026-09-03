@@ -87,36 +87,36 @@
          EVENT LEADERBOARDS
     =========================================== -->
 
-    <div class="card leaderboard-card">
+<!-- ==========================================
+     EVENT LEADERBOARDS
+=========================================== -->
 
-        <div class="leaderboard-section-header">
+<div class="leaderboard-section-header event-leaderboards-title">
 
-            <div>
+    <div>
 
-                <h2>
-                    ⛳ Event Leaderboards
-                </h2>
+        <h2>
+            ⛳ Event Leaderboards
+        </h2>
 
-                <p>
-                    Live and finalized event results
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div id="eventLeaderboards">
-
-            <div class="loading">
-
-                Loading events...
-
-            </div>
-
-        </div>
+        <p>
+            Regular season event results
+        </p>
 
     </div>
+
+</div>
+
+
+<div id="eventLeaderboards">
+
+    <div class="loading">
+
+        Loading events...
+
+    </div>
+
+</div>
 
 
 </div>
@@ -678,6 +678,10 @@ async function loadEventLeaderboards() {
         );
 
 
+    // ------------------------------------------
+    // GET EVENTS
+    // ------------------------------------------
+
     const {
         data: events,
         error
@@ -714,13 +718,17 @@ async function loadEventLeaderboards() {
     }
 
 
-    if (!events.length) {
+    if (!events || !events.length) {
 
         container.innerHTML = `
 
-            <p>
-                No events available.
-            </p>
+            <div class="no-events">
+
+                <p>
+                    No events available.
+                </p>
+
+            </div>
 
         `;
 
@@ -730,7 +738,42 @@ async function loadEventLeaderboards() {
 
 
     // ------------------------------------------
-    // BATCH FETCH ALL ROUNDS FOR ALL EVENTS
+    // GET ACTIVE PLAYERS
+    // ------------------------------------------
+
+    const {
+        data: activePlayers,
+        error: playerError
+    } = await supabaseClient
+
+        .from("Players")
+
+        .select(`
+            player_id,
+            "Name"
+        `)
+
+        .eq(
+            "Active",
+            true
+        );
+
+
+    if (playerError) {
+
+        throw playerError;
+
+    }
+
+
+    const totalPlayers =
+        activePlayers
+            ? activePlayers.length
+            : 0;
+
+
+    // ------------------------------------------
+    // GET ALL ROUNDS
     // ------------------------------------------
 
     const eventIds =
@@ -774,10 +817,11 @@ async function loadEventLeaderboards() {
 
 
     // ------------------------------------------
-    // GROUP ROUNDS BY EVENT ID
+    // GROUP ROUNDS BY EVENT
     // ------------------------------------------
 
     const roundsByEvent = {};
+
 
     (allRounds || []).forEach(
         round => {
@@ -794,6 +838,7 @@ async function loadEventLeaderboards() {
 
             }
 
+
             roundsByEvent[
                 round.event_id
             ].push(
@@ -805,7 +850,27 @@ async function loadEventLeaderboards() {
 
 
     // ------------------------------------------
-    // RENDER EACH EVENT LEADERBOARD
+    // POINTS TABLE
+    // ------------------------------------------
+
+    const pointsTable = {
+
+        1: 100,
+        2: 85,
+        3: 75,
+        4: 65,
+        5: 55,
+        6: 45,
+        7: 35,
+        8: 25,
+        9: 20,
+        10: 15
+
+    };
+
+
+    // ------------------------------------------
+    // RENDER EVENTS
     // ------------------------------------------
 
     let html = "";
@@ -816,15 +881,123 @@ async function loadEventLeaderboards() {
         of events
     ) {
 
-
-        const rounds =
+        const eventRounds =
             roundsByEvent[
                 event.id
             ] || [];
 
 
+        // --------------------------------------
+        // ONLY COUNT UNIQUE PLAYERS
+        // --------------------------------------
+
+        const submittedPlayerIds =
+            new Set();
+
+
+        eventRounds.forEach(
+            round => {
+
+                if (
+                    round.player_id !== null &&
+                    round.player_id !== undefined
+                ) {
+
+                    submittedPlayerIds.add(
+                        Number(
+                            round.player_id
+                        )
+                    );
+
+                }
+
+            }
+        );
+
+
+        const submittedPlayers =
+            submittedPlayerIds.size;
+
+
+        // --------------------------------------
+        // COMPLETION PERCENTAGE
+        // --------------------------------------
+
+        const completionPercent =
+            totalPlayers > 0
+                ? Math.round(
+                    (
+                        submittedPlayers /
+                        totalPlayers
+                    ) * 100
+                )
+                : 0;
+
+
+        // --------------------------------------
+        // DETERMINE EVENT STATUS
+        // --------------------------------------
+
+        let statusClass;
+        let statusText;
+
+
+        if (
+            event.status ===
+            "Finalized"
+            ||
+            completionPercent >= 100
+        ) {
+
+            statusClass =
+                "event-status-complete";
+
+            statusText =
+                "COMPLETE";
+
+        }
+
+        else if (
+            completionPercent >= 76
+        ) {
+
+            statusClass =
+                "event-status-nearly-complete";
+
+            statusText =
+                `NEARLY COMPLETE · ${submittedPlayers} OF ${totalPlayers}`;
+
+        }
+
+        else if (
+            completionPercent > 0
+        ) {
+
+            statusClass =
+                "event-status-progress";
+
+            statusText =
+                `IN PROGRESS · ${submittedPlayers} OF ${totalPlayers}`;
+
+        }
+
+        else {
+
+            statusClass =
+                "event-status-open";
+
+            statusText =
+                "OPEN";
+
+        }
+
+
+        // --------------------------------------
+        // SORT SCORES
+        // --------------------------------------
+
         const sorted =
-            rounds
+            eventRounds
                 .slice()
                 .sort(
                     (
@@ -841,25 +1014,34 @@ async function loadEventLeaderboards() {
                 );
 
 
+        // --------------------------------------
+        // EVENT CARD
+        // --------------------------------------
+
         html += `
 
-            <div class="event-leaderboard">
+            <div class="event-leaderboard ${statusClass}">
 
                 <div class="event-header">
 
-                    <div>
+                    <div class="event-header-info">
 
-                        <h3>
+                        <div class="event-title-row">
 
-                            ${event.event_name}
+                            <h3>
+                                ${event.event_name}
+                            </h3>
 
-                        </h3>
+                        </div>
 
-                        <p>
+                        <p class="event-date">
 
                             ${
-                                event.event_date ||
-                                ""
+                                event.event_date
+                                    ? formatEventDate(
+                                        event.event_date
+                                    )
+                                    : ""
                             }
 
                         </p>
@@ -867,94 +1049,138 @@ async function loadEventLeaderboards() {
                     </div>
 
 
-                    <span class="${
-                        event.status ===
-                        "Finalized"
-                            ? "status-approved"
-                            : "status-pending"
-                    }">
+                    <div class="event-status">
 
-                        ${
-                            event.status ===
-                            "Finalized"
-                                ? "FINAL"
-                                : "LIVE"
-                        }
+                        ${statusText}
 
-                    </span>
+                    </div>
 
                 </div>
 
 
-                <div class="leaderboard-table">
+                <div class="event-progress">
 
-                    <div class="leaderboard-row leaderboard-header">
+                    <div
+                        class="event-progress-bar"
+                        style="width: ${completionPercent}%"
+                    ></div>
 
-                        <div>POS</div>
-                        <div>PLAYER</div>
-                        <div>GROSS</div>
-                        <div>NET</div>
-                        <div>POINTS</div>
+                </div>
 
-                    </div>
+
+                ${
+                    sorted.length
+                        ? `
+
+                            <div class="leaderboard-table">
+
+                                <div class="leaderboard-row leaderboard-header">
+
+                                    <div>
+                                        POS
+                                    </div>
+
+                                    <div>
+                                        PLAYER
+                                    </div>
+
+                                    <div>
+                                        GROSS
+                                    </div>
+
+                                    <div>
+                                        NET
+                                    </div>
+
+                                    <div>
+                                        POINTS
+                                    </div>
+
+                                </div>
+
+                          `
+                        : `
+
+                            <div class="event-empty">
+
+                                No scores submitted yet.
+
+                            </div>
+
+                          `
+                }
 
         `;
 
 
+        // --------------------------------------
+        // RENDER PLAYERS
+        // --------------------------------------
+
         sorted.forEach(
-    (
-        round,
-        index
-    ) => {
+            (
+                round,
+                index
+            ) => {
 
-        const currentNet =
-            Number(round.net_score);
+                const currentNet =
+                    Number(
+                        round.net_score
+                    );
 
-        const tiedPosition =
-            sorted.findIndex(
-                other =>
-                    Number(other.net_score) ===
-                    currentNet
-            ) + 1;
 
-        const position =
-            index === 0 ||
-            Number(round.net_score) !==
-            Number(sorted[index - 1].net_score)
-                ? tiedPosition
-                : "T" + tiedPosition;
+                const tiedPosition =
+                    sorted.findIndex(
+                        other =>
+                            Number(
+                                other.net_score
+                            ) ===
+                            currentNet
+                    ) + 1;
 
-        const pointsTable = {
-            1: 100,
-            2: 85,
-            3: 75,
-            4: 65,
-            5: 55,
-            6: 45,
-            7: 35,
-            8: 25,
-            9: 20,
-            10: 15
-        };
 
-        const eventPoints =
-            pointsTable[tiedPosition] || 0;
+                const position =
+                    index === 0 ||
+                    Number(
+                        round.net_score
+                    ) !==
+                    Number(
+                        sorted[
+                            index - 1
+                        ].net_score
+                    )
+                        ? tiedPosition
+                        : "T" +
+                          tiedPosition;
+
+
+                const eventPoints =
+                    pointsTable[
+                        tiedPosition
+                    ] || 0;
+
+
+                const playerName =
+                    round.Players &&
+                    round.Players.Name
+                        ? round.Players.Name
+                        : "Unknown Player";
 
 
                 html += `
 
                     <div class="leaderboard-row">
 
-                        <div>
+                        <div class="position">
 
                             ${position}
 
                         </div>
 
 
-                        <div>
+                        <div class="player-name">
 
-                            ${round.Players.Name}
+                            ${playerName}
 
                         </div>
 
@@ -972,11 +1198,13 @@ async function loadEventLeaderboards() {
 
                         </div>
 
+
                         <div class="points">
 
-                             ${eventPoints}
+                            ${eventPoints}
+
                         </div>
-                        
+
                     </div>
 
                 `;
@@ -985,9 +1213,22 @@ async function loadEventLeaderboards() {
         );
 
 
-        html += `
+        // --------------------------------------
+        // CLOSE TABLE / CARD
+        // --------------------------------------
 
-                </div>
+        if (sorted.length) {
+
+            html += `
+
+                            </div>
+
+            `;
+
+        }
+
+
+        html += `
 
             </div>
 
@@ -1001,6 +1242,43 @@ async function loadEventLeaderboards() {
 
 }
 
+
+// ==========================================
+// FORMAT EVENT DATE
+// ==========================================
+
+function formatEventDate(
+    dateString
+) {
+
+    const date =
+        new Date(
+            dateString +
+            "T00:00:00"
+        );
+
+
+    if (
+        isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return dateString;
+
+    }
+
+
+    return date.toLocaleDateString(
+        "en-US",
+        {
+            month: "short",
+            day: "numeric",
+            year: "numeric"
+        }
+    );
+
+}
 
 // ==========================================
 // START
