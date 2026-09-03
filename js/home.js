@@ -523,6 +523,10 @@ async function loadOpenRounds(
             eventIds
         );
 
+        console.log(
+    "OPEN ROUND DATA:",
+    rounds
+);
 
     if (roundError) {
 
