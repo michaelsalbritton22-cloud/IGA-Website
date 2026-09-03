@@ -170,7 +170,7 @@ async function loadHomePage() {
 
 
 // ==========================================
-// CURRENT LEADER
+// CURRENT IGA LEADER
 // ==========================================
 
 async function loadCurrentLeader(
@@ -190,148 +190,355 @@ async function loadCurrentLeader(
     }
 
 
-    // ------------------------------------------
-    // GET SEASON LEADER
-    // ------------------------------------------
+    try {
 
-    const {
-        data: leaders,
-        error
-    } = await supabaseClient
+        // ==========================================
+        // GET REGULAR SEASON EVENTS
+        // ==========================================
 
-        .from("season_points")
+        const {
+            data: events,
+            error: eventError
+        } = await supabaseClient
 
-        .select(`
-            Player_id,
-            total_points,
-            rounds_played,
-            wins,
-            top_3_finishes,
-            low_round,
+            .from("events_table")
 
-            "Players" (
-                player_id,
-                "Name",
-                "Handicap"
+            .select(`
+                id,
+                event_name,
+                status,
+                event_type,
+                season_id
+            `)
+
+            .eq(
+                "season_id",
+                seasonId
             )
-        `)
 
-        .eq(
-            "season_id",
-            seasonId
-        )
+            .eq(
+                "event_type",
+                "Regular Season"
+            )
 
-        .order(
-            "total_points",
-            {
-                ascending: false
-            }
-        )
-
-        .limit(1);
+            .order(
+                "id",
+                {
+                    ascending: true
+                }
+            );
 
 
-    if (error) {
+        if (eventError) {
+
+            throw eventError;
+
+        }
+
+
+        if (
+            !events ||
+            events.length === 0
+        ) {
+
+            container.innerHTML = `
+                <div class="home-empty">
+                    No regular season events available yet.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // CHECK IF REGULAR SEASON IS FINALIZED
+        // ==========================================
+
+        const regularSeasonFinalized =
+            events.every(
+                event =>
+                    event.status ===
+                    "Finalized"
+            );
+
+
+        // ==========================================
+        // BUILD LIVE SEASON STANDINGS
+        // ==========================================
+
+        const playerStandings = {};
+
+
+        for (
+            const event
+            of events
+        ) {
+
+            // ------------------------------------------
+            // GET CURRENT EVENT STANDINGS
+            // ------------------------------------------
+
+            const standings =
+                await getEventStandings(
+                    event.id
+                );
+
+
+            // ------------------------------------------
+            // ADD EVENT POINTS TO PLAYER TOTAL
+            // ------------------------------------------
+
+            standings.forEach(
+                round => {
+
+                    const playerId =
+                        round.player_id;
+
+
+                    if (
+                        !playerStandings[
+                            playerId
+                        ]
+                    ) {
+
+                        playerStandings[
+                            playerId
+                        ] = {
+
+                            player_id:
+                                playerId,
+
+                            name:
+                                round.Players?.Name ||
+                                "Unknown Player",
+
+                            points:
+                                0,
+
+                            rounds:
+                                0
+
+                        };
+
+                    }
+
+
+                    playerStandings[
+                        playerId
+                    ].points +=
+                        Number(
+                            round.provisional_points
+                        ) || 0;
+
+
+                    playerStandings[
+                        playerId
+                    ].rounds += 1;
+
+                }
+            );
+
+        }
+
+
+        // ==========================================
+        // CONVERT TO ARRAY AND SORT
+        // ==========================================
+
+        const standingsArray =
+            Object.values(
+                playerStandings
+            )
+            .sort(
+                (a, b) => {
+
+                    if (
+                        b.points !==
+                        a.points
+                    ) {
+
+                        return (
+                            b.points -
+                            a.points
+                        );
+
+                    }
+
+                    return (
+                        a.name.localeCompare(
+                            b.name
+                        )
+                    );
+
+                }
+            );
+
+
+        // ==========================================
+        // NO ROUNDS YET
+        // ==========================================
+
+        if (
+            standingsArray.length === 0
+        ) {
+
+            container.innerHTML = `
+                <div class="home-empty">
+                    No rounds have been submitted yet.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // TOP 3
+        // ==========================================
+
+        const topThree =
+            standingsArray.slice(
+                0,
+                3
+            );
+
+
+        // ==========================================
+        // TITLE
+        // ==========================================
+
+        const title =
+            regularSeasonFinalized
+                ? "FINAL IGA STANDINGS"
+                : "CURRENT IGA LEADER";
+
+
+        // ==========================================
+        // FINALIZED LABEL
+        // ==========================================
+
+        const finalizedLabel =
+            regularSeasonFinalized
+                ? `
+                    <div class="leader-finalized">
+                        REGULAR SEASON FINALIZED
+                    </div>
+                `
+                : "";
+
+
+        // ==========================================
+        // BUILD TOP 3
+        // ==========================================
+
+        container.innerHTML = `
+
+            <div class="leader-header">
+
+                <div class="leader-title">
+                    ${title}
+                </div>
+
+                ${finalizedLabel}
+
+            </div>
+
+
+            <div class="leader-list">
+
+                ${
+                    topThree.map(
+                        (
+                            player,
+                            index
+                        ) => {
+
+                            const rank =
+                                index + 1;
+
+
+                            const medal =
+                                rank === 1
+                                    ? "🥇"
+                                    : rank === 2
+                                        ? "🥈"
+                                        : "🥉";
+
+
+                            return `
+
+                                <div class="leader-list-row">
+
+                                    <div class="leader-list-rank">
+
+                                        ${medal}
+
+                                    </div>
+
+
+                                    <div class="leader-list-player">
+
+                                        <strong>
+                                            ${player.name}
+                                        </strong>
+
+                                        <span>
+                                            ${player.rounds}
+                                            round${player.rounds === 1 ? "" : "s"}
+                                        </span>
+
+                                    </div>
+
+
+                                    <div class="leader-list-points">
+
+                                        <strong>
+                                            ${player.points}
+                                        </strong>
+
+                                        <span>
+                                            POINTS
+                                        </span>
+
+                                    </div>
+
+                                </div>
+
+                            `;
+
+                        }
+                    ).join("")
+                }
+
+            </div>
+
+        `;
+
+
+        console.log(
+            "LIVE IGA STANDINGS:",
+            standingsArray
+        );
+
+
+    } catch (error) {
 
         console.error(
             "CURRENT LEADER ERROR:",
             error
         );
 
+
         container.innerHTML = `
             <div class="home-error">
-                Unable to load current leader.
+                Unable to load current IGA standings.
             </div>
         `;
 
-        return;
-
     }
-
-
-    if (
-        !leaders ||
-        leaders.length === 0
-    ) {
-
-        container.innerHTML = `
-            <div class="home-empty">
-                No season standings available yet.
-            </div>
-        `;
-
-        return;
-
-    }
-
-
-    const leader =
-        leaders[0];
-
-
-    const player =
-        leader.Players;
-
-
-    // ------------------------------------------
-    // DISPLAY LEADER
-    // ------------------------------------------
-
-    container.innerHTML = `
-
-        <div class="leader-rank">
-            #1
-        </div>
-
-        <div class="leader-name">
-            ${player?.Name || "Unknown Player"}
-        </div>
-
-        <div class="leader-points">
-            ${Number(
-                leader.total_points || 0
-            )}
-        </div>
-
-        <div class="leader-points-label">
-            POINTS
-        </div>
-
-        <div class="leader-stats">
-
-            <div>
-                <strong>
-                    ${player?.Handicap ?? "—"}
-                </strong>
-
-                <span>
-                    Handicap
-                </span>
-            </div>
-
-            <div>
-                <strong>
-                    ${leader.rounds_played || 0}
-                </strong>
-
-                <span>
-                    Rounds
-                </span>
-            </div>
-
-            <div>
-                <strong>
-                    ${leader.wins || 0}
-                </strong>
-
-                <span>
-                    Wins
-                </span>
-            </div>
-
-        </div>
-
-    `;
 
 }
 
