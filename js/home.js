@@ -459,53 +459,50 @@ async function loadCurrentLeader(
                             const rank =
                                 index + 1;
 
-
-                            const medal =
-                                rank === 1
-                                    ? "🥇"
-                                    : rank === 2
-                                        ? "🥈"
-                                        : "🥉";
-
-
                             return `
 
-                                <div class="leader-list-row">
+                               <div class="leader-list-row ${rank === 1 ? "leader-first" : ""}">
 
-                                    <div class="leader-list-rank">
-
-                                        ${medal}
-
-                                    </div>
+    <div class="leader-list-rank">
+        ${rank}.
+    </div>
 
 
-                                    <div class="leader-list-player">
+    <div class="leader-list-player">
 
-                                        <strong>
-                                            ${player.name}
-                                        </strong>
+        <strong>
+            ${player.name}
+        </strong>
 
-                                        <span>
-                                            ${player.rounds}
-                                            round${player.rounds === 1 ? "" : "s"}
-                                        </span>
-
-                                    </div>
+    </div>
 
 
-                                    <div class="leader-list-points">
+    <div class="leader-list-rounds">
 
-                                        <strong>
-                                            ${player.points}
-                                        </strong>
+        <strong>
+            ${player.rounds}
+        </strong>
 
-                                        <span>
-                                            POINTS
-                                        </span>
+        <span>
+            ROUNDS
+        </span>
 
-                                    </div>
+    </div>
 
-                                </div>
+
+    <div class="leader-list-points">
+
+        <strong>
+            ${player.points}
+        </strong>
+
+        <span>
+            POINTS
+        </span>
+
+    </div>
+
+</div>
 
                             `;
 

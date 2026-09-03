@@ -1091,7 +1091,211 @@ footer {
 
 }
 
+/* ==========================================
+   CURRENT IGA LEADER LIST
+========================================== */
 
+.leader-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 15px;
+
+}
+
+
+.leader-title {
+
+    font-size: 12px;
+
+    font-weight: bold;
+
+    letter-spacing: 2px;
+
+    color: #777;
+
+}
+
+
+.leader-finalized {
+
+    font-size: 10px;
+
+    font-weight: bold;
+
+    letter-spacing: 1px;
+
+    color: #C9A227;
+
+}
+
+
+/* Leaderboard rows */
+
+.leader-list {
+
+    width: 100%;
+
+}
+
+
+.leader-list-row {
+
+    display: grid;
+
+    grid-template-columns:
+        42px
+        minmax(0, 1fr)
+        85px
+        85px;
+
+    align-items: center;
+
+    min-height: 55px;
+
+    padding: 0;
+
+    border-bottom: 1px solid #e2e2df;
+
+}
+
+
+.leader-list-row:last-child {
+
+    border-bottom: none;
+
+}
+
+
+/* Position */
+
+.leader-list-rank {
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    color: #777;
+
+}
+
+
+/* Player */
+
+.leader-list-player {
+
+    min-width: 0;
+
+}
+
+
+.leader-list-player strong {
+
+    display: block;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    color: #222;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+}
+
+
+/* Rounds + Points */
+
+.leader-list-rounds,
+.leader-list-points {
+
+    text-align: right;
+
+}
+
+
+.leader-list-rounds strong,
+.leader-list-points strong {
+
+    display: block;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    color: #222;
+
+}
+
+
+.leader-list-rounds span,
+.leader-list-points span {
+
+    display: block;
+
+    margin-top: 2px;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: 1px;
+
+    color: #888;
+
+}
+
+
+/* ==========================================
+   1ST PLACE EMPHASIS
+========================================== */
+
+.leader-list-row.leader-first {
+
+    min-height: 65px;
+
+}
+
+
+.leader-first .leader-list-rank {
+
+    font-size: 16px;
+
+    font-weight: 800;
+
+    color: #0B3D2E;
+
+}
+
+
+.leader-first .leader-list-player strong {
+
+    font-size: 17px;
+
+}
+
+
+.leader-first .leader-list-rounds strong,
+.leader-first .leader-list-points strong {
+
+    font-size: 17px;
+
+}
+
+
+.leader-first .leader-list-points strong {
+
+    color: #0B3D2E;
+
+}
 
 /* ==========================================
    OPEN ROUNDS
@@ -1750,6 +1954,32 @@ footer {
         grid-column: 1 / -1;
 
         text-align: left;
+
+    }
+
+        .leader-list-row {
+
+        grid-template-columns:
+            32px
+            minmax(0, 1fr)
+            65px
+            65px;
+
+        min-height: 52px;
+
+    }
+
+
+    .leader-list-player strong {
+
+        font-size: 14px;
+
+    }
+
+
+    .leader-first .leader-list-player strong {
+
+        font-size: 15px;
 
     }
 
