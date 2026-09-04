@@ -2055,12 +2055,20 @@ footer {
 ------------------------------------------ */
 
 .event-status-open .event-header {
+    background: #6fae78;
+    border-left-color: #4f8f5a;
+}
+
+.event-status-progress .event-header {
     background: #287a3a;
     border-left-color: #1d5c2a;
 }
 
-
 .event-status-open .event-status {
+    color: #ffffff;
+}
+
+.event-status-progress .event-status {
     color: #ffffff;
 }
 

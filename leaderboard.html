@@ -1028,40 +1028,16 @@ events.sort(
         let statusText;
 
 
-        if (
-            event.status ===
-            "Finalized"
-        ) {
-
-            statusClass =
-                "event-status-complete";
-
-            statusText =
-                "COMPLETE";
-
-        }
-
-        else if (
-            submittedPlayers > 0
-        ) {
-
-            statusClass =
-                "event-status-open";
-
-            statusText =
-                `IN PROGRESS · ${submittedPlayers} OF ${totalPlayers}`;
-
-        }
-
-        else {
-
-            statusClass =
-                "event-status-open";
-
-            statusText =
-                "OPEN";
-
-        }
+       if (event.status === "Finalized") {
+    statusClass = "event-status-complete";
+    statusText = "COMPLETE";
+} else if (submittedPlayers > 0) {
+    statusClass = "event-status-progress";
+    statusText = `IN PROGRESS · ${submittedPlayers} OF ${totalPlayers}`;
+} else {
+    statusClass = "event-status-open";
+    statusText = "OPEN";
+}
 
 
         // --------------------------------------
