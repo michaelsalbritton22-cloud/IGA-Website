@@ -2006,7 +2006,6 @@ footer {
     align-items: center;
     padding: 18px 20px;
     border-left: 6px solid transparent;
-    transition: background 0.3s ease;
     color: #ffffff;
 }
 
@@ -2025,6 +2024,7 @@ footer {
 
 .event-header h3 {
     margin: 0;
+    color: #ffffff;
     font-size: 18px;
     font-weight: 700;
     letter-spacing: 0.3px;
@@ -2053,7 +2053,7 @@ footer {
 
 
 /* ------------------------------------------
-   OPEN — SOLID GREEN
+   OPEN / IN PROGRESS — SOLID GREEN
 ------------------------------------------ */
 
 .event-status-open .event-header {
@@ -2068,48 +2068,12 @@ footer {
 
 
 /* ------------------------------------------
-   IN PROGRESS — GREEN / GOLD
------------------------------------------- */
-
-.event-status-progress .event-header {
-    background: linear-gradient(
-        90deg,
-        #287a3a 0%,
-        #5f8132 45%,
-        #a88a24 100%
-    );
-
-    border-left-color: #1d5c2a;
-}
-
-
-.event-status-progress .event-status {
-    color: #ffffff;
-}
-
-
-/* ------------------------------------------
-   NEARLY COMPLETE — GOLD
------------------------------------------- */
-
-.event-status-nearly-complete .event-header {
-    background: #b99528;
-    border-left-color: #8c6d16;
-}
-
-
-.event-status-nearly-complete .event-status {
-    color: #ffffff;
-}
-
-
-/* ------------------------------------------
-   COMPLETE — STRONG CHAMPIONSHIP GOLD
+   COMPLETE — GOLD
 ------------------------------------------ */
 
 .event-status-complete .event-header {
-    background: #a77b16;
-    border-left-color: #76550d;
+    background: #b99528;
+    border-left-color: #8c6d16;
 }
 
 

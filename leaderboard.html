@@ -856,51 +856,118 @@ async function loadEventLeaderboards() {
     };
 
 
-    // ------------------------------------------
-    // PUT CURRENT EVENT FIRST
-    // ------------------------------------------
+// ------------------------------------------
+// PUT CURRENT EVENT FIRST
+// ------------------------------------------
 
-    events.sort(
-        (a, b) => {
+events.sort(
+    (a, b) => {
 
-            const aFinalized =
-                a.status === "Finalized";
+        const aRounds =
+            roundsByEvent[a.id] || [];
 
-            const bFinalized =
-                b.status === "Finalized";
-
-
-            // Non-finalized events come first
-
-            if (
-                !aFinalized &&
-                bFinalized
-            ) {
-
-                return -1;
-
-            }
+        const bRounds =
+            roundsByEvent[b.id] || [];
 
 
-            if (
-                aFinalized &&
+        const aSubmitted =
+            new Set(
+                aRounds
+                    .filter(
+                        round =>
+                            round.player_id !== null &&
+                            round.player_id !== undefined
+                    )
+                    .map(
+                        round =>
+                            Number(round.player_id)
+                    )
+            ).size;
+
+
+        const bSubmitted =
+            new Set(
+                bRounds
+                    .filter(
+                        round =>
+                            round.player_id !== null &&
+                            round.player_id !== undefined
+                    )
+                    .map(
+                        round =>
+                            Number(round.player_id)
+                    )
+            ).size;
+
+
+        const aFinalized =
+            a.status === "Finalized";
+
+        const bFinalized =
+            b.status === "Finalized";
+
+
+        // Current event with submissions first
+
+        if (
+            aSubmitted > 0 &&
+            !aFinalized &&
+            !(
+                bSubmitted > 0 &&
                 !bFinalized
-            ) {
+            )
+        ) {
 
-                return 1;
-
-            }
-
-
-            // Otherwise sort chronologically
-
-            return (
-                new Date(a.event_date) -
-                new Date(b.event_date)
-            );
+            return -1;
 
         }
-    );
+
+
+        if (
+            bSubmitted > 0 &&
+            !bFinalized &&
+            !(
+                aSubmitted > 0 &&
+                !aFinalized
+            )
+        ) {
+
+            return 1;
+
+        }
+
+
+        // Other open events come before finalized events
+
+        if (
+            !aFinalized &&
+            bFinalized
+        ) {
+
+            return -1;
+
+        }
+
+
+        if (
+            aFinalized &&
+            !bFinalized
+        ) {
+
+            return 1;
+
+        }
+
+
+        // Same status = chronological order
+
+        return (
+            new Date(a.event_date) -
+            new Date(b.event_date)
+        );
+
+    }
+);
 
 
     // ------------------------------------------
