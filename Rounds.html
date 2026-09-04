@@ -769,7 +769,6 @@ async function loadRecentResults() {
             "recentResultsBody"
         );
 
-
     try {
 
         console.log(
@@ -796,11 +795,11 @@ async function loadRecentResults() {
                 net_score,
                 points_earned,
                 approval_status,
-                created_at
+                round_date
             `)
 
             .order(
-                "created_at",
+                "round_date",
                 {
                     ascending: false
                 }
@@ -848,8 +847,14 @@ async function loadRecentResults() {
         const playerIds = [
             ...new Set(
                 rounds
-                    .map(round => round.player_id)
-                    .filter(id => id !== null)
+                    .map(
+                        round =>
+                            round.player_id
+                    )
+                    .filter(
+                        id =>
+                            id !== null
+                    )
             )
         ];
 
@@ -861,8 +866,14 @@ async function loadRecentResults() {
         const eventIds = [
             ...new Set(
                 rounds
-                    .map(round => round.event_id)
-                    .filter(id => id !== null)
+                    .map(
+                        round =>
+                            round.event_id
+                    )
+                    .filter(
+                        id =>
+                            id !== null
+                    )
             )
         ];
 
@@ -874,7 +885,9 @@ async function loadRecentResults() {
         let players = [];
 
 
-        if (playerIds.length > 0) {
+        if (
+            playerIds.length > 0
+        ) {
 
             const {
                 data,
@@ -901,7 +914,8 @@ async function loadRecentResults() {
             }
 
 
-            players = data || [];
+            players =
+                data || [];
 
         }
 
@@ -913,7 +927,9 @@ async function loadRecentResults() {
         let events = [];
 
 
-        if (eventIds.length > 0) {
+        if (
+            eventIds.length > 0
+        ) {
 
             const {
                 data,
@@ -942,7 +958,8 @@ async function loadRecentResults() {
             }
 
 
-            events = data || [];
+            events =
+                data || [];
 
         }
 
@@ -954,8 +971,14 @@ async function loadRecentResults() {
         const courseIds = [
             ...new Set(
                 events
-                    .map(event => event.course_id)
-                    .filter(id => id !== null)
+                    .map(
+                        event =>
+                            event.course_id
+                    )
+                    .filter(
+                        id =>
+                            id !== null
+                    )
             )
         ];
 
@@ -963,7 +986,9 @@ async function loadRecentResults() {
         let courses = [];
 
 
-        if (courseIds.length > 0) {
+        if (
+            courseIds.length > 0
+        ) {
 
             const {
                 data,
@@ -990,16 +1015,18 @@ async function loadRecentResults() {
             }
 
 
-            courses = data || [];
+            courses =
+                data || [];
 
         }
 
 
         // ==========================================
-        // CREATE LOOKUP MAPS
+        // CREATE PLAYER MAP
         // ==========================================
 
         const playerMap = {};
+
 
         players.forEach(
             player => {
@@ -1012,7 +1039,12 @@ async function loadRecentResults() {
         );
 
 
+        // ==========================================
+        // CREATE EVENT MAP
+        // ==========================================
+
         const eventMap = {};
+
 
         events.forEach(
             event => {
@@ -1025,7 +1057,12 @@ async function loadRecentResults() {
         );
 
 
+        // ==========================================
+        // CREATE COURSE MAP
+        // ==========================================
+
         const courseMap = {};
+
 
         courses.forEach(
             course => {
@@ -1076,28 +1113,49 @@ async function loadRecentResults() {
 
                     <td>
                         ${formatRoundDate(
+                            round.round_date ||
                             event.event_date
                         )}
                     </td>
 
+
                     <td class="round-player-name">
-                        ${player.Name || "Unknown Player"}
+                        ${
+                            player.Name ||
+                            "Unknown Player"
+                        }
                     </td>
 
-                    <td>
-                        ${course.Course_name || "Unknown"}
-                    </td>
 
                     <td>
-                        ${round.gross_score ?? "—"}
+                        ${
+                            course.Course_name ||
+                            "Unknown"
+                        }
                     </td>
 
+
                     <td>
-                        ${round.net_score ?? "—"}
+                        ${
+                            round.gross_score ??
+                            "—"
+                        }
                     </td>
+
+
+                    <td>
+                        ${
+                            round.net_score ??
+                            "—"
+                        }
+                    </td>
+
 
                     <td class="round-points">
-                        ${round.points_earned ?? "—"}
+                        ${
+                            round.points_earned ??
+                            "—"
+                        }
                     </td>
 
                 `;
@@ -1451,22 +1509,28 @@ async function loadCourseCompletion() {
         );
 
 
-        // ==========================================
-        // SORT COURSES
-        // ==========================================
+   // ==========================================
+// SORT COURSES
+// ==========================================
+// Keep the display order consistent with the table:
+// FIRELAKE → SEMINOLE → WESTWOOD
 
-        const orderedCourses =
-            requirements
-                .map(
-                    requirement =>
-                        courseMap[
-                            requirement.course_id
-                        ]
-                )
-                .filter(
-                    course =>
-                        course
-                );
+const courseDisplayOrder = [
+    2, // Firelake
+    3, // Seminole
+    1  // Westwood
+];
+
+const orderedCourses =
+    courseDisplayOrder
+        .map(
+            courseId =>
+                courseMap[courseId]
+        )
+        .filter(
+            course =>
+                course
+        );
 
 
         // ==========================================
