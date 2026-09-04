@@ -335,7 +335,69 @@
 
         </section>
 
+<section class="round-section">
+    <div class="section-heading">
+        <div>
+            <div class="section-eyebrow">TOURNAMENT NUMBERS</div>
+            <h2>Round Stats</h2>
+        </div>
+        <p class="section-description">A look at how the field played the round.</p>
+    </div>
 
+    <div class="round-stats-grid">
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">AVERAGE GROSS</span>
+            <strong id="statAverageGross">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">AVERAGE NET</span>
+            <strong id="statAverageNet">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">BEST GROSS</span>
+            <strong id="statBestGross">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">BEST NET</span>
+            <strong id="statBestNet">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">BIRDIES</span>
+            <strong id="statBirdies">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">EAGLES</span>
+            <strong id="statEagles">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">PARS</span>
+            <strong id="statPars">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">BOGEYS</span>
+            <strong id="statBogeys">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">DOUBLE BOGEYS</span>
+            <strong id="statDoubleBogeys">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">AVERAGE PUTTS</span>
+            <strong id="statAveragePutts">—</strong>
+        </div>
+
+    </div>
+</section>
 
         <!-- ==========================================
              ROUND INFORMATION
@@ -649,7 +711,15 @@ async function loadRoundPage() {
                 approved_date,
                 counts_for_qualification,
                 qualification_counted,
-                finish_position
+                finish_position,
+                birdies,
+                eagles,
+                pars,
+                bogeys,
+                double_bogeys,
+                fairways_hit,
+                greens_hit,
+                putts
             `)
 
             .eq(
@@ -992,7 +1062,95 @@ async function loadRoundPage() {
 
 }
 
+function loadRoundStats(rounds) {
 
+    const officialRounds = (rounds || []).filter(
+        round => round.approval_status === "Approved"
+    );
+
+    if (!officialRounds.length) {
+        return;
+    }
+
+    const grossScores = officialRounds
+        .map(round => Number(round.gross_score))
+        .filter(Number.isFinite);
+
+    const netScores = officialRounds
+        .map(round => Number(round.net_score))
+        .filter(Number.isFinite);
+
+    const birdies = officialRounds
+        .map(round => Number(round.birdies))
+        .filter(Number.isFinite);
+
+    const eagles = officialRounds
+        .map(round => Number(round.eagles))
+        .filter(Number.isFinite);
+
+    const pars = officialRounds
+        .map(round => Number(round.pars))
+        .filter(Number.isFinite);
+
+    const bogeys = officialRounds
+        .map(round => Number(round.bogeys))
+        .filter(Number.isFinite);
+
+    const doubleBogeys = officialRounds
+        .map(round => Number(round.double_bogeys))
+        .filter(Number.isFinite);
+
+    const putts = officialRounds
+        .map(round => Number(round.putts))
+        .filter(Number.isFinite);
+
+
+    function average(values) {
+        if (!values.length) return "—";
+
+        const total = values.reduce((sum, value) => sum + value, 0);
+
+        return (total / values.length).toFixed(1);
+    }
+
+
+    function total(values) {
+        if (!values.length) return "—";
+
+        return values.reduce((sum, value) => sum + value, 0);
+    }
+
+
+    document.getElementById("statAverageGross").textContent =
+        average(grossScores);
+
+    document.getElementById("statAverageNet").textContent =
+        average(netScores);
+
+    document.getElementById("statBestGross").textContent =
+        grossScores.length ? Math.min(...grossScores) : "—";
+
+    document.getElementById("statBestNet").textContent =
+        netScores.length ? Math.min(...netScores) : "—";
+
+    document.getElementById("statBirdies").textContent =
+        total(birdies);
+
+    document.getElementById("statEagles").textContent =
+        total(eagles);
+
+    document.getElementById("statPars").textContent =
+        total(pars);
+
+    document.getElementById("statBogeys").textContent =
+        total(bogeys);
+
+    document.getElementById("statDoubleBogeys").textContent =
+        total(doubleBogeys);
+
+    document.getElementById("statAveragePutts").textContent =
+        average(putts);
+}
 
 // ==========================================
 // BUILD RESULTS TABLE
