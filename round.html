@@ -172,96 +172,273 @@
              OFFICIAL RESULTS
         =========================================== -->
 
-        <section class="round-section">
+<section class="round-section">
+
+    <div class="section-heading">
+        <div>
+            <div class="section-eyebrow">TOURNAMENT NUMBERS</div>
+            <h2>Round Stats</h2>
+        </div>
+
+        <p class="section-description">
+            A look at how the field played the round.
+        </p>
+    </div>
 
 
-            <div class="section-heading">
+    <div class="round-stats-grid">
 
-                <div>
+        <div class="round-stat-card">
+            <span class="round-stat-label">AVERAGE GROSS</span>
+            <strong id="statAverageGross">—</strong>
+        </div>
 
-                    <div class="section-eyebrow">
-                        OFFICIAL RESULTS
-                    </div>
+        <div class="round-stat-card">
+            <span class="round-stat-label">AVERAGE NET</span>
+            <strong id="statAverageNet">—</strong>
+        </div>
 
-                    <h2>
-                        Results
-                    </h2>
+        <div class="round-stat-card">
+            <span class="round-stat-label">BEST GROSS</span>
+            <strong id="statBestGross">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">BEST NET</span>
+            <strong id="statBestNet">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">BIRDIES</span>
+            <strong id="statBirdies">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">EAGLES</span>
+            <strong id="statEagles">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">PARS</span>
+            <strong id="statPars">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">BOGEYS</span>
+            <strong id="statBogeys">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">DOUBLE BOGEYS</span>
+            <strong id="statDoubleBogeys">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">TRIPLE BOGEYS</span>
+            <strong id="statTripleBogeys">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">AVERAGE PUTTS</span>
+            <strong id="statAveragePutts">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">FAIRWAYS HIT</span>
+            <strong id="statFairways">—</strong>
+        </div>
+
+        <div class="round-stat-card">
+            <span class="round-stat-label">GREENS IN REGULATION</span>
+            <strong id="statGreens">—</strong>
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="round-section">
+
+    <div class="section-heading">
+
+        <div>
+            <div class="section-eyebrow">FIELD PERFORMANCE</div>
+            <h2>Scoring Breakdown</h2>
+        </div>
+
+        <p class="section-description">
+            Total scoring results across all official rounds.
+        </p>
+
+    </div>
+
+
+    <div class="scoring-breakdown-card">
+
+        <div class="scoring-breakdown-total">
+
+            <span>TOTAL HOLES RECORDED</span>
+
+            <strong id="scoringTotalHoles">
+                —
+            </strong>
+
+        </div>
+
+
+        <div class="scoring-breakdown-bars">
+
+
+            <div class="scoring-row">
+
+                <div class="scoring-label">
+
+                    <span>Eagles</span>
+
+                    <strong id="breakdownEagles">
+                        0
+                    </strong>
 
                 </div>
 
+                <div class="scoring-track">
 
-                <p
-                    class="section-description"
-                    id="roundResultsDescription"
-                >
-                    Official tournament results.
-                </p>
+                    <div
+                        class="scoring-fill scoring-eagle"
+                        id="barEagles"
+                    ></div>
+
+                </div>
 
             </div>
 
 
-            <div class="round-results-card">
+            <div class="scoring-row">
 
+                <div class="scoring-label">
 
-                <div class="round-results-wrapper">
+                    <span>Birdies</span>
 
+                    <strong id="breakdownBirdies">
+                        0
+                    </strong>
 
-                    <table class="round-results-table">
+                </div>
 
+                <div class="scoring-track">
 
-                        <thead>
-
-                            <tr>
-
-                                <th>
-                                    FINISH
-                                </th>
-
-                                <th>
-                                    PLAYER
-                                </th>
-
-                                <th>
-                                    GROSS
-                                </th>
-
-                                <th>
-                                    NET
-                                </th>
-
-                                <th>
-                                    POINTS
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody id="roundResultsBody">
-
-                            <tr>
-
-                                <td
-                                    colspan="5"
-                                    class="table-loading"
-                                >
-                                    Loading results...
-                                </td>
-
-                            </tr>
-
-                        </tbody>
-
-
-                    </table>
-
+                    <div
+                        class="scoring-fill scoring-birdie"
+                        id="barBirdies"
+                    ></div>
 
                 </div>
 
             </div>
 
-        </section>
+
+            <div class="scoring-row">
+
+                <div class="scoring-label">
+
+                    <span>Pars</span>
+
+                    <strong id="breakdownPars">
+                        0
+                    </strong>
+
+                </div>
+
+                <div class="scoring-track">
+
+                    <div
+                        class="scoring-fill"
+                        id="barPars"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            <div class="scoring-row">
+
+                <div class="scoring-label">
+
+                    <span>Bogeys</span>
+
+                    <strong id="breakdownBogeys">
+                        0
+                    </strong>
+
+                </div>
+
+                <div class="scoring-track">
+
+                    <div
+                        class="scoring-fill"
+                        id="barBogeys"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            <div class="scoring-row">
+
+                <div class="scoring-label">
+
+                    <span>Double Bogeys</span>
+
+                    <strong id="breakdownDoubles">
+                        0
+                    </strong>
+
+                </div>
+
+                <div class="scoring-track">
+
+                    <div
+                        class="scoring-fill"
+                        id="barDoubles"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+            <div class="scoring-row">
+
+                <div class="scoring-label">
+
+                    <span>Triple Bogeys</span>
+
+                    <strong id="breakdownTriples">
+                        0
+                    </strong>
+
+                </div>
+
+                <div class="scoring-track">
+
+                    <div
+                        class="scoring-fill"
+                        id="barTriples"
+                    ></div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
 
 
 
@@ -488,7 +665,7 @@
 
         </section>
 
-
+        
 
         <!-- ==========================================
              BACK BUTTON
@@ -1022,6 +1199,7 @@ async function loadRoundPage() {
             event.status
         );
 
+        loadRoundStats(rounds || []);
 
 
         // ==========================================
@@ -1074,9 +1252,19 @@ function loadRoundStats(rounds) {
         round => round.approval_status === "Approved"
     );
 
+
+    // ==========================================
+    // NO OFFICIAL ROUNDS
+    // ==========================================
+
     if (!officialRounds.length) {
         return;
     }
+
+
+    // ==========================================
+    // COLLECT STAT VALUES
+    // ==========================================
 
     const grossScores = officialRounds
         .map(round => Number(round.gross_score))
@@ -1114,55 +1302,289 @@ function loadRoundStats(rounds) {
         .map(round => Number(round.putts))
         .filter(Number.isFinite);
 
+    const fairways = officialRounds
+        .map(round => Number(round.fairways_hit))
+        .filter(Number.isFinite);
+
+    const greens = officialRounds
+        .map(round => Number(round.greens_hit))
+        .filter(Number.isFinite);
+
+
+    // ==========================================
+    // HELPER FUNCTIONS
+    // ==========================================
 
     function average(values) {
-        if (!values.length) return "—";
 
-        const total = values.reduce((sum, value) => sum + value, 0);
+        if (!values.length) {
+            return "—";
+        }
 
-        return (total / values.length).toFixed(1);
+        const total =
+            values.reduce(
+                (sum, value) =>
+                    sum + value,
+                0
+            );
+
+        return (
+            total / values.length
+        ).toFixed(1);
+
     }
 
 
     function total(values) {
-        if (!values.length) return "—";
 
-        return values.reduce((sum, value) => sum + value, 0);
+        if (!values.length) {
+            return 0;
+        }
+
+        return values.reduce(
+            (sum, value) =>
+                sum + value,
+            0
+        );
+
     }
 
 
-    document.getElementById("statAverageGross").textContent =
-        average(grossScores);
+    // ==========================================
+    // ROUND STAT TOTALS
+    // ==========================================
 
-    document.getElementById("statAverageNet").textContent =
-        average(netScores);
-
-    document.getElementById("statBestGross").textContent =
-        grossScores.length ? Math.min(...grossScores) : "—";
-
-    document.getElementById("statBestNet").textContent =
-        netScores.length ? Math.min(...netScores) : "—";
-
-    document.getElementById("statBirdies").textContent =
-        total(birdies);
-
-    document.getElementById("statEagles").textContent =
+    const eagleTotal =
         total(eagles);
 
-    document.getElementById("statPars").textContent =
+    const birdieTotal =
+        total(birdies);
+
+    const parTotal =
         total(pars);
 
-    document.getElementById("statBogeys").textContent =
+    const bogeyTotal =
         total(bogeys);
 
-    document.getElementById("statDoubleBogeys").textContent =
+    const doubleTotal =
         total(doubleBogeys);
 
-    document.getElementById("statTripleBogeys").textContent =
+    const tripleTotal =
         total(tripleBogeys);
 
-    document.getElementById("statAveragePutts").textContent =
+
+    const scoringTotal =
+        eagleTotal +
+        birdieTotal +
+        parTotal +
+        bogeyTotal +
+        doubleTotal +
+        tripleTotal;
+
+
+    // ==========================================
+    // STANDARD ROUND STATS
+    // ==========================================
+
+    document.getElementById(
+        "statAverageGross"
+    ).textContent =
+        average(grossScores);
+
+
+    document.getElementById(
+        "statAverageNet"
+    ).textContent =
+        average(netScores);
+
+
+    document.getElementById(
+        "statBestGross"
+    ).textContent =
+        grossScores.length
+            ? Math.min(...grossScores)
+            : "—";
+
+
+    document.getElementById(
+        "statBestNet"
+    ).textContent =
+        netScores.length
+            ? Math.min(...netScores)
+            : "—";
+
+
+    document.getElementById(
+        "statBirdies"
+    ).textContent =
+        birdieTotal;
+
+
+    document.getElementById(
+        "statEagles"
+    ).textContent =
+        eagleTotal;
+
+
+    document.getElementById(
+        "statPars"
+    ).textContent =
+        parTotal;
+
+
+    document.getElementById(
+        "statBogeys"
+    ).textContent =
+        bogeyTotal;
+
+
+    document.getElementById(
+        "statDoubleBogeys"
+    ).textContent =
+        doubleTotal;
+
+
+    document.getElementById(
+        "statTripleBogeys"
+    ).textContent =
+        tripleTotal;
+
+
+    document.getElementById(
+        "statAveragePutts"
+    ).textContent =
         average(putts);
+
+
+    document.getElementById(
+        "statFairways"
+    ).textContent =
+        average(fairways);
+
+
+    document.getElementById(
+        "statGreens"
+    ).textContent =
+        average(greens);
+
+
+    // ==========================================
+    // SCORING BREAKDOWN NUMBERS
+    // ==========================================
+
+    document.getElementById(
+        "scoringTotalHoles"
+    ).textContent =
+        scoringTotal;
+
+
+    document.getElementById(
+        "breakdownEagles"
+    ).textContent =
+        eagleTotal;
+
+
+    document.getElementById(
+        "breakdownBirdies"
+    ).textContent =
+        birdieTotal;
+
+
+    document.getElementById(
+        "breakdownPars"
+    ).textContent =
+        parTotal;
+
+
+    document.getElementById(
+        "breakdownBogeys"
+    ).textContent =
+        bogeyTotal;
+
+
+    document.getElementById(
+        "breakdownDoubles"
+    ).textContent =
+        doubleTotal;
+
+
+    document.getElementById(
+        "breakdownTriples"
+    ).textContent =
+        tripleTotal;
+
+
+    // ==========================================
+    // SCORING BREAKDOWN BARS
+    // ==========================================
+
+    function setScoringBar(
+        elementId,
+        value
+    ) {
+
+        const element =
+            document.getElementById(
+                elementId
+            );
+
+
+        if (
+            !element ||
+            !scoringTotal
+        ) {
+            return;
+        }
+
+
+        const percentage =
+            (
+                value /
+                scoringTotal
+            ) * 100;
+
+
+        element.style.width =
+            `${percentage}%`;
+
+    }
+
+
+    setScoringBar(
+        "barEagles",
+        eagleTotal
+    );
+
+
+    setScoringBar(
+        "barBirdies",
+        birdieTotal
+    );
+
+
+    setScoringBar(
+        "barPars",
+        parTotal
+    );
+
+
+    setScoringBar(
+        "barBogeys",
+        bogeyTotal
+    );
+
+
+    setScoringBar(
+        "barDoubles",
+        doubleTotal
+    );
+
+
+    setScoringBar(
+        "barTriples",
+        tripleTotal
+    );
+
 }
 
 // ==========================================
