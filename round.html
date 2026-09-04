@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>IGA Tour | Round</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     HEADER
+=========================================== -->
+
+<div id="header"></div>
+
+
+<div class="container round-page">
+
+
+    <!-- ==========================================
+         LOADING
+    =========================================== -->
+
+    <div
+        id="roundLoading"
+        class="round-loading"
+    >
+        Loading IGA event...
+    </div>
+
+
+    <!-- ==========================================
+         EVENT CONTENT
+    =========================================== -->
+
+    <div
+        id="roundContent"
+        style="display: none;"
+    >
+
+
+        <!-- ==========================================
+             EVENT HERO
+        =========================================== -->
+
+        <section class="round-hero">
+
+            <div class="round-hero-top">
+
+                <div>
+
+                    <div
+                        class="page-eyebrow"
+                        id="roundEventType"
+                    >
+                        IGA EVENT
+                    </div>
+
+
+                    <h1 id="roundEventName">
+                        IGA Event
+                    </h1>
+
+
+                    <div class="round-hero-course">
+
+                        <span id="roundCourse">
+                            Course TBD
+                        </span>
+
+                        <span class="round-hero-divider">
+                            •
+                        </span>
+
+                        <span id="roundLocation">
+                            Location TBD
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="roundStatus"
+                    class="round-status-badge"
+                >
+                    OPEN
+                </div>
+
+            </div>
+
+
+            <div class="round-hero-meta">
+
+
+                <div class="round-meta-item">
+
+                    <span>
+                        DATE
+                    </span>
+
+                    <strong id="roundDate">
+                        Date TBD
+                    </strong>
+
+                </div>
+
+
+                <div class="round-meta-item">
+
+                    <span>
+                        COURSE PAR
+                    </span>
+
+                    <strong id="roundPar">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="round-meta-item">
+
+                    <span>
+                        PLAYERS
+                    </span>
+
+                    <strong id="roundPlayerCount">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="round-meta-item">
+
+                    <span>
+                        ROUND TYPE
+                    </span>
+
+                    <strong id="roundType">
+                        Regular Season
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==========================================
+             OFFICIAL RESULTS
+        =========================================== -->
+
+        <section class="round-section">
+
+
+            <div class="section-heading">
+
+                <div>
+
+                    <div class="section-eyebrow">
+                        OFFICIAL RESULTS
+                    </div>
+
+                    <h2>
+                        Results
+                    </h2>
+
+                </div>
+
+
+                <p
+                    class="section-description"
+                    id="roundResultsDescription"
+                >
+                    Official tournament results.
+                </p>
+
+            </div>
+
+
+            <div class="round-results-card">
+
+
+                <div class="round-results-wrapper">
+
+
+                    <table class="round-results-table">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    FINISH
+                                </th>
+
+                                <th>
+                                    PLAYER
+                                </th>
+
+                                <th>
+                                    GROSS
+                                </th>
+
+                                <th>
+                                    NET
+                                </th>
+
+                                <th>
+                                    POINTS
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="roundResultsBody">
+
+                            <tr>
+
+                                <td
+                                    colspan="5"
+                                    class="table-loading"
+                                >
+                                    Loading results...
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+
+                    </table>
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==========================================
+             THE COURSE
+        =========================================== -->
+
+        <section class="round-section">
+
+
+            <div class="section-heading">
+
+                <div>
+
+                    <div class="section-eyebrow">
+                        THE COURSE
+                    </div>
+
+                    <h2>
+                        Course Information
+                    </h2>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="round-course-card">
+
+
+                <div class="round-course-main">
+
+
+                    <div class="round-course-icon">
+                        ⛳
+                    </div>
+
+
+                    <div>
+
+                        <h3 id="courseName">
+                            Course TBD
+                        </h3>
+
+                        <p id="courseLocation">
+                            Location TBD
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="round-course-par">
+
+                    <span>
+                        PAR
+                    </span>
+
+                    <strong id="coursePar">
+                        —
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ==========================================
+             ROUND INFORMATION
+        =========================================== -->
+
+        <section class="round-section">
+
+
+            <div class="section-heading">
+
+                <div>
+
+                    <div class="section-eyebrow">
+                        EVENT INFORMATION
+                    </div>
+
+                    <h2>
+                        About This Round
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="round-information-card">
+
+
+                <div class="round-information-item">
+
+                    <span>
+                        EVENT
+                    </span>
+
+                    <strong id="infoEventName">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="round-information-item">
+
+                    <span>
+                        EVENT TYPE
+                    </span>
+
+                    <strong id="infoEventType">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="round-information-item">
+
+                    <span>
+                        STATUS
+                    </span>
+
+                    <strong id="infoStatus">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="round-information-item">
+
+                    <span>
+                        PLAYERS
+                    </span>
+
+                    <strong id="infoPlayers">
+                        —
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ==========================================
+             BACK BUTTON
+        =========================================== -->
+
+        <div class="round-back-container">
+
+            <button
+                class="round-back-button"
+                onclick="backToRounds()"
+            >
+
+                ← BACK TO ROUNDS
+
+            </button>
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ==========================================
+     FOOTER
+=========================================== -->
+
+<footer>
+
+    <div>
+        IGA Tour
+    </div>
+
+    <span>
+        Internal Golf Association
+    </span>
+
+</footer>
+
+
+
+<!-- ==========================================
+     SUPABASE
+=========================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/database.js"></script>
+
+<script src="js/components.js"></script>
+
+
+<script>
+
+
+// ==========================================
+// LOAD SHARED HEADER
+// ==========================================
+
+loadHeader();
+
+
+
+// ==========================================
+// GET EVENT ID FROM URL
+// ==========================================
+
+const urlParams =
+    new URLSearchParams(
+        window.location.search
+    );
+
+
+const eventId =
+    Number(
+        urlParams.get("event")
+    );
+
+
+
+// ==========================================
+// LOAD ROUND PAGE
+// ==========================================
+
+async function loadRoundPage() {
+
+    console.log(
+        "Loading IGA round page...",
+        eventId
+    );
+
+
+    if (!eventId) {
+
+        showRoundError(
+            "No IGA event was specified."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+
+        // ==========================================
+        // GET EVENT
+        // ==========================================
+
+        const {
+            data: event,
+            error: eventError
+        } = await supabaseClient
+
+            .from("events_table")
+
+            .select(`
+                id,
+                event_name,
+                event_type,
+                season_id,
+                status,
+                course_id,
+                event_date
+            `)
+
+            .eq(
+                "id",
+                eventId
+            )
+
+            .single();
+
+
+        if (eventError) {
+
+            throw eventError;
+
+        }
+
+
+        if (!event) {
+
+            showRoundError(
+                "IGA event not found."
+            );
+
+            return;
+
+        }
+
+
+
+        // ==========================================
+        // GET COURSE
+        // ==========================================
+
+        let course = null;
+
+
+        if (event.course_id) {
+
+            const {
+                data,
+                error: courseError
+            } = await supabaseClient
+
+                .from("courses")
+
+                .select(`
+                    course_id,
+                    "Course_name",
+                    "Location",
+                    par
+                `)
+
+                .eq(
+                    "course_id",
+                    event.course_id
+                )
+
+                .single();
+
+
+            if (courseError) {
+
+                throw courseError;
+
+            }
+
+
+            course = data;
+
+        }
+
+
+
+        // ==========================================
+        // GET EVENT ROUNDS
+        // ==========================================
+
+        const {
+            data: rounds,
+            error: roundError
+        } = await supabaseClient
+
+            .from("rounds")
+
+            .select(`
+                id,
+                event_id,
+                player_id,
+                course_id,
+                round_date,
+                gross_score,
+                net_score,
+                handicap_used,
+                points_earned,
+                approval_status,
+                approved_by,
+                approved_date,
+                counts_for_qualification,
+                qualification_counted,
+                finish_position
+            `)
+
+            .eq(
+                "event_id",
+                eventId
+            );
+
+
+        if (roundError) {
+
+            throw roundError;
+
+        }
+
+
+
+        // ==========================================
+        // GET PLAYERS
+        // ==========================================
+
+        const playerIds = [
+            ...new Set(
+                (rounds || [])
+                    .map(
+                        round =>
+                            round.player_id
+                    )
+                    .filter(
+                        id =>
+                            id !== null
+                    )
+            )
+        ];
+
+
+        let players = [];
+
+
+        if (playerIds.length > 0) {
+
+            const {
+                data,
+                error: playerError
+            } = await supabaseClient
+
+                .from("Players")
+
+                .select(`
+                    player_id,
+                    "Name"
+                `)
+
+                .in(
+                    "player_id",
+                    playerIds
+                );
+
+
+            if (playerError) {
+
+                throw playerError;
+
+            }
+
+
+            players =
+                data || [];
+
+        }
+
+
+
+        // ==========================================
+        // CREATE PLAYER MAP
+        // ==========================================
+
+        const playerMap = {};
+
+
+        players.forEach(
+            player => {
+
+                playerMap[
+                    player.player_id
+                ] = player;
+
+            }
+        );
+
+
+
+        // ==========================================
+        // FIRST SUBMITTED DATE
+        // ==========================================
+
+        const firstSubmittedRound =
+            (rounds || [])
+
+                .filter(
+                    round =>
+                        round.round_date
+                )
+
+                .sort(
+                    (a, b) =>
+                        parseDateOnly(
+                            a.round_date
+                        ) -
+                        parseDateOnly(
+                            b.round_date
+                        )
+                )[0];
+
+
+        const firstSubmittedDate =
+            firstSubmittedRound?.round_date ||
+            null;
+
+
+
+        // ==========================================
+        // UPDATE EVENT HERO
+        // ==========================================
+
+        document.getElementById(
+            "roundEventName"
+        ).textContent =
+            event.event_name ||
+            "IGA Event";
+
+
+        document.getElementById(
+            "roundEventType"
+        ).textContent =
+            event.event_type ||
+            "IGA EVENT";
+
+
+        document.getElementById(
+            "roundCourse"
+        ).textContent =
+            course?.Course_name ||
+            "Course TBD";
+
+
+        document.getElementById(
+            "roundLocation"
+        ).textContent =
+            course?.Location ||
+            "Location TBD";
+
+
+        document.getElementById(
+            "roundDate"
+        ).textContent =
+            formatRoundDate(
+                firstSubmittedDate ||
+                event.event_date
+            );
+
+
+        document.getElementById(
+            "roundPar"
+        ).textContent =
+            course?.par ??
+            "—";
+
+
+        document.getElementById(
+            "roundPlayerCount"
+        ).textContent =
+            (rounds || []).length;
+
+
+        document.getElementById(
+            "roundType"
+        ).textContent =
+            event.event_type ||
+            "Regular Season";
+
+
+
+        // ==========================================
+        // STATUS
+        // ==========================================
+
+        const statusElement =
+            document.getElementById(
+                "roundStatus"
+            );
+
+
+        let statusText =
+            "UPCOMING";
+
+
+        if (
+            event.status ===
+            "Finalized"
+        ) {
+
+            statusText =
+                "COMPLETE";
+
+        }
+
+        else if (
+            event.status ===
+            "Open"
+        ) {
+
+            statusText =
+                "OPEN";
+
+        }
+
+
+        statusElement.textContent =
+            statusText;
+
+
+        statusElement.className =
+            `round-status-badge round-status-${event.status
+                ?.toLowerCase()
+                .replace(/\s+/g, "-") || "upcoming"}`;
+
+
+
+        // ==========================================
+        // EVENT INFORMATION
+        // ==========================================
+
+        document.getElementById(
+            "infoEventName"
+        ).textContent =
+            event.event_name ||
+            "—";
+
+
+        document.getElementById(
+            "infoEventType"
+        ).textContent =
+            event.event_type ||
+            "—";
+
+
+        document.getElementById(
+            "infoStatus"
+        ).textContent =
+            event.status ||
+            "—";
+
+
+        document.getElementById(
+            "infoPlayers"
+        ).textContent =
+            (rounds || []).length;
+
+
+
+        // ==========================================
+        // COURSE CARD
+        // ==========================================
+
+        document.getElementById(
+            "courseName"
+        ).textContent =
+            course?.Course_name ||
+            "Course TBD";
+
+
+        document.getElementById(
+            "courseLocation"
+        ).textContent =
+            course?.Location ||
+            "Location TBD";
+
+
+        document.getElementById(
+            "coursePar"
+        ).textContent =
+            course?.par ??
+            "—";
+
+
+
+        // ==========================================
+        // BUILD OFFICIAL RESULTS
+        // ==========================================
+
+        buildResultsTable(
+            rounds || [],
+            playerMap,
+            event.status
+        );
+
+
+
+        // ==========================================
+        // SHOW PAGE
+        // ==========================================
+
+        document.getElementById(
+            "roundLoading"
+        ).style.display =
+            "none";
+
+
+        document.getElementById(
+            "roundContent"
+        ).style.display =
+            "block";
+
+
+        console.log(
+            "IGA ROUND PAGE LOADED:",
+            {
+                event,
+                course,
+                rounds,
+                players
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "ERROR LOADING ROUND PAGE:",
+            error
+        );
+
+
+        showRoundError(
+            "Unable to load this IGA event."
+        );
+
+    }
+
+}
+
+
+
+// ==========================================
+// BUILD RESULTS TABLE
+// ==========================================
+
+function buildResultsTable(
+    rounds,
+    playerMap,
+    eventStatus
+) {
+
+    const body =
+        document.getElementById(
+            "roundResultsBody"
+        );
+
+
+    const description =
+        document.getElementById(
+            "roundResultsDescription"
+        );
+
+
+    // ==========================================
+    // ONLY APPROVED ROUNDS ARE OFFICIAL
+    // ==========================================
+
+    const approvedRounds =
+        rounds.filter(
+            round =>
+                round.approval_status ===
+                "Approved"
+        );
+
+
+    if (
+        approvedRounds.length === 0
+    ) {
+
+        body.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="5"
+                    class="table-loading"
+                >
+                    ${
+                        eventStatus === "Open"
+                            ? "Official results will appear as scores are approved."
+                            : "No official results are available for this event yet."
+                    }
+                </td>
+
+            </tr>
+
+        `;
+
+
+        description.textContent =
+            eventStatus === "Open"
+                ? "Scores are added to the official results as they are approved."
+                : "Official tournament results.";
+
+
+        return;
+
+    }
+
+
+
+    // ==========================================
+    // SORT RESULTS
+    // ==========================================
+
+    const sortedRounds =
+        [...approvedRounds].sort(
+            (a, b) => {
+
+                // ----------------------------------
+                // USE FINISH POSITION IF AVAILABLE
+                // ----------------------------------
+
+                if (
+                    a.finish_position !== null &&
+                    a.finish_position !== undefined &&
+                    b.finish_position !== null &&
+                    b.finish_position !== undefined
+                ) {
+
+                    return (
+                        Number(a.finish_position) -
+                        Number(b.finish_position)
+                    );
+
+                }
+
+
+                if (
+                    a.finish_position !== null &&
+                    a.finish_position !== undefined
+                ) {
+
+                    return -1;
+
+                }
+
+
+                if (
+                    b.finish_position !== null &&
+                    b.finish_position !== undefined
+                ) {
+
+                    return 1;
+
+                }
+
+
+                // ----------------------------------
+                // FALL BACK TO POINTS
+                // ----------------------------------
+
+                const pointsA =
+                    Number(
+                        a.points_earned
+                    ) || 0;
+
+
+                const pointsB =
+                    Number(
+                        b.points_earned
+                    ) || 0;
+
+
+                if (
+                    pointsA !== pointsB
+                ) {
+
+                    return (
+                        pointsB -
+                        pointsA
+                    );
+
+                }
+
+
+                // ----------------------------------
+                // FALL BACK TO NET SCORE
+                // ----------------------------------
+
+                return (
+                    Number(
+                        a.net_score
+                    ) || 999
+                ) -
+                (
+                    Number(
+                        b.net_score
+                    ) || 999
+                );
+
+            }
+        );
+
+
+
+    // ==========================================
+    // BUILD ROWS
+    // ==========================================
+
+    body.innerHTML = "";
+
+
+    sortedRounds.forEach(
+        (
+            round,
+            index
+        ) => {
+
+
+            const player =
+                playerMap[
+                    round.player_id
+                ] || {};
+
+
+            const finish =
+                round.finish_position ??
+                (
+                    index + 1
+                );
+
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td class="round-finish">
+
+                    ${finish}
+
+                </td>
+
+
+                <td class="round-player-name">
+
+                    ${
+                        player.Name ||
+                        "Unknown Player"
+                    }
+
+                </td>
+
+
+                <td>
+
+                    ${
+                        round.gross_score ??
+                        "—"
+                    }
+
+                </td>
+
+
+                <td>
+
+                    ${
+                        round.net_score ??
+                        "—"
+                    }
+
+                </td>
+
+
+                <td class="round-points">
+
+                    ${
+                        round.points_earned ??
+                        "—"
+                    }
+
+                </td>
+
+            `;
+
+
+            body.appendChild(
+                row
+            );
+
+        }
+    );
+
+
+    description.textContent =
+        `${approvedRounds.length} official ${
+            approvedRounds.length === 1
+                ? "result"
+                : "results"
+        }`;
+
+}
+
+
+
+// ==========================================
+// DATE PARSER
+// ==========================================
+
+function parseDateOnly(
+    dateString
+) {
+
+    if (!dateString) {
+
+        return 0;
+
+    }
+
+
+    const parts =
+        dateString
+            .split("-")
+            .map(
+                Number
+            );
+
+
+    return new Date(
+        parts[0],
+        parts[1] - 1,
+        parts[2]
+    );
+
+}
+
+
+
+// ==========================================
+// DATE FORMAT
+// ==========================================
+
+function formatRoundDate(
+    dateString
+) {
+
+    if (!dateString) {
+
+        return "Date TBD";
+
+    }
+
+
+    const parts =
+        dateString
+            .split("-")
+            .map(
+                Number
+            );
+
+
+    const date =
+        new Date(
+            parts[0],
+            parts[1] - 1,
+            parts[2]
+        );
+
+
+    return date.toLocaleDateString(
+        "en-US",
+        {
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+        }
+    );
+
+}
+
+
+
+// ==========================================
+// ERROR MESSAGE
+// ==========================================
+
+function showRoundError(
+    message
+) {
+
+    document.getElementById(
+        "roundLoading"
+    ).innerHTML = `
+
+        <div class="round-error">
+
+            ${message}
+
+            <br><br>
+
+            <button
+                class="round-back-button"
+                onclick="backToRounds()"
+            >
+                ← BACK TO ROUNDS
+            </button>
+
+        </div>
+
+    `;
+
+}
+
+
+
+// ==========================================
+// BACK TO ROUNDS
+// ==========================================
+
+function backToRounds() {
+
+    window.location.href =
+        "Rounds.html";
+
+}
+
+
+
+// ==========================================
+// LOAD PAGE
+// ==========================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    loadRoundPage
+);
+
+
+</script>
+
+
+</body>
+
+</html>
