@@ -1,446 +1,883 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
+```
 <meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>IGA Tour | Rounds</title>
 
-
-<style>
-
-body {
-    margin:0;
-    font-family:Arial, Helvetica, sans-serif;
-    background:#f5f5f2;
-    color:#222;
-}
-
-
-header {
-    background:#003b24;
-    color:white;
-    padding:25px 50px;
-}
-
-
-.logo {
-    font-size:36px;
-    font-weight:bold;
-}
-
-
-.subtitle {
-    margin-top:5px;
-    font-size:18px;
-}
-
-
-nav {
-    background:#111;
-    padding:15px 50px;
-}
-
-
-nav a {
-    color:white;
-    text-decoration:none;
-    margin-right:25px;
-    font-weight:bold;
-}
-
-
-.container {
-    padding:40px 50px;
-}
-
-
-h1 {
-    font-size:42px;
-}
-
-
-.card {
-
-    background:white;
-    padding:25px;
-    margin-bottom:25px;
-    border-radius:12px;
-    box-shadow:0 5px 15px #ddd;
-
-}
-
-
-h2 {
-    color:#003b24;
-}
-
-
-
-table {
-
-    width:100%;
-    border-collapse:collapse;
-
-}
-
-
-th {
-
-    background:#003b24;
-    color:white;
-    padding:12px;
-    text-align:left;
-
-}
-
-
-td {
-
-    padding:12px;
-    border-bottom:1px solid #ddd;
-
-}
-
-
-.complete {
-
-    color:green;
-    font-weight:bold;
-
-}
-
-
-.incomplete {
-
-    color:#b8860b;
-    font-weight:bold;
-
-}
-
-
-footer {
-
-    background:#111;
-    color:white;
-    text-align:center;
-    padding:20px;
-
-}
-
-
-</style>
+<link rel="stylesheet" href="css/style.css">
+```
 
 </head>
 
-
-
 <body>
 
+<!-- ==========================================
+     HEADER
+=========================================== -->
 
+<div id="header"></div>
 
-<header>
+<div class="container rounds-page">
 
-<div class="logo">
-⛳ IGA TOUR
-</div>
+```
+<!-- ==========================================
+     PAGE HEADER
+=========================================== -->
 
-<div class="subtitle">
-Internal Golf Association | Qualifying Rounds
-</div>
+<div class="rounds-page-header">
 
-</header>
+    <div>
+        <div class="page-eyebrow">
+            INTERNAL GOLF ASSOCIATION
+        </div>
 
+        <h1>
+            IGA Rounds
+        </h1>
 
+        <p>
+            Follow the season, track qualifying rounds, and revisit every event.
+        </p>
+    </div>
 
-
-<nav>
-
-<a href="index.html">Home</a>
-
-<a href="leaderboard.html">Leaderboard</a>
-
-<a href="players.html">Players</a>
-
-<a href="rounds.html">Rounds</a>
-
-<a href="stats.html">Stats</a>
-
-<a href="championships.html">Championships</a>
-
-</nav>
-
-
-
-
-
-<div class="container">
-
-
-<h1>
-🏌️ IGA Qualifying Rounds
-</h1>
-
-
-
-<div class="card">
-
-
-<h2>
-2027 Season Requirements
-</h2>
-
-
-<ul>
-
-<li>Season: August 1, 2026 - October 31, 2027</li>
-
-<li>Players must complete two rounds at each approved IGA course</li>
-
-<li>Approved Courses: Firelake, Seminole, Westwood</li>
-
-<li>Each round awards season points</li>
-
-<li>Standings update after each submitted round</li>
-
-</ul>
-
+    <div class="rounds-season-badge">
+        <span>2027 SEASON</span>
+        <strong>Aug 1, 2026 – Oct 31, 2027</strong>
+    </div>
 
 </div>
 
 
 
+<!-- ==========================================
+     SEASON PROGRESS
+=========================================== -->
+
+<section class="rounds-section">
+
+    <div class="section-heading">
+
+        <div>
+            <div class="section-eyebrow">
+                SEASON REQUIREMENTS
+            </div>
+
+            <h2>
+                Season Progress
+            </h2>
+        </div>
+
+        <div class="season-progress-summary">
+            <strong id="seasonRoundsCompleted">0</strong>
+            <span>of</span>
+            <strong id="seasonRoundsRequired">6</strong>
+            <span>required rounds</span>
+        </div>
+
+    </div>
 
 
-<div class="card">
+    <div class="season-progress-card">
+
+        <div class="season-progress-top">
+
+            <div>
+                <span class="progress-label">
+                    Course Requirements
+                </span>
+
+                <p>
+                    Players must complete two qualifying rounds at each approved IGA course.
+                </p>
+            </div>
+
+            <div class="progress-percentage" id="seasonProgressPercent">
+                0%
+            </div>
+
+        </div>
 
 
-<h2>
-Course Completion Tracker
-</h2>
+        <div class="season-progress-track">
+
+            <div
+                class="season-progress-fill"
+                id="seasonProgressFill"
+                style="width: 0%;">
+            </div>
+
+        </div>
 
 
-<table>
+        <div class="season-progress-courses">
+
+            <div class="progress-course">
+
+                <div class="progress-course-icon">
+                    F
+                </div>
+
+                <div>
+                    <strong>Firelake</strong>
+                    <span id="firelakeProgress">
+                        0 / 2 rounds
+                    </span>
+                </div>
+
+            </div>
 
 
-<tr>
+            <div class="progress-course">
 
-<th>Player</th>
+                <div class="progress-course-icon">
+                    S
+                </div>
 
-<th>Firelake</th>
+                <div>
+                    <strong>Seminole</strong>
+                    <span id="seminoleProgress">
+                        0 / 2 rounds
+                    </span>
+                </div>
 
-<th>Seminole</th>
-
-<th>Westwood</th>
-
-<th>Total</th>
-
-</tr>
-
-
-<tr>
-
-<td>
-Michael Albritton
-</td>
-
-<td class="complete">
-✅ 2/2
-</td>
-
-<td>
-1/2
-</td>
-
-<td>
-0/2
-</td>
-
-<td>
-3/6
-</td>
-
-</tr>
+            </div>
 
 
+            <div class="progress-course">
 
-<tr>
+                <div class="progress-course-icon">
+                    W
+                </div>
 
-<td>
-Connor
-</td>
+                <div>
+                    <strong>Westwood</strong>
+                    <span id="westwoodProgress">
+                        0 / 2 rounds
+                    </span>
+                </div>
 
-<td>
-1/2
-</td>
+            </div>
 
-<td class="complete">
-✅ 2/2
-</td>
+        </div>
 
-<td>
-0/2
-</td>
+    </div>
 
-<td>
-3/6
-</td>
-
-</tr>
+</section>
 
 
 
-<tr>
+<!-- ==========================================
+     COURSE COMPLETION TRACKER
+=========================================== -->
 
-<td>
-Ryan
-</td>
+<section class="rounds-section">
 
-<td>
-0/2
-</td>
+    <div class="section-heading">
 
-<td>
-1/2
-</td>
+        <div>
+            <div class="section-eyebrow">
+                QUALIFYING ROUNDS
+            </div>
 
-<td>
-1/2
-</td>
+            <h2>
+                Course Completion
+            </h2>
+        </div>
 
-<td>
-2/6
-</td>
+        <p class="section-description">
+            Progress toward the two-round requirement at each approved course.
+        </p>
 
-</tr>
+    </div>
 
 
-</table>
+    <div class="rounds-table-card">
 
+        <div class="rounds-table-wrapper">
+
+            <table class="rounds-completion-table">
+
+                <thead>
+
+                    <tr>
+                        <th>PLAYER</th>
+                        <th>FIRELAKE</th>
+                        <th>SEMINOLE</th>
+                        <th>WESTWOOD</th>
+                        <th>TOTAL</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="courseCompletionBody">
+
+                    <tr>
+
+                        <td colspan="5" class="table-loading">
+                            Loading player progress...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ==========================================
+     ROUND HISTORY
+=========================================== -->
+
+<section class="rounds-section">
+
+    <div class="section-heading">
+
+        <div>
+            <div class="section-eyebrow">
+                EVENT ARCHIVE
+            </div>
+
+            <h2>
+                Round History
+            </h2>
+        </div>
+
+        <p class="section-description">
+            Explore every IGA event and its results.
+        </p>
+
+    </div>
+
+
+    <div
+        class="round-history-grid"
+        id="roundHistory">
+
+        <div class="round-history-loading">
+            Loading IGA events...
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ==========================================
+     RECENT RESULTS
+=========================================== -->
+
+<section class="rounds-section">
+
+    <div class="section-heading">
+
+        <div>
+            <div class="section-eyebrow">
+                LATEST SCORES
+            </div>
+
+            <h2>
+                Recent Results
+            </h2>
+        </div>
+
+        <p class="section-description">
+            The latest submitted qualifying rounds.
+        </p>
+
+    </div>
+
+
+    <div class="rounds-table-card">
+
+        <div class="rounds-table-wrapper">
+
+            <table class="rounds-results-table">
+
+                <thead>
+
+                    <tr>
+                        <th>DATE</th>
+                        <th>PLAYER</th>
+                        <th>COURSE</th>
+                        <th>GROSS</th>
+                        <th>NET</th>
+                        <th>POINTS</th>
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="recentResultsBody">
+
+                    <tr>
+
+                        <td colspan="6" class="table-loading">
+                            Loading recent results...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+```
 
 </div>
 
-
-
-
-
-
-
-<div class="card">
-
-
-<h2>
-Recent Round Results
-</h2>
-
-
-
-<table>
-
-
-<tr>
-
-<th>Date</th>
-
-<th>Player</th>
-
-<th>Course</th>
-
-<th>Score</th>
-
-<th>Points</th>
-
-<th>Birdies</th>
-
-</tr>
-
-
-
-<tr>
-
-<td>
-Aug 15, 2026
-</td>
-
-<td>
-Michael
-</td>
-
-<td>
-Firelake
-</td>
-
-<td>
-76
-</td>
-
-<td>
-100
-</td>
-
-<td>
-4
-</td>
-
-</tr>
-
-
-
-
-<tr>
-
-<td>
-Aug 22, 2026
-</td>
-
-<td>
-Connor
-</td>
-
-<td>
-Seminole
-</td>
-
-<td>
-79
-</td>
-
-<td>
-85
-</td>
-
-<td>
-3
-</td>
-
-</tr>
-
-
-
-
-</table>
-
-
-
-</div>
-
-
-
-
-
-</div>
-
-
-
+<!-- ==========================================
+     FOOTER
+=========================================== -->
 
 <footer>
 
-IGA Tour © 2027 | Internal Golf Association
+```
+<div>
+    IGA Tour
+</div>
+
+<span>
+    Internal Golf Association
+</span>
+```
 
 </footer>
 
+<!-- ==========================================
+     SUPABASE
+=========================================== -->
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/supabase.js"></script>
+
+<script src="js/database.js"></script>
+
+<script>
+
+
+// ==========================================
+// ROUNDS PAGE
+// ==========================================
+
+async function loadRoundsPage() {
+
+    console.log("Loading IGA Rounds page...");
+
+
+    try {
+
+        await loadRoundHistory();
+
+        await loadRecentResults();
+
+        await loadCourseCompletion();
+
+
+        console.log("IGA Rounds page loaded successfully.");
+
+    } catch (error) {
+
+        console.error(
+            "IGA Rounds page error:",
+            error
+        );
+
+    }
+
+}
+
+
+
+// ==========================================
+// LOAD ROUND HISTORY
+// ==========================================
+
+async function loadRoundHistory() {
+
+    const container =
+        document.getElementById("roundHistory");
+
+
+    const {
+        data: events,
+        error
+    } = await supabaseClient
+
+        .from("events_table")
+
+        .select(`
+            id,
+            event_name,
+            event_type,
+            status,
+            event_date,
+            course_id,
+            courses (
+                course_name,
+                city,
+                state
+            )
+        `)
+
+        .eq("season_id", 1)
+
+        .neq("event_type", "Major")
+
+        .order(
+            "event_date",
+            {
+                ascending: false
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Error loading round history:",
+            error
+        );
+
+        container.innerHTML = `
+            <div class="round-history-empty">
+                Unable to load IGA events.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    if (!events || events.length === 0) {
+
+        container.innerHTML = `
+            <div class="round-history-empty">
+                No IGA events have been scheduled yet.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    events.forEach(event => {
+
+        const course =
+            event.courses || {};
+
+
+        let statusClass =
+            "round-card-upcoming";
+
+        let statusText =
+            "UPCOMING";
+
+
+        if (event.status === "Finalized") {
+
+            statusClass =
+                "round-card-complete";
+
+            statusText =
+                "COMPLETE";
+
+        } else if (event.status === "Open") {
+
+            statusClass =
+                "round-card-open";
+
+            statusText =
+                "OPEN";
+
+        }
+
+
+        const eventDate =
+            formatRoundDate(
+                event.event_date
+            );
+
+
+        const location =
+            course.city && course.state
+
+                ? `${course.city}, ${course.state}`
+
+                : "Location TBD";
+
+
+        const card = document.createElement("div");
+
+        card.className =
+            `round-history-card ${statusClass}`;
+
+
+        card.innerHTML = `
+
+            <div class="round-card-top">
+
+                <span class="round-card-status">
+                    ${statusText}
+                </span>
+
+                <span class="round-card-date">
+                    ${eventDate}
+                </span>
+
+            </div>
+
+
+            <div class="round-card-body">
+
+                <div class="round-card-course">
+
+                    <div class="round-card-course-icon">
+                        ⛳
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            ${event.event_name}
+                        </h3>
+
+                        <span>
+                            ${course.course_name || "Course TBD"}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="round-card-location">
+
+                    <span class="location-icon">
+                        📍
+                    </span>
+
+                    ${location}
+
+                </div>
+
+
+                <div class="round-card-footer">
+
+                    <span class="round-card-result"
+                          id="event-result-${event.id}">
+                        Results available after round
+                    </span>
+
+                    <button
+                        class="round-view-button"
+                        onclick="viewRound(${event.id})">
+
+                        VIEW ROUND
+
+                        <span>
+                            →
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(card);
+
+    });
+
+}
+
+
+
+// ==========================================
+// LOAD RECENT RESULTS
+// ==========================================
+
+async function loadRecentResults() {
+
+    const body =
+        document.getElementById(
+            "recentResultsBody"
+        );
+
+
+    const {
+        data: rounds,
+        error
+    } = await supabaseClient
+
+        .from("rounds")
+
+        .select(`
+            id,
+            player_id,
+            event_id,
+            gross_score,
+            net_score,
+            points,
+            approval_status,
+            created_at,
+            Players (
+                Name
+            ),
+            events_table (
+                event_name,
+                event_date,
+                courses (
+                    course_name
+                )
+            )
+        `)
+
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        )
+
+        .limit(10);
+
+
+    if (error) {
+
+        console.error(
+            "Error loading recent results:",
+            error
+        );
+
+        body.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="table-loading">
+
+                    Unable to load recent results.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    if (!rounds || rounds.length === 0) {
+
+        body.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="6"
+                    class="table-loading">
+
+                    No submitted rounds yet.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    body.innerHTML = "";
+
+
+    rounds.forEach(round => {
+
+        const playerName =
+            round.Players?.Name ||
+            "Unknown Player";
+
+
+        const event =
+            round.events_table || {};
+
+
+        const course =
+            event.courses || {};
+
+
+        const date =
+            formatRoundDate(
+                event.event_date
+            );
+
+
+        const row =
+            document.createElement("tr");
+
+
+        row.innerHTML = `
+
+            <td>
+                ${date}
+            </td>
+
+            <td class="round-player-name">
+                ${playerName}
+            </td>
+
+            <td>
+                ${course.course_name || "Unknown"}
+            </td>
+
+            <td>
+                ${round.gross_score ?? "—"}
+            </td>
+
+            <td>
+                ${round.net_score ?? "—"}
+            </td>
+
+            <td class="round-points">
+                ${round.points ?? "—"}
+            </td>
+
+        `;
+
+
+        body.appendChild(row);
+
+    });
+
+}
+
+
+
+// ==========================================
+// COURSE COMPLETION
+// ==========================================
+
+async function loadCourseCompletion() {
+
+    const body =
+        document.getElementById(
+            "courseCompletionBody"
+        );
+
+
+    // This section will be connected
+    // to the IGA qualifying-round
+    // requirements and player data.
+
+
+    body.innerHTML = `
+
+        <tr>
+
+            <td colspan="5" class="table-loading">
+
+                Course completion data will load
+                from the IGA database.
+
+            </td>
+
+        </tr>
+
+    `;
+
+}
+
+
+
+// ==========================================
+// VIEW ROUND
+// ==========================================
+
+function viewRound(eventId) {
+
+    window.location.href =
+        `round.html?event=${eventId}`;
+
+}
+
+
+
+// ==========================================
+// DATE FORMAT
+// ==========================================
+
+function formatRoundDate(dateString) {
+
+    if (!dateString) {
+
+        return "Date TBD";
+
+    }
+
+
+    const date =
+        new Date(dateString);
+
+
+    return date.toLocaleDateString(
+        "en-US",
+        {
+            month: "short",
+            day: "numeric",
+            year: "numeric"
+        }
+    );
+
+}
+
+
+
+// ==========================================
+// LOAD PAGE
+// ==========================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    loadRoundsPage
+);
+
+
+</script>
 
 </body>
 

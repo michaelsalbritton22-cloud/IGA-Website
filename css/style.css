@@ -2210,3 +2210,479 @@ footer {
     }
 
 }
+/* ==========================================
+IGA ROUNDS PAGE
+========================================== */
+
+.rounds-page {
+padding-top: 35px;
+padding-bottom: 60px;
+}
+
+/* ------------------------------------------
+PAGE HEADER
+------------------------------------------ */
+
+.rounds-page-header {
+display: flex;
+justify-content: space-between;
+align-items: flex-end;
+gap: 30px;
+margin-bottom: 35px;
+}
+
+.page-eyebrow,
+.section-eyebrow {
+font-size: 11px;
+font-weight: 800;
+letter-spacing: 1.4px;
+color: #287a3a;
+margin-bottom: 7px;
+}
+
+.rounds-page-header h1 {
+margin: 0;
+font-size: 38px;
+line-height: 1.1;
+}
+
+.rounds-page-header p {
+margin: 8px 0 0;
+color: #777;
+font-size: 14px;
+}
+
+.rounds-season-badge {
+background: #ffffff;
+border: 1px solid #deded9;
+border-radius: 8px;
+padding: 13px 17px;
+text-align: right;
+box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.rounds-season-badge span {
+display: block;
+font-size: 10px;
+font-weight: 800;
+letter-spacing: 1px;
+color: #287a3a;
+margin-bottom: 4px;
+}
+
+.rounds-season-badge strong {
+font-size: 12px;
+color: #444;
+}
+
+/* ------------------------------------------
+SECTIONS
+------------------------------------------ */
+
+.rounds-section {
+margin-bottom: 38px;
+}
+
+.section-heading {
+display: flex;
+justify-content: space-between;
+align-items: flex-end;
+gap: 20px;
+margin-bottom: 15px;
+}
+
+.section-heading h2 {
+margin: 0;
+font-size: 22px;
+color: #222;
+}
+
+.section-description {
+margin: 0;
+color: #777;
+font-size: 13px;
+}
+
+.season-progress-summary {
+display: flex;
+align-items: baseline;
+gap: 5px;
+color: #777;
+font-size: 13px;
+}
+
+.season-progress-summary strong {
+color: #222;
+font-size: 22px;
+}
+
+/* ------------------------------------------
+SEASON PROGRESS
+------------------------------------------ */
+
+.season-progress-card {
+background: #ffffff;
+border: 1px solid #deded9;
+border-radius: 10px;
+padding: 24px;
+box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+}
+
+.season-progress-top {
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 20px;
+}
+
+.progress-label {
+display: block;
+font-size: 14px;
+font-weight: 800;
+color: #222;
+}
+
+.season-progress-top p {
+margin: 5px 0 0;
+color: #777;
+font-size: 12px;
+}
+
+.progress-percentage {
+font-size: 25px;
+font-weight: 800;
+color: #287a3a;
+}
+
+.season-progress-track {
+height: 8px;
+background: #e7e7e2;
+border-radius: 10px;
+overflow: hidden;
+margin: 20px 0;
+}
+
+.season-progress-fill {
+height: 100%;
+background: #287a3a;
+border-radius: 10px;
+transition: width 0.4s ease;
+}
+
+.season-progress-courses {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 15px;
+}
+
+.progress-course {
+display: flex;
+align-items: center;
+gap: 11px;
+padding: 13px;
+background: #f7f7f4;
+border-radius: 7px;
+}
+
+.progress-course-icon {
+width: 32px;
+height: 32px;
+display: flex;
+align-items: center;
+justify-content: center;
+border-radius: 50%;
+background: #287a3a;
+color: #ffffff;
+font-size: 12px;
+font-weight: 800;
+}
+
+.progress-course strong {
+display: block;
+font-size: 13px;
+}
+
+.progress-course span {
+display: block;
+margin-top: 2px;
+color: #777;
+font-size: 11px;
+}
+
+/* ------------------------------------------
+TABLE CARDS
+------------------------------------------ */
+
+.rounds-table-card {
+background: #ffffff;
+border: 1px solid #deded9;
+border-radius: 10px;
+overflow: hidden;
+box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+}
+
+.rounds-table-wrapper {
+width: 100%;
+overflow-x: auto;
+}
+
+.rounds-completion-table,
+.rounds-results-table {
+width: 100%;
+border-collapse: collapse;
+}
+
+.rounds-completion-table th,
+.rounds-results-table th {
+background: #f1f1ed;
+color: #666;
+padding: 13px 15px;
+font-size: 10px;
+font-weight: 800;
+letter-spacing: 0.7px;
+text-align: left;
+white-space: nowrap;
+}
+
+.rounds-completion-table td,
+.rounds-results-table td {
+padding: 14px 15px;
+border-bottom: 1px solid #eeeeea;
+font-size: 13px;
+white-space: nowrap;
+}
+
+.rounds-completion-table tbody tr:last-child td,
+.rounds-results-table tbody tr:last-child td {
+border-bottom: none;
+}
+
+.rounds-completion-table tbody tr:hover,
+.rounds-results-table tbody tr:hover {
+background: #fafafa;
+}
+
+.table-loading {
+text-align: center;
+color: #888;
+padding: 28px !important;
+}
+
+.round-player-name {
+font-weight: 700;
+}
+
+.round-points {
+font-weight: 800;
+color: #287a3a;
+}
+
+/* ------------------------------------------
+ROUND HISTORY
+------------------------------------------ */
+
+.round-history-grid {
+display: grid;
+grid-template-columns: repeat(3, minmax(0, 1fr));
+gap: 20px;
+}
+
+.round-history-card {
+background: #ffffff;
+border: 1px solid #deded9;
+border-radius: 10px;
+overflow: hidden;
+box-shadow: 0 3px 12px rgba(0,0,0,0.04);
+transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.round-history-card:hover {
+transform: translateY(-2px);
+box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.round-card-top {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 11px 15px;
+border-bottom: 1px solid #eeeeea;
+}
+
+.round-card-status {
+font-size: 10px;
+font-weight: 800;
+letter-spacing: 0.8px;
+}
+
+.round-card-date {
+font-size: 11px;
+color: #777;
+}
+
+.round-card-complete .round-card-status {
+color: #9b7516;
+}
+
+.round-card-open .round-card-status {
+color: #287a3a;
+}
+
+.round-card-upcoming .round-card-status {
+color: #888;
+}
+
+.round-card-body {
+padding: 18px;
+}
+
+.round-card-course {
+display: flex;
+align-items: center;
+gap: 12px;
+}
+
+.round-card-course-icon {
+width: 40px;
+height: 40px;
+display: flex;
+align-items: center;
+justify-content: center;
+background: #f0f3ef;
+border-radius: 7px;
+font-size: 19px;
+}
+
+.round-card-course h3 {
+margin: 0;
+font-size: 16px;
+color: #222;
+}
+
+.round-card-course span {
+display: block;
+margin-top: 3px;
+color: #777;
+font-size: 11px;
+}
+
+.round-card-location {
+margin-top: 17px;
+padding-top: 14px;
+border-top: 1px solid #eeeeea;
+color: #666;
+font-size: 12px;
+}
+
+.location-icon {
+margin-right: 5px;
+}
+
+.round-card-footer {
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 10px;
+margin-top: 17px;
+}
+
+.round-card-result {
+color: #777;
+font-size: 11px;
+}
+
+.round-view-button {
+border: none;
+background: #287a3a;
+color: #ffffff;
+padding: 9px 12px;
+border-radius: 5px;
+font-size: 10px;
+font-weight: 800;
+letter-spacing: 0.5px;
+cursor: pointer;
+}
+
+.round-view-button:hover {
+background: #1d5c2a;
+}
+
+.round-view-button span {
+margin-left: 4px;
+}
+
+.round-history-loading,
+.round-history-empty {
+grid-column: 1 / -1;
+background: #ffffff;
+border: 1px solid #deded9;
+border-radius: 10px;
+padding: 35px;
+text-align: center;
+color: #888;
+}
+
+/* ------------------------------------------
+FOOTER
+------------------------------------------ */
+
+footer {
+margin-top: 20px;
+}
+
+footer div {
+font-weight: 800;
+}
+
+footer span {
+display: block;
+margin-top: 4px;
+font-size: 11px;
+color: #aaa;
+}
+
+/* ------------------------------------------
+MOBILE
+------------------------------------------ */
+
+@media (max-width: 1100px) {
+
+```
+.round-history-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+```
+
+}
+
+@media (max-width: 750px) {
+
+```
+.rounds-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.rounds-season-badge {
+    text-align: left;
+}
+
+.section-heading {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.season-progress-courses {
+    grid-template-columns: 1fr;
+}
+
+.round-history-grid {
+    grid-template-columns: 1fr;
+}
+
+.rounds-page-header h1 {
+    font-size: 32px;
+}
+```
+
+}
