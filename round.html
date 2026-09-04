@@ -392,6 +392,11 @@
         </div>
 
         <div class="round-stat-card">
+            <span class="round-stat-label">TRIPLE BOGEYS</span>
+            <strong id="statTripleBogeys">—</strong>
+        </div>
+
+        <div class="round-stat-card">
             <span class="round-stat-label">AVERAGE PUTTS</span>
             <strong id="statAveragePutts">—</strong>
         </div>
@@ -717,6 +722,7 @@ async function loadRoundPage() {
                 pars,
                 bogeys,
                 double_bogeys,
+                triple_bogeys,
                 fairways_hit,
                 greens_hit,
                 putts
@@ -1100,6 +1106,10 @@ function loadRoundStats(rounds) {
         .map(round => Number(round.double_bogeys))
         .filter(Number.isFinite);
 
+    const tripleBogeys = officialRounds
+        .map(round => Number(round.triple_bogeys))
+        .filter(Number.isFinite);
+
     const putts = officialRounds
         .map(round => Number(round.putts))
         .filter(Number.isFinite);
@@ -1147,6 +1157,9 @@ function loadRoundStats(rounds) {
 
     document.getElementById("statDoubleBogeys").textContent =
         total(doubleBogeys);
+
+    document.getElementById("statTripleBogeys").textContent =
+        total(tripleBogeys);
 
     document.getElementById("statAveragePutts").textContent =
         average(putts);
