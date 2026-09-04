@@ -794,243 +794,531 @@ async function loadRecentResults() {
 
 async function loadCourseCompletion() {
 
-    const body = document.getElementById("courseCompletionBody");
-
-    body.innerHTML = `
-        <tr>
-            <td colspan="5" class="table-loading">
-                Loading course completion...
-            </td>
-        </tr>
-    `;
+    const body =
+        document.getElementById(
+            "courseCompletionBody"
+        );
 
     try {
 
-        // --------------------------------------------------
-        // GET ACTIVE IGA PLAYERS
-        // --------------------------------------------------
+        console.log(
+            "Loading IGA course completion..."
+        );
 
-        const { data: players, error: playersError } = await supabaseClient
+
+        // ==========================================
+        // CURRENT SEASON
+        // ==========================================
+
+        const seasonId = 1;
+
+
+        // ==========================================
+        // GET ACTIVE PLAYERS
+        // ==========================================
+
+        const {
+            data: players,
+            error: playerError
+        } = await supabaseClient
+
             .from("Players")
-            .select("*")
-            .eq("Active", true)
-            .order("Name");
 
-        if (playersError) {
-            throw playersError;
-        }
-
-
-        // --------------------------------------------------
-        // GET QUALIFYING ROUNDS FOR CURRENT SEASON
-        // --------------------------------------------------
-
-        const { data: rounds, error: roundsError } = await supabaseClient
-            .from("rounds")
             .select(`
                 player_id,
-                event_id,
+                "Name"
+            `)
+
+            .eq(
+                "Active",
+                true
+            )
+
+            .order(
+                "Name",
+                {
+                    ascending: true
+                }
+            );
+
+
+        if (playerError) {
+
+            throw playerError;
+
+        }
+
+
+        // ==========================================
+        // GET COURSE REQUIREMENTS
+        // ==========================================
+
+        const {
+            data: requirements,
+            error: requirementError
+        } = await supabaseClient
+
+            .from("season_requirements")
+
+            .select(`
+                course_id,
+                required_rounds
+            `)
+
+            .eq(
+                "season",
+                seasonId
+            )
+
+            .gt(
+                "required_rounds",
+                0
+            );
+
+
+        if (requirementError) {
+
+            throw requirementError;
+
+        }
+
+
+        if (
+            !requirements ||
+            requirements.length === 0
+        ) {
+
+            body.innerHTML = `
+                <tr>
+                    <td
+                        colspan="5"
+                        class="table-loading"
+                    >
+                        No qualifying course requirements
+                        have been configured.
+                    </td>
+                </tr>
+            `;
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // GET COURSE INFORMATION
+        // ==========================================
+
+        const courseIds =
+            requirements.map(
+                requirement =>
+                    requirement.course_id
+            );
+
+
+        const {
+            data: courses,
+            error: courseError
+        } = await supabaseClient
+
+            .from("courses")
+
+            .select(`
+                course_id,
+                "Course_name"
+            `)
+
+            .in(
+                "course_id",
+                courseIds
+            );
+
+
+        if (courseError) {
+
+            throw courseError;
+
+        }
+
+
+        // ==========================================
+        // GET APPROVED QUALIFYING ROUNDS
+        // ==========================================
+
+        const {
+            data: rounds,
+            error: roundError
+        } = await supabaseClient
+
+            .from("rounds")
+
+            .select(`
+                id,
+                player_id,
+                course_id,
+                season_id,
                 approval_status,
-                events_table (
-                    season_id,
-                    event_type,
-                    course_id,
-                    status,
-                    courses (
-                        course_name
-                    )
+                counts_for_qualification
+            `)
+
+            .eq(
+                "season_id",
+                seasonId
+            )
+
+            .eq(
+                "approval_status",
+                "Approved"
+            )
+
+            .eq(
+                "counts_for_qualification",
+                true
+            )
+
+            .in(
+                "course_id",
+                courseIds
+            );
+
+
+        if (roundError) {
+
+            throw roundError;
+
+        }
+
+
+        // ==========================================
+        // CREATE COURSE MAP
+        // ==========================================
+
+        const courseMap = {};
+
+        (courses || []).forEach(
+            course => {
+
+                courseMap[
+                    course.course_id
+                ] = course;
+
+            }
+        );
+
+
+        // ==========================================
+        // CREATE REQUIREMENT MAP
+        // ==========================================
+
+        const requirementMap = {};
+
+        requirements.forEach(
+            requirement => {
+
+                requirementMap[
+                    requirement.course_id
+                ] =
+                    Number(
+                        requirement.required_rounds
+                    ) || 0;
+
+            }
+        );
+
+
+        // ==========================================
+        // COUNT PLAYER ROUNDS
+        // ==========================================
+
+        const playerProgress = {};
+
+
+        (players || []).forEach(
+            player => {
+
+                playerProgress[
+                    player.player_id
+                ] = {};
+
+                courseIds.forEach(
+                    courseId => {
+
+                        playerProgress[
+                            player.player_id
+                        ][courseId] = 0;
+
+                    }
+                );
+
+            }
+        );
+
+
+        // ==========================================
+        // ADD APPROVED QUALIFYING ROUNDS
+        // ==========================================
+
+        (rounds || []).forEach(
+            round => {
+
+                if (
+                    !playerProgress[
+                        round.player_id
+                    ]
+                ) {
+
+                    return;
+
+                }
+
+
+                if (
+                    playerProgress[
+                        round.player_id
+                    ][round.course_id] !==
+                    undefined
+                ) {
+
+                    playerProgress[
+                        round.player_id
+                    ][round.course_id]++;
+
+                }
+
+            }
+        );
+
+
+        // ==========================================
+        // SORT COURSES
+        // ==========================================
+
+        const orderedCourses =
+            requirements
+                .map(
+                    requirement =>
+                        courseMap[
+                            requirement.course_id
+                        ]
                 )
-            `);
-
-        if (roundsError) {
-            throw roundsError;
-        }
-
-
-        // --------------------------------------------------
-        // COURSE IDENTIFICATION
-        // --------------------------------------------------
-
-        function getCourseType(courseName) {
-
-            if (!courseName) {
-                return null;
-            }
-
-            const name = courseName.toLowerCase();
-
-            if (name.includes("firelake")) {
-                return "firelake";
-            }
-
-            if (name.includes("seminole")) {
-                return "seminole";
-            }
-
-            if (name.includes("westwood")) {
-                return "westwood";
-            }
-
-            return null;
-        }
+                .filter(
+                    course =>
+                        course
+                );
 
 
-        // --------------------------------------------------
-        // BUILD PLAYER PROGRESS
-        // --------------------------------------------------
-
-        const progress = {};
-
-        players.forEach(player => {
-
-            progress[player.id] = {
-                player: player,
-                firelake: 0,
-                seminole: 0,
-                westwood: 0
-            };
-
-        });
-
-
-        // --------------------------------------------------
-        // COUNT QUALIFYING ROUNDS
-        // --------------------------------------------------
-
-        (rounds || []).forEach(round => {
-
-            const event = round.events_table;
-
-            if (!event) {
-                return;
-            }
-
-            // Must belong to current season
-            if (Number(event.season_id) !== 1) {
-                return;
-            }
-
-            // Major events do not count toward
-            // regular qualifying requirements.
-            if (event.event_type === "Major") {
-                return;
-            }
-
-            // Only approved/finalized player rounds count.
-            const approvalStatus =
-                String(round.approval_status || "").toLowerCase();
-
-            if (
-                approvalStatus !== "approved" &&
-                approvalStatus !== "finalized"
-            ) {
-                return;
-            }
-
-            const course =
-                event.courses?.course_name || "";
-
-            const courseType =
-                getCourseType(course);
-
-            if (!courseType) {
-                return;
-            }
-
-            const playerProgress =
-                progress[round.player_id];
-
-            if (!playerProgress) {
-                return;
-            }
-
-            // Maximum requirement is two rounds
-            // per course.
-            if (playerProgress[courseType] < 2) {
-                playerProgress[courseType]++;
-            }
-
-        });
-
-
-        // --------------------------------------------------
-        // DISPLAY PLAYER PROGRESS
-        // --------------------------------------------------
+        // ==========================================
+        // BUILD TABLE
+        // ==========================================
 
         body.innerHTML = "";
 
-        let totalCompleted = 0;
-        let totalRequired = players.length * 6;
+
+        (players || []).forEach(
+            player => {
+
+                let totalCompleted = 0;
+
+                let totalRequired = 0;
 
 
-        players.forEach(player => {
+                const cells =
+                    orderedCourses.map(
+                        course => {
 
-            const playerProgress =
-                progress[player.id];
+                            const courseId =
+                                course.course_id;
 
-            if (!playerProgress) {
-                return;
+
+                            const completed =
+                                playerProgress[
+                                    player.player_id
+                                ][courseId] || 0;
+
+
+                            const required =
+                                requirementMap[
+                                    courseId
+                                ] || 0;
+
+
+                            totalCompleted +=
+                                Math.min(
+                                    completed,
+                                    required
+                                );
+
+
+                            totalRequired +=
+                                required;
+
+
+                            // ----------------------------------
+                            // STATUS
+                            // ----------------------------------
+
+                            let statusClass =
+                                "progress-not-started";
+
+                            let statusText =
+                                `${completed} / ${required}`;
+
+
+                            if (
+                                completed >=
+                                required
+                            ) {
+
+                                statusClass =
+                                    "progress-complete";
+
+                                statusText =
+                                    `${required} / ${required}`;
+
+                            }
+
+                            else if (
+                                completed > 0
+                            ) {
+
+                                statusClass =
+                                    "progress-in-progress";
+
+                            }
+
+
+                            return `
+                                <td>
+                                    <span
+                                        class="course-progress-value ${statusClass}"
+                                    >
+                                        ${statusText}
+                                    </span>
+                                </td>
+                            `;
+
+                        }
+                    )
+                    .join("");
+
+
+                // ==========================================
+                // TOTAL
+                // ==========================================
+
+                const totalClass =
+                    totalCompleted >=
+                    totalRequired
+                        ? "progress-complete"
+                        : (
+                            totalCompleted > 0
+                                ? "progress-in-progress"
+                                : "progress-not-started"
+                        );
+
+
+                const row =
+                    document.createElement("tr");
+
+
+                row.innerHTML = `
+                    <td class="round-player-name">
+                        ${player.Name}
+                    </td>
+
+                    ${cells}
+
+                    <td>
+                        <span
+                            class="course-progress-value ${totalClass}"
+                        >
+                            ${totalCompleted}
+                            /
+                            ${totalRequired}
+                        </span>
+                    </td>
+                `;
+
+
+                body.appendChild(row);
+
             }
-
-            const total =
-                playerProgress.firelake +
-                playerProgress.seminole +
-                playerProgress.westwood;
-
-            totalCompleted += total;
+        );
 
 
-            const row =
-                document.createElement("tr");
-
-
-            row.innerHTML = `
-                <td class="round-player-name">
-                    ${player.Name || "Unknown Player"}
-                </td>
-
-                <td>
-                    ${formatCourseProgress(
-                        playerProgress.firelake
-                    )}
-                </td>
-
-                <td>
-                    ${formatCourseProgress(
-                        playerProgress.seminole
-                    )}
-                </td>
-
-                <td>
-                    ${formatCourseProgress(
-                        playerProgress.westwood
-                    )}
-                </td>
-
-                <td class="course-total-progress">
-                    ${total} / 6
-                </td>
-            `;
-
-            body.appendChild(row);
-
-        });
-
-
-        // --------------------------------------------------
+        // ==========================================
         // UPDATE SEASON SUMMARY
-        // --------------------------------------------------
+        // ==========================================
 
-        const requiredRounds =
-            players.length * 6;
+        const totalRequiredPerPlayer =
+            requirements.reduce(
+                (
+                    total,
+                    requirement
+                ) =>
+                    total +
+                    (
+                        Number(
+                            requirement.required_rounds
+                        ) || 0
+                    ),
+                0
+            );
 
-        const percentage =
-            requiredRounds > 0
-                ? Math.round(
-                    (totalCompleted / requiredRounds) * 100
-                )
-                : 0;
 
+        const totalCompletedAcrossLeague =
+            (players || []).reduce(
+                (
+                    total,
+                    player
+                ) => {
+
+                    return (
+                        total +
+                        courseIds.reduce(
+                            (
+                                playerTotal,
+                                courseId
+                            ) => {
+
+                                const completed =
+                                    playerProgress[
+                                        player.player_id
+                                    ][courseId] || 0;
+
+                                const required =
+                                    requirementMap[
+                                        courseId
+                                    ] || 0;
+
+                                return (
+                                    playerTotal +
+                                    Math.min(
+                                        completed,
+                                        required
+                                    )
+                                );
+
+                            },
+                            0
+                        )
+                    );
+
+                },
+                0
+            );
+
+
+        const totalRequiredAcrossLeague =
+            (
+                players || []
+            ).length *
+            totalRequiredPerPlayer;
+
+
+        // ==========================================
+        // UPDATE TOP SUMMARY
+        // ==========================================
 
         const completedElement =
             document.getElementById(
@@ -1047,99 +1335,201 @@ async function loadCourseCompletion() {
                 "seasonProgressPercent"
             );
 
-        const progressFill =
+        const fillElement =
             document.getElementById(
                 "seasonProgressFill"
             );
 
 
         if (completedElement) {
+
             completedElement.textContent =
-                totalCompleted;
+                totalCompletedAcrossLeague;
+
         }
+
 
         if (requiredElement) {
+
             requiredElement.textContent =
-                requiredRounds;
+                totalRequiredAcrossLeague;
+
         }
+
+
+        const percentage =
+            totalRequiredAcrossLeague > 0
+                ? Math.round(
+                    (
+                        totalCompletedAcrossLeague /
+                        totalRequiredAcrossLeague
+                    ) * 100
+                )
+                : 0;
+
 
         if (percentageElement) {
+
             percentageElement.textContent =
                 `${percentage}%`;
+
         }
 
-        if (progressFill) {
-            progressFill.style.width =
+
+        if (fillElement) {
+
+            fillElement.style.width =
                 `${percentage}%`;
+
         }
 
 
-        // --------------------------------------------------
-        // UPDATE COURSE SUMMARY
-        // --------------------------------------------------
+        // ==========================================
+        // UPDATE COURSE SUMMARY CARDS
+        // ==========================================
 
-        const firelakeTotal =
-            players.reduce(
-                (total, player) =>
-                    total +
-                    progress[player.id].firelake,
-                0
-            );
+        const courseSummaryIds = {
 
-        const seminoleTotal =
-            players.reduce(
-                (total, player) =>
-                    total +
-                    progress[player.id].seminole,
-                0
-            );
+            Firelake:
+                "firelakeProgress",
 
-        const westwoodTotal =
-            players.reduce(
-                (total, player) =>
-                    total +
-                    progress[player.id].westwood,
-                0
-            );
+            Seminole:
+                "seminoleProgress",
+
+            Westwood:
+                "westwoodProgress"
+
+        };
 
 
-        updateCourseSummary(
-            "firelakeProgress",
-            firelakeTotal,
-            players.length * 2
+        orderedCourses.forEach(
+            course => {
+
+                const name =
+                    course.Course_name ||
+                    "";
+
+                const elementId =
+                    Object.keys(
+                        courseSummaryIds
+                    ).find(
+                        key =>
+                            name
+                                .toLowerCase()
+                                .includes(
+                                    key.toLowerCase()
+                                )
+                    );
+
+
+                if (!elementId) {
+
+                    return;
+
+                }
+
+
+                const element =
+                    document.getElementById(
+                        courseSummaryIds[
+                            elementId
+                        ]
+                    );
+
+
+                if (!element) {
+
+                    return;
+
+                }
+
+
+                const courseId =
+                    course.course_id;
+
+
+                const completed =
+                    (players || []).reduce(
+                        (
+                            total,
+                            player
+                        ) => {
+
+                            const playerCompleted =
+                                playerProgress[
+                                    player.player_id
+                                ][courseId] || 0;
+
+                            const required =
+                                requirementMap[
+                                    courseId
+                                ] || 0;
+
+                            return (
+                                total +
+                                Math.min(
+                                    playerCompleted,
+                                    required
+                                )
+                            );
+
+                        },
+                        0
+                    );
+
+
+                const required =
+                    (
+                        players || []
+                    ).length *
+                    (
+                        requirementMap[
+                            courseId
+                        ] || 0
+                    );
+
+
+                element.textContent =
+                    `${completed} / ${required} rounds completed`;
+
+            }
         );
 
-        updateCourseSummary(
-            "seminoleProgress",
-            seminoleTotal,
-            players.length * 2
+
+        console.log(
+            "IGA COURSE COMPLETION:",
+            {
+                players,
+                requirements,
+                courses,
+                rounds
+            }
         );
 
-        updateCourseSummary(
-            "westwoodProgress",
-            westwoodTotal,
-            players.length * 2
-        );
+    }
 
-
-    } catch (error) {
+    catch (error) {
 
         console.error(
-            "Error loading course completion:",
+            "ERROR LOADING COURSE COMPLETION:",
             error
         );
 
+
         body.innerHTML = `
             <tr>
-                <td colspan="5" class="table-loading">
+                <td
+                    colspan="5"
+                    class="table-loading"
+                >
                     Unable to load course completion data.
                 </td>
             </tr>
         `;
 
     }
-}
 
+}
 function formatCourseProgress(count) {
 
     if (count >= 2) {

@@ -2725,6 +2725,81 @@ function updateCourseSummary(elementId, completed, required) {
         `${completed} / ${required} rounds`;
 }
 
+/* ==========================================
+   COURSE COMPLETION TRACKER
+========================================== */
+
+.course-progress-value {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 58px;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+}
+
+
+/* ------------------------------------------
+   NOT STARTED
+------------------------------------------ */
+
+.course-progress-value.progress-not-started {
+    background: #f0f1ee;
+    color: #888;
+}
+
+
+/* ------------------------------------------
+   IN PROGRESS
+------------------------------------------ */
+
+.course-progress-value.progress-in-progress {
+    background: #e3f0e5;
+    color: #287a3a;
+}
+
+
+/* ------------------------------------------
+   COMPLETE
+------------------------------------------ */
+
+.course-progress-value.progress-complete {
+    background: #e7dba9;
+    color: #806414;
+}
+
+
+/* ------------------------------------------
+   PLAYER NAME
+------------------------------------------ */
+
+.rounds-completion-table
+.round-player-name {
+    font-weight: 800;
+    color: #222;
+}
+
+
+/* ------------------------------------------
+   TOTAL COLUMN
+------------------------------------------ */
+
+.rounds-completion-table th:last-child,
+.rounds-completion-table td:last-child {
+    border-left: 1px solid #e4e4df;
+}
+
+
+/* ------------------------------------------
+   COMPLETED ROW
+------------------------------------------ */
+
+.rounds-completion-table tbody tr:hover {
+    background: #fafbf9;
+}
 
 /* ------------------------------------------
 FOOTER
