@@ -469,6 +469,42 @@ async function loadRoundHistory() {
 
         }
 
+    // ==========================================
+    // GET SUBMITTED ROUNDS
+    // ==========================================
+
+const eventIds =
+    (events || []).map(
+        event =>
+            event.id
+    );
+
+
+const {
+    data: rounds,
+    error: roundError
+} = await supabaseClient
+
+    .from("rounds")
+
+    .select(`
+        id,
+        event_id,
+        player_id,
+        round_date
+    `)
+
+    .in(
+        "event_id",
+        eventIds
+    );
+
+
+if (roundError) {
+
+    throw roundError;
+
+}
 
         if (
             !events ||
@@ -611,10 +647,43 @@ async function loadRoundHistory() {
                 // DATE
                 // ----------------------------------
 
-                const eventDate =
-                    formatRoundDate(
-                        event.event_date
-                    );
+               // ----------------------------------
+// FIRST ROUND SUBMITTED DATE
+// ----------------------------------
+
+const eventRounds =
+    (rounds || [])
+        .filter(
+            round =>
+                round.event_id ===
+                event.id
+        );
+
+
+const firstSubmittedRound =
+    eventRounds
+        .filter(
+            round =>
+                round.round_date
+        )
+        .sort(
+            (a, b) =>
+                new Date(a.round_date) -
+                new Date(b.round_date)
+        )[0];
+
+
+const firstSubmittedDate =
+    firstSubmittedRound?.round_date ||
+    null;
+
+
+const eventDate =
+    firstSubmittedDate
+        ? formatRoundDate(
+            firstSubmittedDate
+        )
+        : "Date TBD";
 
 
                 // ----------------------------------
