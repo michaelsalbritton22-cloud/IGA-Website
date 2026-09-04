@@ -2202,3 +2202,32 @@ footer {
     }
 
 }
+
+/* ==========================================
+   IGA EVENT HEADER COLORS
+========================================== */
+
+.event-leaderboard.event-status-open .event-header {
+    background: #287a3a !important;
+    color: #ffffff;
+    border-left: 6px solid #1d5c2a;
+}
+
+.event-leaderboard.event-status-open .event-header h3,
+.event-leaderboard.event-status-open .event-header .event-date,
+.event-leaderboard.event-status-open .event-header .event-status {
+    color: #ffffff;
+}
+
+
+.event-leaderboard.event-status-complete .event-header {
+    background: #b99528 !important;
+    color: #ffffff;
+    border-left: 6px solid #8c6d16;
+}
+
+.event-leaderboard.event-status-complete .event-header h3,
+.event-leaderboard.event-status-complete .event-header .event-date,
+.event-leaderboard.event-status-complete .event-header .event-status {
+    color: #ffffff;
+}
