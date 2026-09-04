@@ -2686,6 +2686,46 @@ color: #888;
 text-align: center;
 }
 
+function formatCourseProgress(count) {
+
+    if (count >= 2) {
+        return `
+            <span class="course-progress complete">
+                2 / 2
+            </span>
+        `;
+    }
+
+    if (count === 1) {
+        return `
+            <span class="course-progress partial">
+                1 / 2
+            </span>
+        `;
+    }
+
+    return `
+        <span class="course-progress none">
+            0 / 2
+        </span>
+    `;
+}
+
+
+function updateCourseSummary(elementId, completed, required) {
+
+    const element =
+        document.getElementById(elementId);
+
+    if (!element) {
+        return;
+    }
+
+    element.textContent =
+        `${completed} / ${required} rounds`;
+}
+
+
 /* ------------------------------------------
 FOOTER
 ------------------------------------------ */

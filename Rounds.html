@@ -794,35 +794,390 @@ async function loadRecentResults() {
 
 async function loadCourseCompletion() {
 
-    const body =
-        document.getElementById(
-            "courseCompletionBody"
+    const body = document.getElementById("courseCompletionBody");
+
+    body.innerHTML = `
+        <tr>
+            <td colspan="5" class="table-loading">
+                Loading course completion...
+            </td>
+        </tr>
+    `;
+
+    try {
+
+        // --------------------------------------------------
+        // GET ACTIVE IGA PLAYERS
+        // --------------------------------------------------
+
+        const { data: players, error: playersError } = await supabaseClient
+            .from("Players")
+            .select("*")
+            .eq("Active", true)
+            .order("Name");
+
+        if (playersError) {
+            throw playersError;
+        }
+
+
+        // --------------------------------------------------
+        // GET QUALIFYING ROUNDS FOR CURRENT SEASON
+        // --------------------------------------------------
+
+        const { data: rounds, error: roundsError } = await supabaseClient
+            .from("rounds")
+            .select(`
+                player_id,
+                event_id,
+                approval_status,
+                events_table (
+                    season_id,
+                    event_type,
+                    course_id,
+                    status,
+                    courses (
+                        course_name
+                    )
+                )
+            `);
+
+        if (roundsError) {
+            throw roundsError;
+        }
+
+
+        // --------------------------------------------------
+        // COURSE IDENTIFICATION
+        // --------------------------------------------------
+
+        function getCourseType(courseName) {
+
+            if (!courseName) {
+                return null;
+            }
+
+            const name = courseName.toLowerCase();
+
+            if (name.includes("firelake")) {
+                return "firelake";
+            }
+
+            if (name.includes("seminole")) {
+                return "seminole";
+            }
+
+            if (name.includes("westwood")) {
+                return "westwood";
+            }
+
+            return null;
+        }
+
+
+        // --------------------------------------------------
+        // BUILD PLAYER PROGRESS
+        // --------------------------------------------------
+
+        const progress = {};
+
+        players.forEach(player => {
+
+            progress[player.id] = {
+                player: player,
+                firelake: 0,
+                seminole: 0,
+                westwood: 0
+            };
+
+        });
+
+
+        // --------------------------------------------------
+        // COUNT QUALIFYING ROUNDS
+        // --------------------------------------------------
+
+        (rounds || []).forEach(round => {
+
+            const event = round.events_table;
+
+            if (!event) {
+                return;
+            }
+
+            // Must belong to current season
+            if (Number(event.season_id) !== 1) {
+                return;
+            }
+
+            // Major events do not count toward
+            // regular qualifying requirements.
+            if (event.event_type === "Major") {
+                return;
+            }
+
+            // Only approved/finalized player rounds count.
+            const approvalStatus =
+                String(round.approval_status || "").toLowerCase();
+
+            if (
+                approvalStatus !== "approved" &&
+                approvalStatus !== "finalized"
+            ) {
+                return;
+            }
+
+            const course =
+                event.courses?.course_name || "";
+
+            const courseType =
+                getCourseType(course);
+
+            if (!courseType) {
+                return;
+            }
+
+            const playerProgress =
+                progress[round.player_id];
+
+            if (!playerProgress) {
+                return;
+            }
+
+            // Maximum requirement is two rounds
+            // per course.
+            if (playerProgress[courseType] < 2) {
+                playerProgress[courseType]++;
+            }
+
+        });
+
+
+        // --------------------------------------------------
+        // DISPLAY PLAYER PROGRESS
+        // --------------------------------------------------
+
+        body.innerHTML = "";
+
+        let totalCompleted = 0;
+        let totalRequired = players.length * 6;
+
+
+        players.forEach(player => {
+
+            const playerProgress =
+                progress[player.id];
+
+            if (!playerProgress) {
+                return;
+            }
+
+            const total =
+                playerProgress.firelake +
+                playerProgress.seminole +
+                playerProgress.westwood;
+
+            totalCompleted += total;
+
+
+            const row =
+                document.createElement("tr");
+
+
+            row.innerHTML = `
+                <td class="round-player-name">
+                    ${player.Name || "Unknown Player"}
+                </td>
+
+                <td>
+                    ${formatCourseProgress(
+                        playerProgress.firelake
+                    )}
+                </td>
+
+                <td>
+                    ${formatCourseProgress(
+                        playerProgress.seminole
+                    )}
+                </td>
+
+                <td>
+                    ${formatCourseProgress(
+                        playerProgress.westwood
+                    )}
+                </td>
+
+                <td class="course-total-progress">
+                    ${total} / 6
+                </td>
+            `;
+
+            body.appendChild(row);
+
+        });
+
+
+        // --------------------------------------------------
+        // UPDATE SEASON SUMMARY
+        // --------------------------------------------------
+
+        const requiredRounds =
+            players.length * 6;
+
+        const percentage =
+            requiredRounds > 0
+                ? Math.round(
+                    (totalCompleted / requiredRounds) * 100
+                )
+                : 0;
+
+
+        const completedElement =
+            document.getElementById(
+                "seasonRoundsCompleted"
+            );
+
+        const requiredElement =
+            document.getElementById(
+                "seasonRoundsRequired"
+            );
+
+        const percentageElement =
+            document.getElementById(
+                "seasonProgressPercent"
+            );
+
+        const progressFill =
+            document.getElementById(
+                "seasonProgressFill"
+            );
+
+
+        if (completedElement) {
+            completedElement.textContent =
+                totalCompleted;
+        }
+
+        if (requiredElement) {
+            requiredElement.textContent =
+                requiredRounds;
+        }
+
+        if (percentageElement) {
+            percentageElement.textContent =
+                `${percentage}%`;
+        }
+
+        if (progressFill) {
+            progressFill.style.width =
+                `${percentage}%`;
+        }
+
+
+        // --------------------------------------------------
+        // UPDATE COURSE SUMMARY
+        // --------------------------------------------------
+
+        const firelakeTotal =
+            players.reduce(
+                (total, player) =>
+                    total +
+                    progress[player.id].firelake,
+                0
+            );
+
+        const seminoleTotal =
+            players.reduce(
+                (total, player) =>
+                    total +
+                    progress[player.id].seminole,
+                0
+            );
+
+        const westwoodTotal =
+            players.reduce(
+                (total, player) =>
+                    total +
+                    progress[player.id].westwood,
+                0
+            );
+
+
+        updateCourseSummary(
+            "firelakeProgress",
+            firelakeTotal,
+            players.length * 2
+        );
+
+        updateCourseSummary(
+            "seminoleProgress",
+            seminoleTotal,
+            players.length * 2
+        );
+
+        updateCourseSummary(
+            "westwoodProgress",
+            westwoodTotal,
+            players.length * 2
         );
 
 
-    // This section will be connected
-    // to the IGA qualifying-round
-    // requirements and player data.
+    } catch (error) {
 
+        console.error(
+            "Error loading course completion:",
+            error
+        );
 
-    body.innerHTML = `
+        body.innerHTML = `
+            <tr>
+                <td colspan="5" class="table-loading">
+                    Unable to load course completion data.
+                </td>
+            </tr>
+        `;
 
-        <tr>
+    }
+}
 
-            <td colspan="5" class="table-loading">
+function formatCourseProgress(count) {
 
-                Course completion data will load
-                from the IGA database.
+    if (count >= 2) {
+        return `
+            <span class="course-progress complete">
+                2 / 2
+            </span>
+        `;
+    }
 
-            </td>
+    if (count === 1) {
+        return `
+            <span class="course-progress partial">
+                1 / 2
+            </span>
+        `;
+    }
 
-        </tr>
-
+    return `
+        <span class="course-progress none">
+            0 / 2
+        </span>
     `;
-
 }
 
 
+function updateCourseSummary(elementId, completed, required) {
+
+    const element =
+        document.getElementById(elementId);
+
+    if (!element) {
+        return;
+    }
+
+    element.textContent =
+        `${completed} / ${required} rounds`;
+}
 
 // ==========================================
 // VIEW ROUND
