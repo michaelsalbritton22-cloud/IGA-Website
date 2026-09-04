@@ -370,7 +370,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script src="js/supabase.js"></script>
 
 <script src="js/database.js"></script>
 
@@ -414,213 +413,350 @@ async function loadRoundsPage() {
 // LOAD ROUND HISTORY
 // ==========================================
 
-async function loadRoundHistory() {
+aasync function loadRoundHistory() {
 
     const container =
         document.getElementById("roundHistory");
 
+    try {
 
-    const {
-        data: events,
-        error
-    } = await supabaseClient
+        console.log("Loading IGA round history...");
 
-        .from("events_table")
 
-        .select(`
-            id,
-            event_name,
-            event_type,
-            status,
-            event_date,
-            course_id,
-            courses (
-                course_name,
-                city,
-                state
+        // ==========================================
+        // GET EVENTS
+        // ==========================================
+
+        const {
+            data: events,
+            error: eventError
+        } = await supabaseClient
+
+            .from("events_table")
+
+            .select(`
+                id,
+                event_name,
+                event_type,
+                status,
+                event_date,
+                course_id
+            `)
+
+            .eq(
+                "season_id",
+                1
             )
-        `)
 
-        .eq("season_id", 1)
+            .neq(
+                "event_type",
+                "Major"
+            )
 
-        .neq("event_type", "Major")
-
-        .order(
-            "event_date",
-            {
-                ascending: false
-            }
-        );
-
-
-    if (error) {
-
-        console.error(
-            "Error loading round history:",
-            error
-        );
-
-        container.innerHTML = `
-            <div class="round-history-empty">
-                Unable to load IGA events.
-            </div>
-        `;
-
-        return;
-
-    }
+            .order(
+                "event_date",
+                {
+                    ascending: false
+                }
+            );
 
 
-    if (!events || events.length === 0) {
+        if (eventError) {
 
-        container.innerHTML = `
-            <div class="round-history-empty">
-                No IGA events have been scheduled yet.
-            </div>
-        `;
-
-        return;
-
-    }
-
-
-    container.innerHTML = "";
-
-
-    events.forEach(event => {
-
-        const course =
-            event.courses || {};
-
-
-        let statusClass =
-            "round-card-upcoming";
-
-        let statusText =
-            "UPCOMING";
-
-
-        if (event.status === "Finalized") {
-
-            statusClass =
-                "round-card-complete";
-
-            statusText =
-                "COMPLETE";
-
-        } else if (event.status === "Open") {
-
-            statusClass =
-                "round-card-open";
-
-            statusText =
-                "OPEN";
+            throw eventError;
 
         }
 
 
-        const eventDate =
-            formatRoundDate(
-                event.event_date
-            );
+        if (
+            !events ||
+            events.length === 0
+        ) {
+
+            container.innerHTML = `
+                <div class="round-history-empty">
+                    No IGA events have been scheduled yet.
+                </div>
+            `;
+
+            return;
+
+        }
 
 
-        const location =
-            course.city && course.state
+        // ==========================================
+        // GET COURSES
+        // ==========================================
 
-                ? `${course.city}, ${course.state}`
-
-                : "Location TBD";
-
-
-        const card = document.createElement("div");
-
-        card.className =
-            `round-history-card ${statusClass}`;
-
-
-        card.innerHTML = `
-
-            <div class="round-card-top">
-
-                <span class="round-card-status">
-                    ${statusText}
-                </span>
-
-                <span class="round-card-date">
-                    ${eventDate}
-                </span>
-
-            </div>
+        const courseIds = [
+            ...new Set(
+                events
+                    .map(event => event.course_id)
+                    .filter(id => id !== null)
+            )
+        ];
 
 
-            <div class="round-card-body">
+        let courses = [];
 
-                <div class="round-card-course">
 
-                    <div class="round-card-course-icon">
-                        ⛳
-                    </div>
+        if (courseIds.length > 0) {
 
-                    <div>
+            const {
+                data,
+                error: courseError
+            } = await supabaseClient
 
-                        <h3>
-                            ${event.event_name}
-                        </h3>
+                .from("courses")
 
-                        <span>
-                            ${course.course_name || "Course TBD"}
+                .select(`
+                    course_id,
+                    "Course_name",
+                    "Location"
+                `)
+
+                .in(
+                    "course_id",
+                    courseIds
+                );
+
+
+            if (courseError) {
+
+                throw courseError;
+
+            }
+
+
+            courses = data || [];
+
+        }
+
+
+        // ==========================================
+        // CREATE COURSE MAP
+        // ==========================================
+
+        const courseMap = {};
+
+
+        courses.forEach(
+            course => {
+
+                courseMap[
+                    course.course_id
+                ] = course;
+
+            }
+        );
+
+
+        // ==========================================
+        // BUILD EVENT CARDS
+        // ==========================================
+
+        container.innerHTML = "";
+
+
+        events.forEach(
+            event => {
+
+                const course =
+                    courseMap[
+                        event.course_id
+                    ] || {};
+
+
+                // ----------------------------------
+                // STATUS
+                // ----------------------------------
+
+                let statusClass =
+                    "round-card-upcoming";
+
+                let statusText =
+                    "UPCOMING";
+
+
+                if (
+                    event.status ===
+                    "Finalized"
+                ) {
+
+                    statusClass =
+                        "round-card-complete";
+
+                    statusText =
+                        "COMPLETE";
+
+                }
+
+                else if (
+                    event.status ===
+                    "Open"
+                ) {
+
+                    statusClass =
+                        "round-card-open";
+
+                    statusText =
+                        "OPEN";
+
+                }
+
+
+                // ----------------------------------
+                // DATE
+                // ----------------------------------
+
+                const eventDate =
+                    formatRoundDate(
+                        event.event_date
+                    );
+
+
+                // ----------------------------------
+                // LOCATION
+                // ----------------------------------
+
+                let location =
+                    "Location TBD";
+
+
+                if (
+                    course.Location
+                ) {
+
+                    location =
+                        course.Location;
+
+                }
+
+
+                // ----------------------------------
+                // CARD
+                // ----------------------------------
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    `round-history-card ${statusClass}`;
+
+
+                card.innerHTML = `
+
+                    <div class="round-card-top">
+
+                        <span class="round-card-status">
+                            ${statusText}
+                        </span>
+
+                        <span class="round-card-date">
+                            ${eventDate}
                         </span>
 
                     </div>
 
-                </div>
+
+                    <div class="round-card-body">
+
+                        <div class="round-card-course">
+
+                            <div class="round-card-course-icon">
+                                ⛳
+                            </div>
+
+                            <div>
+
+                                <h3>
+                                    ${event.event_name}
+                                </h3>
+
+                                <span>
+                                    ${course.Course_name || "Course TBD"}
+                                </span>
+
+                            </div>
+
+                        </div>
 
 
-                <div class="round-card-location">
+                        <div class="round-card-location">
 
-                    <span class="location-icon">
-                        📍
-                    </span>
+                            <span class="location-icon">
+                                📍
+                            </span>
 
-                    ${location}
+                            ${location}
 
-                </div>
+                        </div>
 
 
-                <div class="round-card-footer">
+                        <div class="round-card-footer">
 
-                    <span class="round-card-result"
-                          id="event-result-${event.id}">
-                        Results available after round
-                    </span>
+                            <span
+                                class="round-card-result"
+                                id="event-result-${event.id}"
+                            >
+                                Results available after round
+                            </span>
 
-                    <button
-                        class="round-view-button"
-                        onclick="viewRound(${event.id})">
 
-                        VIEW ROUND
+                            <button
+                                class="round-view-button"
+                                onclick="viewRound(${event.id})"
+                            >
+                                VIEW ROUND
+                                <span>→</span>
+                            </button>
 
-                        <span>
-                            →
-                        </span>
+                        </div>
 
-                    </button>
+                    </div>
 
-                </div>
+                `;
+
+
+                container.appendChild(
+                    card
+                );
+
+            }
+        );
+
+
+        console.log(
+            "IGA ROUND HISTORY:",
+            events
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "ERROR LOADING ROUND HISTORY:",
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <div class="round-history-empty">
+
+                Unable to load IGA events.
 
             </div>
 
         `;
 
-
-        container.appendChild(card);
-
-    });
+    }
 
 }
-
-
 
 // ==========================================
 // LOAD RECENT RESULTS
@@ -634,158 +770,385 @@ async function loadRecentResults() {
         );
 
 
-    const {
-        data: rounds,
-        error
-    } = await supabaseClient
+    try {
 
-        .from("rounds")
+        console.log(
+            "Loading recent IGA results..."
+        );
 
-        .select(`
-            id,
-            player_id,
-            event_id,
-            gross_score,
-            net_score,
-            points,
-            approval_status,
-            created_at,
-            Players (
-                Name
-            ),
-            events_table (
-                event_name,
-                event_date,
-                courses (
-                    course_name
-                )
+
+        // ==========================================
+        // GET RECENT ROUNDS
+        // ==========================================
+
+        const {
+            data: rounds,
+            error: roundError
+        } = await supabaseClient
+
+            .from("rounds")
+
+            .select(`
+                id,
+                player_id,
+                event_id,
+                gross_score,
+                net_score,
+                points_earned,
+                approval_status,
+                created_at
+            `)
+
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
             )
-        `)
 
-        .order(
-            "created_at",
-            {
-                ascending: false
+            .limit(10);
+
+
+        if (roundError) {
+
+            throw roundError;
+
+        }
+
+
+        if (
+            !rounds ||
+            rounds.length === 0
+        ) {
+
+            body.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="6"
+                        class="table-loading"
+                    >
+                        No submitted rounds yet.
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // GET PLAYER IDs
+        // ==========================================
+
+        const playerIds = [
+            ...new Set(
+                rounds
+                    .map(round => round.player_id)
+                    .filter(id => id !== null)
+            )
+        ];
+
+
+        // ==========================================
+        // GET EVENT IDs
+        // ==========================================
+
+        const eventIds = [
+            ...new Set(
+                rounds
+                    .map(round => round.event_id)
+                    .filter(id => id !== null)
+            )
+        ];
+
+
+        // ==========================================
+        // GET PLAYERS
+        // ==========================================
+
+        let players = [];
+
+
+        if (playerIds.length > 0) {
+
+            const {
+                data,
+                error: playerError
+            } = await supabaseClient
+
+                .from("Players")
+
+                .select(`
+                    player_id,
+                    "Name"
+                `)
+
+                .in(
+                    "player_id",
+                    playerIds
+                );
+
+
+            if (playerError) {
+
+                throw playerError;
+
             }
-        )
-
-        .limit(10);
 
 
-    if (error) {
+            players = data || [];
+
+        }
+
+
+        // ==========================================
+        // GET EVENTS
+        // ==========================================
+
+        let events = [];
+
+
+        if (eventIds.length > 0) {
+
+            const {
+                data,
+                error: eventError
+            } = await supabaseClient
+
+                .from("events_table")
+
+                .select(`
+                    id,
+                    event_name,
+                    event_date,
+                    course_id
+                `)
+
+                .in(
+                    "id",
+                    eventIds
+                );
+
+
+            if (eventError) {
+
+                throw eventError;
+
+            }
+
+
+            events = data || [];
+
+        }
+
+
+        // ==========================================
+        // GET COURSES
+        // ==========================================
+
+        const courseIds = [
+            ...new Set(
+                events
+                    .map(event => event.course_id)
+                    .filter(id => id !== null)
+            )
+        ];
+
+
+        let courses = [];
+
+
+        if (courseIds.length > 0) {
+
+            const {
+                data,
+                error: courseError
+            } = await supabaseClient
+
+                .from("courses")
+
+                .select(`
+                    course_id,
+                    "Course_name"
+                `)
+
+                .in(
+                    "course_id",
+                    courseIds
+                );
+
+
+            if (courseError) {
+
+                throw courseError;
+
+            }
+
+
+            courses = data || [];
+
+        }
+
+
+        // ==========================================
+        // CREATE LOOKUP MAPS
+        // ==========================================
+
+        const playerMap = {};
+
+        players.forEach(
+            player => {
+
+                playerMap[
+                    player.player_id
+                ] = player;
+
+            }
+        );
+
+
+        const eventMap = {};
+
+        events.forEach(
+            event => {
+
+                eventMap[
+                    event.id
+                ] = event;
+
+            }
+        );
+
+
+        const courseMap = {};
+
+        courses.forEach(
+            course => {
+
+                courseMap[
+                    course.course_id
+                ] = course;
+
+            }
+        );
+
+
+        // ==========================================
+        // BUILD TABLE
+        // ==========================================
+
+        body.innerHTML = "";
+
+
+        rounds.forEach(
+            round => {
+
+                const player =
+                    playerMap[
+                        round.player_id
+                    ] || {};
+
+
+                const event =
+                    eventMap[
+                        round.event_id
+                    ] || {};
+
+
+                const course =
+                    courseMap[
+                        event.course_id
+                    ] || {};
+
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${formatRoundDate(
+                            event.event_date
+                        )}
+                    </td>
+
+                    <td class="round-player-name">
+                        ${player.Name || "Unknown Player"}
+                    </td>
+
+                    <td>
+                        ${course.Course_name || "Unknown"}
+                    </td>
+
+                    <td>
+                        ${round.gross_score ?? "—"}
+                    </td>
+
+                    <td>
+                        ${round.net_score ?? "—"}
+                    </td>
+
+                    <td class="round-points">
+                        ${round.points_earned ?? "—"}
+                    </td>
+
+                `;
+
+
+                body.appendChild(
+                    row
+                );
+
+            }
+        );
+
+
+        console.log(
+            "IGA RECENT RESULTS:",
+            {
+                rounds,
+                players,
+                events,
+                courses
+            }
+        );
+
+    }
+
+    catch (error) {
 
         console.error(
-            "Error loading recent results:",
+            "ERROR LOADING RECENT RESULTS:",
             error
         );
 
+
         body.innerHTML = `
 
             <tr>
 
                 <td
                     colspan="6"
-                    class="table-loading">
-
+                    class="table-loading"
+                >
                     Unable to load recent results.
-
                 </td>
 
             </tr>
 
         `;
 
-        return;
-
     }
-
-
-    if (!rounds || rounds.length === 0) {
-
-        body.innerHTML = `
-
-            <tr>
-
-                <td
-                    colspan="6"
-                    class="table-loading">
-
-                    No submitted rounds yet.
-
-                </td>
-
-            </tr>
-
-        `;
-
-        return;
-
-    }
-
-
-    body.innerHTML = "";
-
-
-    rounds.forEach(round => {
-
-        const playerName =
-            round.Players?.Name ||
-            "Unknown Player";
-
-
-        const event =
-            round.events_table || {};
-
-
-        const course =
-            event.courses || {};
-
-
-        const date =
-            formatRoundDate(
-                event.event_date
-            );
-
-
-        const row =
-            document.createElement("tr");
-
-
-        row.innerHTML = `
-
-            <td>
-                ${date}
-            </td>
-
-            <td class="round-player-name">
-                ${playerName}
-            </td>
-
-            <td>
-                ${course.course_name || "Unknown"}
-            </td>
-
-            <td>
-                ${round.gross_score ?? "—"}
-            </td>
-
-            <td>
-                ${round.net_score ?? "—"}
-            </td>
-
-            <td class="round-points">
-                ${round.points ?? "—"}
-            </td>
-
-        `;
-
-
-        body.appendChild(row);
-
-    });
 
 }
-
 
 
 // ==========================================
