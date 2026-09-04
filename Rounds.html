@@ -2092,8 +2092,19 @@ function formatRoundDate(dateString) {
     }
 
 
+    // Treat date-only database values as local dates
+    // instead of UTC dates.
+
+    const dateParts =
+        dateString.split("-");
+
+
     const date =
-        new Date(dateString);
+        new Date(
+            Number(dateParts[0]),
+            Number(dateParts[1]) - 1,
+            Number(dateParts[2])
+        );
 
 
     return date.toLocaleDateString(
@@ -2106,7 +2117,6 @@ function formatRoundDate(dateString) {
     );
 
 }
-
 
 
 // ==========================================
