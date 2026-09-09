@@ -2452,6 +2452,8 @@ let bogeys = 0;
 
 let doubleBogeys = 0;
 
+let tripleBogeysPlus = 0;
+
 
     holes.forEach(
     hole => {
@@ -2483,7 +2485,7 @@ let doubleBogeys = 0;
 const scoreDifference =
     gross - par;
 
-if (scoreDifference === -2) {
+if (scoreDifference <= -2) {
 
     eagles++;
 
@@ -2510,6 +2512,12 @@ else if (scoreDifference === 1) {
 else if (scoreDifference === 2) {
 
     doubleBogeys++;
+
+}
+
+else if (scoreDifference >= 3) {
+
+    tripleBogeysPlus++;
 
 }
 
@@ -2645,6 +2653,9 @@ else if (scoreDifference === 2) {
 
             double_bogeys:
                 doubleBogeys,
+            
+            triple_bogeys:
+                tripleBogeysPlus,
 
             fairways_hit:
                 null,
