@@ -3607,7 +3607,7 @@ async function getAllPlayerStats(playerIds) {
             );
 
         const tripleBogeysPlus =
-            rounds.reduce(
+            playerRounds.reduce(
                 (total, round) =>
                     total +
                     Number(
