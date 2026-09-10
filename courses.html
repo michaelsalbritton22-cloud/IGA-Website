@@ -212,7 +212,7 @@ const { data, error } = await supabaseClient
 
     </div>
     
-    <div class="course-events">
+        <div class="course-events">
 
         <div class="course-events-title">
             IGA EVENTS
@@ -241,6 +241,49 @@ const { data, error } = await supabaseClient
                 ||
                 `<div class="course-no-events">
                     No IGA events yet
+                </div>`
+        }
+
+    </div>
+
+
+    <div class="course-kings">
+
+        <div class="course-events-title">
+            KING OF THE COURSE
+        </div>
+
+        ${
+            kingResults
+                .filter(
+                    king =>
+                        king.course_id === course.course_id
+                )
+                .map(
+                    king => `
+                        <div class="course-king">
+
+                            <div>
+                                <span>
+                                    ${king.season_id}
+                                </span>
+
+                                <strong>
+                                    ${king.player_name}
+                                </strong>
+                            </div>
+
+                            <strong>
+                                ${king.combined_net}
+                            </strong>
+
+                        </div>
+                    `
+                )
+                .join("")
+                ||
+                `<div class="course-no-events">
+                    No champion yet
                 </div>`
         }
 
