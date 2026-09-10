@@ -152,54 +152,90 @@ async function loadCoursesPage() {
 
             card.innerHTML = `
 
-                <div class="course-card-header">
+    <div class="course-card-header">
 
-                    <h2>
-                        ${course.Course_name || "Course TBD"}
-                    </h2>
+        <h2>
+            ${course.Course_name || "Course TBD"}
+        </h2>
 
-                    <p>
-                        ${course.Location || "Location TBD"}
-                    </p>
+        <p>
+            ${course.Location || "Location TBD"}
+        </p>
 
-                </div>
+    </div>
 
-                <div class="course-card-details">
 
-                    <div>
-                        <span>PAR</span>
-                        <strong>${course.par ?? "—"}</strong>
-                    </div>
+    <div class="course-card-details">
 
-                    <div>
-                        <span>YARDAGE</span>
-                        <strong>
-                            ${
-                                course.yardage
-                                    ? Number(course.yardage).toLocaleString()
-                                    : "—"
-                            }
-                        </strong>
-                    </div>
+        <div>
+            <span>PAR</span>
+            <strong>${course.par ?? "—"}</strong>
+        </div>
 
-                    <div>
-                        <span>TEES</span>
-                        <strong>${course.tee_name || "—"}</strong>
-                    </div>
+        <div>
+            <span>YARDAGE</span>
+            <strong>
+                ${
+                    course.yardage
+                        ? Number(course.yardage).toLocaleString()
+                        : "—"
+                }
+            </strong>
+        </div>
 
-                    <div>
-                        <span>RATING</span>
-                        <strong>${course.course_rating ?? "—"}</strong>
-                    </div>
+        <div>
+            <span>TEES</span>
+            <strong>${course.tee_name || "—"}</strong>
+        </div>
 
-                    <div>
-                        <span>SLOPE</span>
-                        <strong>${course.slope ?? "—"}</strong>
-                    </div>
+        <div>
+            <span>RATING</span>
+            <strong>${course.course_rating ?? "—"}</strong>
+        </div>
 
-                </div>
+        <div>
+            <span>SLOPE</span>
+            <strong>${course.slope ?? "—"}</strong>
+        </div>
 
-            `;
+    </div>
+
+
+    <div class="course-events">
+
+        <div class="course-events-title">
+            IGA EVENTS
+        </div>
+
+        ${
+            events
+                .filter(
+                    event =>
+                        event.course_id === course.course_id
+                )
+                .map(
+                    event => `
+                        <div class="course-event">
+                            <span>
+                                ${event.event_name}
+                            </span>
+
+                            <strong>
+                                ${event.event_type}
+                            </strong>
+                        </div>
+                    `
+                )
+                .join("")
+                ||
+                `<div class="course-no-events">
+                    No IGA events yet
+                </div>`
+        }
+
+    </div>
+
+`;
 
             container.appendChild(card);
 
