@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>IGA Tour | Courses</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+    <!-- ==========================================
+         SHARED HEADER
+         ========================================== -->
+
+    <div id="header"></div>
+
+
+    <!-- ==========================================
+         PAGE
+         ========================================== -->
+
+    <div class="container">
+
+        <div class="page-header">
+
+            <div class="section-eyebrow">
+                IGA TOUR
+            </div>
+
+            <h1>Courses</h1>
+
+            <p>
+                The courses that have shaped the IGA Tour.
+            </p>
+
+        </div>
+
+
+        <div id="coursesContainer">
+
+            <div class="message">
+                Loading courses...
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         FOOTER
+         ========================================== -->
+
+    <footer>
+        IGA Tour © 2027 | Internal Golf Association
+    </footer>
+
+
+    <!-- ==========================================
+         SCRIPTS
+         ========================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="js/database.js"></script>
+
+    <script src="js/components.js"></script>
+
+    <script>
+        loadHeader();
+    </script>
+
+
+</body>
+
+</html>
