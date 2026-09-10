@@ -681,7 +681,7 @@
                 <div class="round-stat-card">
 
                     <span>
-                        TRIPLE BOGEYS
+                        TRIPLE BOGEYS+
                     </span>
 
                     <strong id="statTripleBogeys">
@@ -1453,7 +1453,7 @@ function loadRoundStats(rounds) {
         .map(round => Number(round.double_bogeys))
         .filter(Number.isFinite);
 
-    const tripleBogeys = officialRounds
+    const tripleBogeysPlus = officialRounds
         .map(round => Number(round.triple_bogeys))
         .filter(Number.isFinite);
 
@@ -1529,7 +1529,7 @@ function loadRoundStats(rounds) {
         total(doubleBogeys);
 
     const tripleTotal =
-        total(tripleBogeys);
+        total(tripleBogeysPlus);
 
 
     const scoringTotal =

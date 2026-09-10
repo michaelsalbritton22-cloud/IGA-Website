@@ -2062,25 +2062,7 @@ async function getOpenEventRoster(eventId) {
 
 }
 
-getOpenEventRoster(1)
-    .then(data => {
-
-        console.log(
-            "IGA EVENT ROSTER:",
-            data
-        );
-
-    })
-    .catch(error => {
-
-        console.error(
-            "IGA EVENT ROSTER ERROR:",
-            error
-        );
-
-    });
-
-    // ==========================================
+// ==========================================
 // COMMISSIONER SCORE ENTRY
 // ==========================================
 
@@ -2197,6 +2179,323 @@ async function getCourseHoles(courseId) {
 
 }
 
+function calculateScoringBreakdown(holes, grossScores) {
+
+    let grossTotal = 0;
+    let birdies = 0;
+    let eagles = 0;
+    let pars = 0;
+    let bogeys = 0;
+    let doubleBogeys = 0;
+    let tripleBogeysPlus = 0;
+
+    holes.forEach(hole => {
+
+        const holeNumber = Number(hole.hole_number);
+        const gross = Number(grossScores[holeNumber - 1]);
+        const par = Number(hole.par);
+
+        if (!Number.isFinite(gross) || !Number.isFinite(par)) {
+            return;
+        }
+
+        grossTotal += gross;
+
+        const scoreDifference = gross - par;
+
+        if (scoreDifference <= -2) {
+            eagles++;
+        }
+        else if (scoreDifference === -1) {
+            birdies++;
+        }
+        else if (scoreDifference === 0) {
+            pars++;
+        }
+        else if (scoreDifference === 1) {
+            bogeys++;
+        }
+        else if (scoreDifference === 2) {
+            doubleBogeys++;
+        }
+        else if (scoreDifference >= 3) {
+            tripleBogeysPlus++;
+        }
+    });
+
+    return {
+        grossTotal,
+        birdies,
+        eagles,
+        pars,
+        bogeys,
+        doubleBogeys,
+        tripleBogeysPlus
+    };
+}
+
+// ==========================================
+// RECALCULATE EXISTING ROUND STATS
+// ==========================================
+
+async function recalculateRoundStats(roundId) {
+
+    console.log(
+        "RECALCULATING ROUND:",
+        roundId
+    );
+
+
+    // ==========================================
+    // GET ROUND
+    // ==========================================
+
+    const {
+        data: round,
+        error: roundError
+    } = await supabaseClient
+
+        .from("rounds")
+
+        .select(`
+            id,
+            course_id,
+            gross_score
+        `)
+
+        .eq(
+            "id",
+            roundId
+        )
+
+        .single();
+
+
+    if (roundError) {
+
+        console.error(
+            "ERROR LOADING ROUND:",
+            roundError
+        );
+
+        throw roundError;
+
+    }
+
+
+    // ==========================================
+    // GET COURSE HOLES
+    // ==========================================
+
+    const holes =
+        await getCourseHoles(
+            round.course_id
+        );
+
+
+    // ==========================================
+    // GET ROUND HOLES
+    // ==========================================
+
+    const {
+        data: roundHoles,
+        error: roundHolesError
+    } = await supabaseClient
+
+        .from("round_holes")
+
+        .select(`
+            hole_number,
+            gross_score
+        `)
+
+        .eq(
+            "round_id",
+            roundId
+        )
+
+        .order(
+            "hole_number"
+        );
+
+
+    if (roundHolesError) {
+
+        console.error(
+            "ERROR LOADING ROUND HOLES:",
+            roundHolesError
+        );
+
+        throw roundHolesError;
+
+    }
+
+
+    // ==========================================
+    // BUILD GROSS SCORE ARRAY
+    // ==========================================
+
+    const grossScores =
+        [];
+
+    roundHoles.forEach(
+        hole => {
+
+            grossScores[
+                Number(
+                    hole.hole_number
+                ) - 1
+            ] =
+                Number(
+                    hole.gross_score
+                );
+
+        }
+    );
+
+
+    // ==========================================
+    // CALCULATE SCORING
+    // ==========================================
+
+    const scoring =
+        calculateScoringBreakdown(
+            holes,
+            grossScores
+        );
+
+
+    // ==========================================
+    // UPDATE ROUND
+    // ==========================================
+
+    const {
+        error: updateError
+    } = await supabaseClient
+
+        .from("rounds")
+
+        .update({
+
+            gross_score:
+                scoring.grossTotal,
+
+            birdies:
+                scoring.birdies,
+
+            eagles:
+                scoring.eagles,
+
+            pars:
+                scoring.pars,
+
+            bogeys:
+                scoring.bogeys,
+
+            double_bogeys:
+                scoring.doubleBogeys,
+
+            triple_bogeys:
+                scoring.tripleBogeysPlus
+
+        })
+
+        .eq(
+            "id",
+            roundId
+        );
+
+
+    if (updateError) {
+
+        console.error(
+            "ERROR UPDATING ROUND STATS:",
+            updateError
+        );
+
+        throw updateError;
+
+    }
+
+
+    console.log(
+        "ROUND STATS RECALCULATED:",
+        roundId,
+        scoring
+    );
+
+
+    return scoring;
+
+}
+
+// ==========================================
+// RECALCULATE ALL ROUND STATS
+// ==========================================
+
+async function recalculateAllRoundStats() {
+
+    console.log(
+        "RECALCULATING ALL ROUND STATS..."
+    );
+
+
+    // ==========================================
+    // GET ALL ROUNDS
+    // ==========================================
+
+    const {
+        data: rounds,
+        error
+    } = await supabaseClient
+
+        .from("rounds")
+
+        .select(`
+            id
+        `)
+
+        .order(
+            "id"
+        );
+
+
+    if (error) {
+
+        console.error(
+            "ERROR LOADING ROUNDS:",
+            error
+        );
+
+        throw error;
+
+    }
+
+
+    // ==========================================
+    // RECALCULATE EACH ROUND
+    // ==========================================
+
+    for (
+        const round
+        of rounds
+    ) {
+
+        await recalculateRoundStats(
+            round.id
+        );
+
+    }
+
+
+    console.log(
+        "ALL ROUND STATS RECALCULATED."
+    );
+
+
+    return true;
+
+}
 
 // ------------------------------------------
 // SAVE COMMISSIONER ROUND
@@ -2434,33 +2733,48 @@ if (
 
 
     // ==========================================
-    // CALCULATE HOLE SCORES
-    // ==========================================
+// CALCULATE HOLE SCORES
+// ==========================================
 
-    const holeRecords = [];
+const scoring =
+    calculateScoringBreakdown(
+        holes,
+        grossScores
+    );
+
+const grossTotal =
+    scoring.grossTotal;
+
+const birdies =
+    scoring.birdies;
+
+const eagles =
+    scoring.eagles;
+
+const pars =
+    scoring.pars;
+
+const bogeys =
+    scoring.bogeys;
+
+const doubleBogeys =
+    scoring.doubleBogeys;
+
+const tripleBogeysPlus =
+    scoring.tripleBogeysPlus;
 
 
-let grossTotal = 0;
+// ==========================================
+// BUILD HOLE RECORDS
+// ==========================================
 
-let birdies = 0;
+const holeRecords = [];
 
-let eagles = 0;
-
-let pars = 0;
-
-let bogeys = 0;
-
-let doubleBogeys = 0;
-
-let tripleBogeysPlus = 0;
-
-
-    holes.forEach(
+holes.forEach(
     hole => {
 
         const holeNumber =
             hole.hole_number;
-
 
         const gross =
             Number(
@@ -2469,77 +2783,21 @@ let tripleBogeysPlus = 0;
                 ]
             );
 
-
-        // ==========================================
-        // ADD TO GROSS TOTAL
-        // ==========================================
-
-        grossTotal +=
-            gross;
-
-            const par =
-    Number(
-        hole.par
-    );
-
-const scoreDifference =
-    gross - par;
-
-if (scoreDifference <= -2) {
-
-    eagles++;
-
-}
-
-else if (scoreDifference === -1) {
-
-    birdies++;
-
-}
-
-else if (scoreDifference === 0) {
-
-    pars++;
-
-}
-
-else if (scoreDifference === 1) {
-
-    bogeys++;
-
-}
-
-else if (scoreDifference === 2) {
-
-    doubleBogeys++;
-
-}
-
-else if (scoreDifference >= 3) {
-
-    tripleBogeysPlus++;
-
-}
-
-        // ==========================================
-        // HOLE RECORD
-        // ==========================================
-
         holeRecords.push({
 
-    hole_number:
-        holeNumber,
+            hole_number:
+                holeNumber,
 
-    gross_score:
-        gross,
+            gross_score:
+                gross,
 
-    handicap_strokes:
-        calculateHandicapStrokes(
-            Number(handicapUsed),
-            hole.handicap_index
-        )
+            handicap_strokes:
+                calculateHandicapStrokes(
+                    Number(handicapUsed),
+                    hole.handicap_index
+                )
 
-});
+        });
 
     }
 );
@@ -2823,9 +3081,6 @@ console.log(
 
 }
 
-// ==========================================
-// GET PLAYER STATS
-// ==========================================
 
 // ==========================================
 // GET PLAYER STATS
@@ -2857,6 +3112,7 @@ async function getPlayerStats(playerId) {
             pars,
             bogeys,
             double_bogeys,
+            triple_bogeys,
             approval_status,
             finish_position
         `)
@@ -2916,6 +3172,8 @@ async function getPlayerStats(playerId) {
             bogeys: 0,
 
             doubleBogeys: 0,
+
+            tripleBogeysPlus: 0,
 
             points: 0,
 
@@ -3010,6 +3268,15 @@ async function getPlayerStats(playerId) {
             0
         );
 
+    const tripleBogeysPlus =
+    rounds.reduce(
+        (total, round) =>
+            total +
+            Number(
+                round.triple_bogeys || 0
+            ),
+        0
+    );    
 
     const points =
         rounds.reduce(
@@ -3086,6 +3353,9 @@ async function getPlayerStats(playerId) {
 
             doubleBogeys,
 
+        tripleBogeysPlus:
+
+            tripleBogeysPlus,    
 
         points:
 
@@ -3144,6 +3414,7 @@ async function getAllPlayerStats(playerIds) {
             pars,
             bogeys,
             double_bogeys,
+            triple_bogeys,
             approval_status,
             finish_position
         `)
@@ -3237,6 +3508,8 @@ async function getAllPlayerStats(playerIds) {
                 bogeys: 0,
 
                 doubleBogeys: 0,
+
+                tripleBogeysPlus: 0,
 
                 points: 0,
 
@@ -3333,6 +3606,15 @@ async function getAllPlayerStats(playerIds) {
                 0
             );
 
+        const tripleBogeysPlus =
+            rounds.reduce(
+                (total, round) =>
+                    total +
+                    Number(
+                        round.triple_bogeys || 0
+                    ),
+                0
+            );    
 
         const points =
             playerRounds.reduce(
@@ -3409,6 +3691,9 @@ async function getAllPlayerStats(playerIds) {
 
                 doubleBogeys,
 
+            tripleBogeysPlus:
+
+                tripleBogeysPlus,
 
             points:
 
