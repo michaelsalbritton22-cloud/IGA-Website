@@ -1935,10 +1935,20 @@ async function getKingOfTheCourseHistory() {
 
     }
 
-    console.log(
-        "King of the Course rounds:",
-        data
-    );
+  console.log(
+    "King of the Course rounds:",
+    data
+);
+
+console.log(
+    "Event statuses:",
+    data.map(
+        round => ({
+            event: round.events_table?.event_name,
+            status: round.events_table?.status
+        })
+    )
+);
 
     return data || [];
 
