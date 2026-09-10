@@ -3676,3 +3676,188 @@ MOBILE
     }
 
 }
+
+/* ==========================================
+   COURSE INFORMATION
+========================================== */
+
+.round-course-card {
+    background: #ffffff;
+    border: 1px solid #e1e5e8;
+    border-radius: 12px;
+    padding: 26px 30px;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.04);
+}
+
+
+.round-course-main {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+
+.round-course-icon {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f1f5f2;
+    border-radius: 10px;
+
+    font-size: 24px;
+}
+
+
+.round-course-main h3 {
+    margin: 0 0 4px;
+
+    color: #1f2937;
+
+    font-size: 22px;
+    font-weight: 700;
+}
+
+
+.round-course-main p {
+    margin: 0;
+
+    color: #7b8190;
+
+    font-size: 13px;
+}
+
+
+/* ==========================================
+   COURSE DETAILS
+========================================== */
+
+.round-course-details {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+
+    padding: 24px 0;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+
+.round-course-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+
+    padding: 0 22px;
+
+    border-right: 1px solid #e5e7eb;
+}
+
+
+.round-course-detail:first-child {
+    padding-left: 0;
+}
+
+
+.round-course-detail:last-child {
+    padding-right: 0;
+    border-right: none;
+}
+
+
+.round-course-detail span {
+    color: #7b8190;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 0.12em;
+}
+
+
+.round-course-detail strong {
+    color: #1f2937;
+
+    font-size: 24px;
+    line-height: 1;
+
+    font-weight: 700;
+}
+
+
+/* ==========================================
+   COURSE WEBSITE
+========================================== */
+
+.round-course-website {
+    padding-top: 20px;
+}
+
+
+.round-course-website a {
+    color: var(--iga-green);
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-decoration: none;
+}
+
+
+.round-course-website a:hover {
+    color: var(--iga-gold);
+    text-decoration: underline;
+}
+
+
+/* ==========================================
+   COURSE INFORMATION MOBILE
+========================================== */
+
+@media (max-width: 700px) {
+
+    .round-course-card {
+        padding: 22px 20px;
+    }
+
+
+    .round-course-details {
+        grid-template-columns: repeat(2, 1fr);
+        row-gap: 22px;
+    }
+
+
+    .round-course-detail {
+        padding: 0 16px;
+        border-right: 1px solid #e5e7eb;
+    }
+
+
+    .round-course-detail:nth-child(2n) {
+        padding-right: 0;
+        border-right: none;
+    }
+
+
+    .round-course-detail:nth-child(3),
+    .round-course-detail:nth-child(4),
+    .round-course-detail:nth-child(5) {
+        padding-top: 18px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+
+    .round-course-detail:first-child {
+        padding-left: 0;
+    }
+
+
+    .round-course-detail:nth-child(3) {
+        padding-left: 0;
+    }
+
+}

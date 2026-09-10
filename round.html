@@ -1065,11 +1065,16 @@ async function loadRoundPage() {
 
                 .from("courses")
 
-                .select(`
+              .select(`
                     course_id,
-                    "Course_name",
-                    "Location",
-                    par
+                    Course_name,
+                    Location,
+                    par,
+                    yardage,
+                    course_rating,
+                    slope,
+                    tee_name,
+                    website_url
                 `)
 
                 .eq(
