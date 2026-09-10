@@ -125,7 +125,10 @@ const rounds =
     await getCourseRoundHistory();
 
 const kingHistory =
-    await getKingOfTheCourseHistory();    
+    await getKingOfTheCourseHistory();  
+    
+const kingResults =
+    await getKingOfTheCourse();
 
 const { data, error } = await supabaseClient
             .from("courses")
