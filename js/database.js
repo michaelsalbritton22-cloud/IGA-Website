@@ -1802,6 +1802,56 @@ async function getOpenEvents() {
 }
 
 // ==========================================
+// GET COURSE EVENT HISTORY
+// ==========================================
+
+async function getCourseEventHistory() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+        .from("events_table")
+
+        .select(`
+            id,
+            event_name,
+            event_type,
+            season_id,
+            status,
+            course_id,
+            event_date
+        `)
+
+        .order("event_date", {
+            ascending: false
+        });
+
+
+    if (error) {
+
+        console.error(
+            "ERROR LOADING COURSE EVENT HISTORY:",
+            error
+        );
+
+        throw error;
+
+    }
+
+
+    console.log(
+        "Course event history:",
+        data
+    );
+
+
+    return data || [];
+
+}
+
+// ==========================================
 // GET ACTIVE PLAYERS
 // ==========================================
 
