@@ -659,6 +659,7 @@ async function loadPlayersPage() {
                     pars: 0,
                     bogeys: 0,
                     doubleBogeys: 0,
+                    tripleBogeysPlus:0,
                     points: 0,
                     wins: 0
                 };
@@ -860,6 +861,12 @@ const photoHTML =
                     </b>
                 </div>
 
+                <div class="stat">
+                    <span>Double Bogeys</span>
+                    <b>
+                        ${stats.tripleBogeysPlus}
+                    </b>
+                </div>
 
                 <div class="stat">
                     <span>Season Points</span>
