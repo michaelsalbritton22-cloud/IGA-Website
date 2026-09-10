@@ -112,11 +112,14 @@ loadCourseEventHistory();
 async function loadCoursesPage() {
 
     const container =
-        document.getElementById("coursesContainer");
+    document.getElementById("coursesContainer");
 
-    try {
+try {
 
-        console.log("Loading IGA courses...");
+    console.log("Loading IGA courses...");
+
+    const events =
+        await getCourseEventHistory();
 
         const { data, error } = await supabaseClient
             .from("courses")
