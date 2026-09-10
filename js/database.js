@@ -1907,10 +1907,15 @@ async function getKingOfTheCourseHistory() {
             player_id,
             course_id,
             season_id,
+            event_id,
             net_score,
             counts_for_qualification,
             Players (
                 Name
+            )
+            events_table (
+                Event_name,
+                status
             )
         `)
 
