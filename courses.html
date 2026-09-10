@@ -124,6 +124,9 @@ const events =
 const rounds =
     await getCourseRoundHistory();
 
+const kingHistory =
+    await getKingOfTheCourseHistory();    
+
 const { data, error } = await supabaseClient
             .from("courses")
             .select("*")
