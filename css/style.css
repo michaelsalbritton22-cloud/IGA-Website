@@ -3469,6 +3469,169 @@ MOBILE
     color: #1f2937;
 }
 
+/* ==========================================
+   SCORING BREAKDOWN
+========================================== */
+
+.scoring-breakdown-card {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 35px;
+
+    background: #ffffff;
+    border: 1px solid #dfe3e8;
+    border-radius: 10px;
+
+    padding: 28px 32px;
+
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.04);
+}
+
+
+.scoring-breakdown-total {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    padding-right: 30px;
+
+    border-right: 1px solid #e5e7eb;
+}
+
+
+.scoring-breakdown-total span {
+    margin-bottom: 8px;
+
+    color: #8a9199;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 1.3px;
+}
+
+
+.scoring-breakdown-total strong {
+    color: #1f2937;
+
+    font-size: 38px;
+    line-height: 1;
+
+    font-weight: 700;
+}
+
+
+.scoring-breakdown-bars {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    gap: 14px;
+}
+
+
+.scoring-row {
+    display: grid;
+    grid-template-columns: 135px 1fr;
+
+    align-items: center;
+
+    gap: 15px;
+}
+
+
+.scoring-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 10px;
+
+    color: #555;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+.scoring-label strong {
+    color: #222;
+
+    font-size: 13px;
+    font-weight: 800;
+}
+
+
+.scoring-track {
+    height: 9px;
+
+    background: #edf0ed;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+}
+
+
+.scoring-fill {
+    height: 100%;
+
+    width: 0;
+
+    background: #287a3a;
+
+    border-radius: 20px;
+
+    transition: width 0.5s ease;
+}
+
+
+.scoring-fill.scoring-eagle {
+    background: #b99528;
+}
+
+
+.scoring-fill.scoring-birdie {
+    background: #4f9a63;
+}
+
+
+/* ==========================================
+   SCORING BREAKDOWN MOBILE
+========================================== */
+
+@media (max-width: 700px) {
+
+    .scoring-breakdown-card {
+        grid-template-columns: 1fr;
+
+        gap: 22px;
+
+        padding: 24px 20px;
+    }
+
+
+    .scoring-breakdown-total {
+        padding-right: 0;
+        padding-bottom: 20px;
+
+        border-right: none;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+
+    .scoring-breakdown-total strong {
+        font-size: 32px;
+    }
+
+
+    .scoring-row {
+        grid-template-columns: 115px 1fr;
+
+        gap: 12px;
+    }
+
+}
 
 /* ==========================================
    ROUND STATS RESPONSIVE
