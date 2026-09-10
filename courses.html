@@ -118,10 +118,13 @@ try {
 
     console.log("Loading IGA courses...");
 
-    const events =
-        await getCourseEventHistory();
+const events =
+    await getCourseEventHistory();
 
-        const { data, error } = await supabaseClient
+const rounds =
+    await getCourseRoundHistory();
+
+const { data, error } = await supabaseClient
             .from("courses")
             .select("*")
             .order("course_id");
