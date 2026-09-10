@@ -2080,6 +2080,244 @@ async function getKingOfTheCourseHistory() {
 }
 
 // ==========================================
+// CALCULATE KING OF THE COURSE
+// ==========================================
+
+async function getKingOfTheCourse() {
+
+    const rounds =
+        await getKingOfTheCourseHistory();
+
+
+    if (!rounds.length) {
+
+        console.log(
+            "No finalized qualifying rounds for King of the Course."
+        );
+
+        return [];
+
+    }
+
+
+    // ==========================================
+    // GET COURSE REQUIREMENTS
+    // ==========================================
+
+    const {
+        data: courses,
+        error: courseError
+    } = await supabaseClient
+
+        .from("courses")
+
+        .select(`
+            course_id,
+            Course_name,
+            required_rounds
+        `);
+
+
+    if (courseError) {
+
+        console.error(
+            "ERROR LOADING COURSE REQUIREMENTS:",
+            courseError
+        );
+
+        throw courseError;
+
+    }
+
+
+    const courseMap =
+        new Map(
+            courses.map(
+                course => [
+                    course.course_id,
+                    course
+                ]
+            )
+        );
+
+
+    // ==========================================
+    // GROUP ROUNDS
+    // COURSE → SEASON → PLAYER
+    // ==========================================
+
+    const groups = {};
+
+
+    rounds.forEach(
+        round => {
+
+            const key =
+                `${round.course_id}-${round.season_id}-${round.player_id}`;
+
+
+            if (!groups[key]) {
+
+                groups[key] = {
+
+                    course_id:
+                        round.course_id,
+
+                    season_id:
+                        round.season_id,
+
+                    player_id:
+                        round.player_id,
+
+                    player_name:
+                        round.player_name,
+
+                    scores: []
+
+                };
+
+            }
+
+
+            groups[key].scores.push(
+                round.net_score
+            );
+
+        }
+    );
+
+
+    // ==========================================
+    // CALCULATE BEST REQUIRED ROUNDS
+    // ==========================================
+
+    const qualifiedPlayers = [];
+
+
+    Object.values(groups).forEach(
+        player => {
+
+            const course =
+                courseMap.get(
+                    player.course_id
+                );
+
+
+            if (!course) {
+                return;
+            }
+
+
+            const requiredRounds =
+                Number(
+                    course.required_rounds
+                );
+
+
+            if (
+                !requiredRounds ||
+                player.scores.length <
+                    requiredRounds
+            ) {
+
+                return;
+
+            }
+
+
+            const bestScores =
+                [...player.scores]
+                    .sort(
+                        (a, b) =>
+                            a - b
+                    )
+                    .slice(
+                        0,
+                        requiredRounds
+                    );
+
+
+            const combinedNet =
+                bestScores.reduce(
+                    (total, score) =>
+                        total + score,
+                    0
+                );
+
+
+            qualifiedPlayers.push({
+
+                course_id:
+                    player.course_id,
+
+                course_name:
+                    course.Course_name,
+
+                season_id:
+                    player.season_id,
+
+                player_id:
+                    player.player_id,
+
+                player_name:
+                    player.player_name,
+
+                combined_net:
+                    combinedNet,
+
+                rounds_used:
+                    bestScores.length
+
+            });
+
+        }
+    );
+
+
+    // ==========================================
+    // FIND WINNER FOR EACH COURSE / SEASON
+    // ==========================================
+
+    const winners = {};
+
+
+    qualifiedPlayers.forEach(
+        player => {
+
+            const key =
+                `${player.course_id}-${player.season_id}`;
+
+
+            if (
+                !winners[key] ||
+                player.combined_net <
+                    winners[key].combined_net
+            ) {
+
+                winners[key] =
+                    player;
+
+            }
+
+        }
+    );
+
+
+    const results =
+        Object.values(winners);
+
+
+    console.log(
+        "King of the Course results:",
+        results
+    );
+
+
+    return results;
+
+}
+
+// ==========================================
 // GET ACTIVE PLAYERS
 // ==========================================
 
