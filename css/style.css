@@ -3861,3 +3861,118 @@ MOBILE
     }
 
 }
+
+/* ==========================================
+   COURSE CARDS
+========================================== */
+
+#coursesContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+}
+
+.course-card {
+    background: #ffffff;
+    border: 1px solid #e1e5e8;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.course-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 9px 24px rgba(0, 0, 0, 0.07);
+}
+
+.course-card-header {
+    padding: 24px 26px;
+    background: #f7f8f6;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.course-card-header h2 {
+    margin: 0 0 6px;
+    color: #1f2937;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.course-card-header p {
+    margin: 0;
+    color: #7b8190;
+    font-size: 13px;
+}
+
+.course-card-details {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    padding: 20px 24px;
+}
+
+.course-card-details > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 0 14px;
+    border-right: 1px solid #e5e7eb;
+}
+
+.course-card-details > div:first-child {
+    padding-left: 0;
+}
+
+.course-card-details > div:last-child {
+    padding-right: 0;
+    border-right: none;
+}
+
+.course-card-details span {
+    color: #7b8190;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+.course-card-details strong {
+    color: #1f2937;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+@media (max-width: 900px) {
+
+    #coursesContainer {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .course-card-details {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px 0;
+    }
+
+    .course-card-details > div {
+        padding: 0 14px;
+    }
+
+    .course-card-details > div:nth-child(2n) {
+        border-right: none;
+    }
+
+    .course-card-details > div:nth-child(3),
+    .course-card-details > div:nth-child(4),
+    .course-card-details > div:nth-child(5) {
+        padding-top: 16px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .course-card-details > div:nth-child(3) {
+        padding-left: 0;
+    }
+
+}
