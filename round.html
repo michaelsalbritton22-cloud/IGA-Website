@@ -1066,7 +1066,7 @@ async function loadRoundPage() {
                 .from("courses")
 
               .select(`
-                    course_id,
+                course_id,
                     Course_name,
                     Location,
                     par,
@@ -1394,29 +1394,82 @@ async function loadRoundPage() {
 
 
 
-        // ==========================================
-        // COURSE CARD
-        // ==========================================
+      // ==========================================
+// COURSE CARD
+// ==========================================
 
-        document.getElementById(
-            "courseName"
-        ).textContent =
-            course?.Course_name ||
-            "Course TBD";
-
-
-        document.getElementById(
-            "courseLocation"
-        ).textContent =
-            course?.Location ||
-            "Location TBD";
+document.getElementById(
+    "courseName"
+).textContent =
+    course?.Course_name ||
+    "Course TBD";
 
 
-        document.getElementById(
-            "coursePar"
-        ).textContent =
-            course?.par ??
-            "—";
+document.getElementById(
+    "courseLocation"
+).textContent =
+    course?.Location ||
+    "Location TBD";
+
+
+document.getElementById(
+    "coursePar"
+).textContent =
+    course?.par ??
+    "—";
+
+
+document.getElementById(
+    "courseYardage"
+).textContent =
+    course?.yardage
+        ? Number(course.yardage).toLocaleString()
+        : "—";
+
+
+document.getElementById(
+    "courseTees"
+).textContent =
+    course?.tee_name ||
+    "—";
+
+
+document.getElementById(
+    "courseRating"
+).textContent =
+    course?.course_rating ??
+    "—";
+
+
+document.getElementById(
+    "courseSlope"
+).textContent =
+    course?.slope ??
+    "—";
+
+
+const courseWebsite =
+    document.getElementById("courseWebsite");
+
+
+if (courseWebsite) {
+
+    if (course?.website_url) {
+
+        courseWebsite.href =
+            course.website_url;
+
+        courseWebsite.style.display =
+            "inline-block";
+
+    } else {
+
+        courseWebsite.style.display =
+            "none";
+
+    }
+
+}
 
 
 
