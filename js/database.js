@@ -993,9 +993,9 @@ async function getEventStandings(eventId) {
 // ==========================================
 
 async function finalizeEvent(
-    eventId,
-    approvedBy = "Commissioner"
-) {
+       eventId,
+     approvedBy = "Commissioner"
+    ) {
 
     console.log(
         "FINALIZING EVENT:",
@@ -1050,9 +1050,9 @@ async function finalizeEvent(
 // CHECK EVENT SUBMISSIONS
 // ==========================================
 
-const {
-    data: eventRounds,
-    error: submissionError
+    const {
+     data: eventRounds,
+     error: submissionError
 } = await supabaseClient
 
     .from("rounds")
@@ -1895,9 +1895,13 @@ async function getCourseRoundHistory() {
 
 async function getKingOfTheCourseHistory() {
 
+    // ==========================================
+    // GET QUALIFYING ROUNDS
+    // ==========================================
+
     const {
-        data,
-        error
+        data: rounds,
+        error: roundError
     } = await supabaseClient
 
         .from("rounds")
@@ -1909,14 +1913,7 @@ async function getKingOfTheCourseHistory() {
             season_id,
             event_id,
             net_score,
-            counts_for_qualification,
-            Players (
-                Name
-            )
-            events_table (
-                Event_name,
-                status
-            )
+            counts_for_qualification
         `)
 
         .eq(
@@ -1924,33 +1921,161 @@ async function getKingOfTheCourseHistory() {
             true
         );
 
-    if (error) {
+
+    if (roundError) {
 
         console.error(
-            "ERROR LOADING KING OF THE COURSE HISTORY:",
-            error
+            "ERROR LOADING KING OF THE COURSE ROUNDS:",
+            roundError
         );
 
-        throw error;
+        throw roundError;
 
     }
 
-  console.log(
-    "King of the Course rounds:",
-    data
-);
 
-console.log(
-    "Event statuses:",
-    data.map(
-        round => ({
-            event: round.events_table?.event_name,
-            status: round.events_table?.status
-        })
-    )
-);
+    // ==========================================
+    // GET FINALIZED EVENTS
+    // ==========================================
 
-    return data || [];
+    const {
+        data: events,
+        error: eventError
+    } = await supabaseClient
+
+        .from("events_table")
+
+        .select(`
+            id,
+            event_name,
+            status
+        `)
+
+        .eq(
+            "status",
+            "Finalized"
+        );
+
+
+    if (eventError) {
+
+        console.error(
+            "ERROR LOADING FINALIZED EVENTS:",
+            eventError
+        );
+
+        throw eventError;
+
+    }
+
+
+    // ==========================================
+    // KEEP ONLY ROUNDS FROM FINALIZED EVENTS
+    // ==========================================
+
+    const finalizedEventIds =
+        new Set(
+            events.map(
+                event =>
+                    event.id
+            )
+        );
+
+
+    const finalizedRounds =
+        rounds.filter(
+            round =>
+                finalizedEventIds.has(
+                    round.event_id
+                )
+        );
+
+
+    // ==========================================
+    // GET PLAYER NAMES
+    // ==========================================
+
+    const {
+        data: players,
+        error: playerError
+    } = await supabaseClient
+
+        .from("Players")
+
+        .select(`
+            player_id,
+            "Name"
+        `);
+
+
+    if (playerError) {
+
+        console.error(
+            "ERROR LOADING PLAYER NAMES:",
+            playerError
+        );
+
+        throw playerError;
+
+    }
+
+
+    const playerMap =
+        new Map(
+            players.map(
+                player => [
+                    player.player_id,
+                    player.Name
+                ]
+            )
+        );
+
+
+    // ==========================================
+    // BUILD CLEAN RESULT
+    // ==========================================
+
+    const history =
+        finalizedRounds.map(
+            round => ({
+
+                round_id:
+                    round.id,
+
+                player_id:
+                    round.player_id,
+
+                player_name:
+                    playerMap.get(
+                        round.player_id
+                    ) ||
+                    "Unknown Player",
+
+                course_id:
+                    round.course_id,
+
+                season_id:
+                    round.season_id,
+
+                event_id:
+                    round.event_id,
+
+                net_score:
+                    Number(
+                        round.net_score
+                    )
+
+            })
+        );
+
+
+    console.log(
+        "Finalized King of the Course rounds:",
+        history
+    );
+
+
+    return history;
 
 }
 
