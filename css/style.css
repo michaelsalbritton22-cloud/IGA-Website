@@ -3976,3 +3976,54 @@ MOBILE
     }
 
 }
+
+/* ==========================================
+   COURSE EVENT HISTORY
+========================================== */
+
+.course-events {
+    padding: 20px 24px 24px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.course-events-title {
+    margin-bottom: 12px;
+    color: #7b8190;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+.course-event {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 11px 0;
+    border-bottom: 1px solid #eef0f1;
+}
+
+.course-event:last-child {
+    border-bottom: none;
+}
+
+.course-event span {
+    color: #1f2937;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.course-event strong {
+    flex-shrink: 0;
+    color: #287a3a;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.course-no-events {
+    color: #9aa0a6;
+    font-size: 12px;
+    font-style: italic;
+}
