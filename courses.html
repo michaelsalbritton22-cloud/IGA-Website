@@ -205,22 +205,7 @@ const { data, error } = await supabaseClient
         </div>
 
     </div>
-
-<div class="course-rounds">
-
-    <span>IGA ROUNDS</span>
-
-    <strong>
-        ${
-            rounds.filter(
-                round =>
-                    round.course_id === course.course_id
-            ).length
-        }
-    </strong>
-
-</div>
-
+    
     <div class="course-events">
 
         <div class="course-events-title">

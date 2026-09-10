@@ -1890,6 +1890,56 @@ async function getCourseRoundHistory() {
 }
 
 // ==========================================
+// GET KING OF THE COURSE HISTORY
+// ==========================================
+
+async function getKingOfTheCourseHistory() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+        .from("rounds")
+
+        .select(`
+            id,
+            player_id,
+            course_id,
+            season_id,
+            net_score,
+            counts_for_qualification,
+            Players (
+                Name
+            )
+        `)
+
+        .eq(
+            "counts_for_qualification",
+            true
+        );
+
+    if (error) {
+
+        console.error(
+            "ERROR LOADING KING OF THE COURSE HISTORY:",
+            error
+        );
+
+        throw error;
+
+    }
+
+    console.log(
+        "King of the Course rounds:",
+        data
+    );
+
+    return data || [];
+
+}
+
+// ==========================================
 // GET ACTIVE PLAYERS
 // ==========================================
 
@@ -2597,7 +2647,7 @@ async function saveCommissionerRound({
     grossScores,
     netScore,
     notes = ""
-}) {
+    }) {
 
     console.log(
         "Saving Commissioner Round:",
@@ -3168,6 +3218,7 @@ console.log(
     };
 
 }
+
 
 
 // ==========================================
