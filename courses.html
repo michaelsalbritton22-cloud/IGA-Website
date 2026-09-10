@@ -76,6 +76,37 @@
         loadHeader();
     </script>
 
+    <script>
+
+async function loadCourseEventHistory() {
+
+    try {
+
+        const events =
+            await getCourseEventHistory();
+
+        console.log(
+            "Course events loaded:",
+            events
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "ERROR LOADING COURSE EVENTS:",
+            error
+        );
+
+    }
+
+}
+
+loadCourseEventHistory();
+
+</script>
+
 <script>
 
 async function loadCoursesPage() {
