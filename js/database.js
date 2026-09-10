@@ -1852,6 +1852,44 @@ async function getCourseEventHistory() {
 }
 
 // ==========================================
+// GET COURSE ROUND HISTORY
+// ==========================================
+
+async function getCourseRoundHistory() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+        .from("rounds")
+
+        .select(`
+            round_id,
+            course_id
+        `);
+
+    if (error) {
+
+        console.error(
+            "ERROR LOADING COURSE ROUND HISTORY:",
+            error
+        );
+
+        throw error;
+
+    }
+
+    console.log(
+        "Course round history:",
+        data
+    );
+
+    return data || [];
+
+}
+
+// ==========================================
 // GET ACTIVE PLAYERS
 // ==========================================
 
