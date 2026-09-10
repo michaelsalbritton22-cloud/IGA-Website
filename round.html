@@ -1418,6 +1418,11 @@ document.getElementById(
     course?.par ??
     "—";
 
+document.getElementById(
+    "courseTees"
+).textContent =
+    course?.tee_name ||
+    "—";
 
 document.getElementById(
     "courseYardage"
@@ -1425,14 +1430,6 @@ document.getElementById(
     course?.yardage
         ? Number(course.yardage).toLocaleString()
         : "—";
-
-
-document.getElementById(
-    "courseTees"
-).textContent =
-    course?.tee_name ||
-    "—";
-
 
 document.getElementById(
     "courseRating"
