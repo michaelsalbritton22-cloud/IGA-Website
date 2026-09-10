@@ -76,6 +76,136 @@
         loadHeader();
     </script>
 
+<script>
+
+async function loadCoursesPage() {
+
+    const container =
+        document.getElementById("coursesContainer");
+
+    try {
+
+        console.log("Loading IGA courses...");
+
+        const { data, error } = await supabaseClient
+            .from("courses")
+            .select("*")
+            .order("course_id");
+
+        if (error) {
+            throw error;
+        }
+
+        console.log("Courses loaded:", data);
+
+        if (!data || data.length === 0) {
+
+            container.innerHTML = `
+                <div class="message">
+                    <h2>No Courses Found</h2>
+                    <p>There are currently no courses in the IGA database.</p>
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML = "";
+
+        data.forEach(course => {
+
+            const card =
+                document.createElement("div");
+
+            card.className = "course-card";
+
+            card.innerHTML = `
+
+                <div class="course-card-header">
+
+                    <h2>
+                        ${course.Course_name || "Course TBD"}
+                    </h2>
+
+                    <p>
+                        ${course.Location || "Location TBD"}
+                    </p>
+
+                </div>
+
+                <div class="course-card-details">
+
+                    <div>
+                        <span>PAR</span>
+                        <strong>${course.par ?? "—"}</strong>
+                    </div>
+
+                    <div>
+                        <span>YARDAGE</span>
+                        <strong>
+                            ${
+                                course.yardage
+                                    ? Number(course.yardage).toLocaleString()
+                                    : "—"
+                            }
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>TEES</span>
+                        <strong>${course.tee_name || "—"}</strong>
+                    </div>
+
+                    <div>
+                        <span>RATING</span>
+                        <strong>${course.course_rating ?? "—"}</strong>
+                    </div>
+
+                    <div>
+                        <span>SLOPE</span>
+                        <strong>${course.slope ?? "—"}</strong>
+                    </div>
+
+                </div>
+
+            `;
+
+            container.appendChild(card);
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "ERROR LOADING COURSES:",
+            error
+        );
+
+        container.innerHTML = `
+
+            <div class="message">
+
+                <h2>
+                    Error Loading Courses
+                </h2>
+
+                <p>
+                    ${error.message}
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+loadCoursesPage();
+
+</script>
 
 </body>
 
