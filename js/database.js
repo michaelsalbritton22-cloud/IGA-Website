@@ -1865,7 +1865,7 @@ async function getCourseRoundHistory() {
         .from("rounds")
 
         .select(`
-            round_id,
+            id,
             course_id
         `);
 
