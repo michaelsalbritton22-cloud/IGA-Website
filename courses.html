@@ -133,6 +133,9 @@ const kingResults =
 const auditMasterHistory =
     await getAuditMasterChampionHistory();
 
+const folgersHistory =
+    await getFolgersChampionHistory();
+
 const { data, error } = await supabaseClient
             .from("courses")
             .select("*")

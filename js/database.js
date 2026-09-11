@@ -2450,6 +2450,330 @@ async function getAuditMasterChampionHistory() {
 }
 
 // ==========================================
+// GET FOLGER'S REDLINE CLASSIC HISTORY
+// ==========================================
+
+async function getFolgersChampionHistory() {
+
+    // ==========================================
+    // GET FINALIZED FOLGER'S EVENTS
+    // ==========================================
+
+    const {
+        data: events,
+        error: eventError
+    } = await supabaseClient
+        .from("events_table")
+        .select(`
+            id,
+            event_name,
+            event_type,
+            season_id,
+            status
+        `)
+        .eq(
+            "event_name",
+            "Folger's Redline Classic"
+        )
+        .eq(
+            "status",
+            "Finalized"
+        );
+
+
+    if (eventError) {
+
+        console.error(
+            "ERROR LOADING FOLGER'S HISTORY:",
+            eventError
+        );
+
+        throw eventError;
+
+    }
+
+
+    if (!events.length) {
+
+        console.log(
+            "No finalized Folger's events."
+        );
+
+        return [];
+
+    }
+
+
+    // ==========================================
+    // GET WINNING TEAMS
+    // ==========================================
+
+    const champions = [];
+
+
+    for (const event of events) {
+
+        const {
+            data: teams,
+            error: teamError
+        } = await supabaseClient
+            .from("folger_teams")
+            .select(`
+                id,
+                team_name
+            `)
+            .eq(
+                "event_id",
+                event.id
+            );
+
+
+        if (teamError) {
+
+            console.error(
+                "ERROR LOADING FOLGER'S TEAMS:",
+                teamError
+            );
+
+            throw teamError;
+
+        }
+
+
+        if (!teams || !teams.length) {
+
+            continue;
+
+        }
+
+
+        // ==========================================
+        // GET MATCH RESULTS
+        // ==========================================
+
+        const {
+            data: matches,
+            error: matchError
+        } = await supabaseClient
+            .from("folger_matches")
+            .select(`
+                winner_team_id
+            `)
+            .eq(
+                "event_id",
+                event.id
+            );
+
+
+        if (matchError) {
+
+            console.error(
+                "ERROR LOADING FOLGER'S MATCHES:",
+                matchError
+            );
+
+            throw matchError;
+
+        }
+
+
+        if (!matches || !matches.length) {
+
+            continue;
+
+        }
+
+
+        // ==========================================
+        // COUNT TEAM POINTS
+        // ==========================================
+
+        const teamPoints = {};
+
+
+        teams.forEach(
+            team => {
+
+                teamPoints[
+                    team.id
+                ] = 0;
+
+            }
+        );
+
+
+        matches.forEach(
+            match => {
+
+                if (
+                    match.winner_team_id &&
+                    teamPoints[
+                        match.winner_team_id
+                    ] !== undefined
+                ) {
+
+                    teamPoints[
+                        match.winner_team_id
+                    ]++;
+
+                }
+
+            }
+        );
+
+
+        // ==========================================
+        // DETERMINE WINNER
+        // ==========================================
+
+        const winner =
+            teams.reduce(
+                (
+                    best,
+                    team
+                ) => {
+
+                    if (
+                        !best ||
+                        teamPoints[team.id] >
+                            teamPoints[best.id]
+                    ) {
+
+                        return team;
+
+                    }
+
+                    return best;
+
+                },
+                null
+            );
+
+
+        if (!winner) {
+
+            continue;
+
+        }
+
+
+        // ==========================================
+        // GET WINNING TEAM PLAYERS
+        // ==========================================
+
+        const {
+            data: teamPlayers,
+            error: playerError
+        } = await supabaseClient
+            .from("folger_team_players")
+            .select(`
+                player_id
+            `)
+            .eq(
+                "team_id",
+                winner.id
+            );
+
+
+        if (playerError) {
+
+            console.error(
+                "ERROR LOADING FOLGER'S TEAM PLAYERS:",
+                playerError
+            );
+
+            throw playerError;
+
+        }
+
+
+        const playerIds =
+            (teamPlayers || [])
+                .map(
+                    player =>
+                        player.player_id
+                );
+
+
+        let players = [];
+
+
+        if (playerIds.length) {
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("Players")
+                .select(`
+                    player_id,
+                    "Name"
+                `)
+                .in(
+                    "player_id",
+                    playerIds
+                );
+
+
+            if (error) {
+
+                console.error(
+                    "ERROR LOADING FOLGER'S PLAYER NAMES:",
+                    error
+                );
+
+                throw error;
+
+            }
+
+
+            players =
+                data || [];
+
+        }
+
+
+        champions.push({
+
+            event_id:
+                event.id,
+
+            season_id:
+                event.season_id,
+
+            team_name:
+                winner.team_name,
+
+            team_id:
+                winner.id,
+
+            points:
+                teamPoints[
+                    winner.id
+                ],
+
+            players:
+                players.map(
+                    player =>
+                        player.Name
+                )
+
+        });
+
+    }
+
+
+    console.log(
+        "Folger's champions:",
+        champions
+    );
+
+
+    return champions;
+
+}
+
+// ==========================================
 // GET ACTIVE PLAYERS
 // ==========================================
 
