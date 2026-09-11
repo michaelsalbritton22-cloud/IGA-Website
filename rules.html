@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>IGA Tour | Rules</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+
+        /* ==========================================
+           RULES PAGE
+        ========================================== */
+
+        .rules-page-header {
+            margin: 40px auto 30px;
+            max-width: 1100px;
+        }
+
+        .rules-page-header h1 {
+            margin-bottom: 8px;
+        }
+
+        .rules-page-header p {
+            color: #666;
+            font-size: 17px;
+        }
+
+
+        /* ==========================================
+           RULE SECTIONS
+        ========================================== */
+
+        .rules-section {
+            margin-bottom: 25px;
+        }
+
+        .rules-section h2 {
+            margin-top: 0;
+            color: #003b24;
+        }
+
+        .rules-section h3 {
+            color: #003b24;
+            margin-top: 25px;
+            margin-bottom: 8px;
+        }
+
+        .rules-section p {
+            line-height: 1.6;
+        }
+
+        .rules-section ul,
+        .rules-section ol {
+            line-height: 1.7;
+        }
+
+
+        /* ==========================================
+           IMPORTANT RULE
+        ========================================== */
+
+        .rule-highlight {
+            background: #f5f5f2;
+            border-left: 6px solid #d4af37;
+            padding: 18px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .rule-highlight strong {
+            color: #003b24;
+        }
+
+
+        /* ==========================================
+           POINTS TABLE
+        ========================================== */
+
+        .points-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .points-table th {
+            background: #003b24;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .points-table td {
+            padding: 11px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+
+        /* ==========================================
+           PENALTY RULES
+        ========================================== */
+
+        .penalty-list li {
+            margin-bottom: 12px;
+        }
+
+
+        /* ==========================================
+           MOBILE
+        ========================================== */
+
+        @media (max-width: 700px) {
+
+            .rules-page-header {
+                margin: 30px 20px 25px;
+            }
+
+            .rules-section {
+                padding: 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div id="header"></div>
+
+
+<main class="container">
+
+
+    <!-- ==========================================
+         PAGE HEADER
+    =========================================== -->
+
+    <section class="rules-page-header">
+
+        <h1>
+            IGA Tour Rules
+        </h1>
+
+        <p>
+            The official rules and playing conditions of the
+            Internal Golf Association.
+        </p>
+
+    </section>
+
+
+    <!-- ==========================================
+         1. LEAGUE FORMAT
+    =========================================== -->
+
+    <section class="card rules-section">
+
+        <h2>
+            1. League Format
+        </h2>
+
+        <p>
+            The Internal Golf Association is an individual
+            stroke-play golf league. Players compete throughout
+            the season for points, championships, and course
+            honors.
+        </p>
+
+        <ul>
+
+            <li>
+                All regular-season events are individual stroke play.
+            </li>
+
+            <li>
+                Each player's score is recorded as both a gross
+                score and a net score.
+            </li>
+
+            <li>
+                Net scores are used for league standings and
+                regular-season event results.
+            </li>
+
+            <li>
+                Each player is allowed <strong>one mulligan per round</strong>.
+            </li>
+
+            <li>
+                There is no additional scoring multiplier applied
+                to handicap or event results.
+            </li>
+
+        </ul>
+
+    </section>
+
+
+    <!-- ==========================================
+         2. REGULAR SEASON POINTS
+    =========================================== -->
+
+    <section class="card rules-section">
+
+        <h2>
+            2. Regular Season Points
+        </h2>
+
+        <p>
+            Regular-season events award league points based on
+            finishing position.
+        </p>
+
+        <table class="points-table">
+
+            <thead>
+
+                <tr>
+                    <th>Finish</th>
+                    <th>Points</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>1st</td>
+                    <td>100</td>
+                </tr>
+
+                <tr>
+                    <td>2nd</td>
+                    <td>85</td>
+                </tr>
+
+                <tr>
+                    <td>3rd</td>
+                    <td>75</td>
+                </tr>
+
+                <tr>
+                    <td>4th</td>
+                    <td>65</td>
+                </tr>
+
+                <tr>
+                    <td>5th</td>
+                    <td>55</td>
+                </tr>
+
+                <tr>
+                    <td>6th</td>
+                    <td>45</td>
+                </tr>
+
+                <tr>
+                    <td>7th</td>
+                    <td>35</td>
+                </tr>
+
+                <tr>
+                    <td>8th</td>
+                    <td>25</td>
+                </tr>
+
+                <tr>
+                    <td>9th</td>
+                    <td>20</td>
+                </tr>
+
+                <tr>
+                    <td>10th</td>
+                    <td>15</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </section>
+
+
+    <!-- ==========================================
+         3. HANDICAP
+    =========================================== -->
+
+    <section class="card rules-section">
+
+        <h2>
+            3. Handicap
+        </h2>
+
+        <p>
+            The IGA uses the player's current 18Birdies handicap
+            when calculating net scores.
+        </p>
+
+        <ul>
+
+            <li>
+                Handicaps are dynamic and are not locked for the
+                entire season.
+            </li>
+
+            <li>
+                The handicap used for a round is recorded with
+                that round.
+            </li>
+
+            <li>
+                Net scores are calculated using the applicable
+                handicap for that round.
+            </li>
+
+        </ul>
+
+    </section>
+
+
+    <!-- ==========================================
+         4. GENERAL PLAYING RULES
+    =========================================== -->
+
+    <section class="card rules-section">
+
+        <h2>
+            4. General Playing Rules
+        </h2>
+
+
+        <div class="rule-highlight">
+
+            <strong>
+                The IGA is designed to keep rounds competitive,
+                enjoyable, and moving.
+            </strong>
+
+        </div>
+
+
+        <ol>
+
+            <li>
+                <strong>Stroke Play.</strong>
+                All regular IGA rounds are played as individual
+                stroke play.
+            </li>
+
+            <li>
+                <strong>No Gimmies.</strong>
+                Every putt must be holed. Players must putt
+                everything out.
+            </li>
+
+            <li>
+                <strong>Breakfast Ball.</strong>
+                A player may use one breakfast ball on the
+                tee shot of Hole #1 only.
+            </li>
+
+            <li>
+                <strong>Lift, Clean and Place.</strong>
+                Players may lift, clean, and place their ball
+                for each shot.
+            </li>
+
+            <li>
+                <strong>One Club Length.</strong>
+                A player may move the ball up to one club length
+                for each shot, except when putting on the green.
+            </li>
+
+        </ol>
+
+    </section>
+
+
+    <!-- ==========================================
+         5. RELIEF
+    =========================================== -->
+
+    <section class="card rules-section">
+
+        <h2>
+            5. Relief
+        </h2>
+
+
+        <h3>
+            Unplayable Ground Conditions
+        </h3>
+
+        <p>
+            A player may move the ball more than one club length
+            when the ball would otherwise require a player to hit
+            from an unreasonable or damaging playing surface.
+        </p>
+
+        <p>
+            This includes, but is not limited to:
+        </p>
+
+        <ul>
+
+            <li>Cart paths</li>
+
+            <li>Rocks</li>
+
+            <li>Tree roots</li>
+
+            <li>Muddy areas</li>
+
+        </ul>
+
+
+        <h3>
+            Bunkers With Standing Water
+        </h3>
+
+        <p>
+            If a bunker contains standing water, the player may
+            move the ball out of the bunker to a reasonable
+            playable location without additional penalty.
+        </p>
+
+    </section>
+
+
+    <!-- ==========================================
+         6. WATER & OUT OF BOUNDS
+    =========================================== -->
+
+    <section class="card rules-section">
+
+        <h2>
+            6. Water Hazards & Out of Bounds
+        </h2>
+
+        <p>
+            A ball that enters a water hazard or goes out of
+            bounds results in a <strong>one-stroke penalty</strong>.
+        </p>
+
+
+        <h3>
+            Water Hazard
+        </h3>
+
+        <p>
+            When a ball enters a water hazard, the player may
+            cross over the water hazard and place the ball on
+            the other side of the hazard.
+        </p>
+
+
+        <h3>
+            Out of Bounds
+        </h3>
+
+        <p>
+            If a tee shot or fairway shot goes out of bounds,
+            the player may place the ball laterally to the
+            location where the ball came to rest.
+        </p>
+
+        <p>
+            The applicable one-stroke penalty still applies.
+        </p>
+
+    </section>
+
+
+    <!-- ==========================================
+         7. SCORE SUBMISSION
+    =========================================== -->
+
+    <section class="card rules-section">
+
+        <h2>
+            7. Score Submission
+        </h2>
+
+        <p>
+            Players are responsible for submitting their scores
+            promptly after completing a round.
+        </p>
+
+        <ul>
+
+            <li>
+                Scores should be submitted in the IGA golf chat
+                within <strong>24 hours</strong> of completing the round.
+            </li>
+
+            <li>
+                Scores may be submitted from 18Birdies or through
+                the IGA's designated scoring process.
+            </li>
+
+            <li>
+                The Commissioner reviews submitted scores before
+                they become official.
+            </li>
+
+            <li>
+                Results remain provisional until the round has
+                been approved and finalized.
+            </li>
+
+        </ul>
+
+    </section>
+
+
+    <!-- ==========================================
+         8. QUALIFYING REQUIREMENTS
+    =========================================== -->
+
+    <section class="card rules-section">
+
+        <h2>
+            8. Course Qualification
+        </h2>
+
+        <p>
+            Players must complete the required qualifying rounds
+            at each designated qualifying course.
+        </p>
+
+        <ul>
+
+            <li>
+                Westwood Park requires two qualifying rounds.
+            </li>
+
+            <li>
+                Firelake requires two qualifying rounds.
+            </li>
+
+            <li>
+                Jimmie Austin requires two qualifying rounds.
+            </li>
+
+        </ul>
+
+        <div class="rule-highlight">
+
+            <strong>
+                Six qualifying rounds are required for complete
+                course qualification.
+            </strong>
+
+        </div>
+
+        <p>
+            The qualifying courses are used for the IGA's
+            <strong>King of the Course</strong> competition.
+        </p>
+
+    </section>
+
+
+    <!-- ==========================================
+         9. CHAMPIONSHIP EVENTS
+    =========================================== -->
+
+    <section class="card rules-section">
+
+        <h2>
+            9. Championship Events
+        </h2>
+
+
+        <h3>
+            IGA League Championship
+        </h3>
+
+        <p>
+            The overall IGA League Champion is determined by
+            regular-season league performance and accumulated
+            league points.
+        </p>
+
+
+        <h3>
+            King of the Course
+        </h3>
+
+        <p>
+            Each qualifying course has its own King of the Course.
+            The title is awarded to the player with the lowest
+            combined net score using the required qualifying rounds.
+        </p>
+
+
+        <h3>
+            Folger's Redline Classic
+        </h3>
+
+        <p>
+            The Folger's Redline Classic is the IGA's mid-season
+            team championship and uses Ryder Cup-style competition.
+        </p>
+
+
+        <h3>
+            Audit Master
+        </h3>
+
+        <p>
+            The Audit Master is the IGA's premier individual
+            championship and is held in October.
+        </p>
+
+    </section>
+
+
+    <!-- ==========================================
+         10. MEMBERSHIP
+    =========================================== -->
+
+    <section class="card rules-section">
+
+        <h2>
+            10. Membership & Administration
+        </h2>
+
+        <ul>
+
+            <li>
+                IGA membership is <strong>$20 per player</strong>.
+            </li>
+
+            <li>
+                A <strong>3% administrative fee</strong> is applied
+                to league funds.
+            </li>
+
+            <li>
+                League funds and administrative decisions are
+                managed by the IGA Commissioner.
+            </li>
+
+        </ul>
+
+    </section>
+
+
+    <!-- ==========================================
+         11. COMMISSIONER
+    =========================================== -->
+
+    <section class="card rules-section">
+
+        <h2>
+            11. Commissioner Authority
+        </h2>
+
+        <p>
+            The Commissioner is responsible for administering
+            the league, reviewing submitted scores, maintaining
+            official standings, and resolving questions regarding
+            the application of IGA rules.
+        </p>
+
+        <p>
+            The Commissioner may make reasonable determinations
+            when a situation is not specifically addressed by
+            these rules, with the goal of protecting the integrity
+            and competitiveness of the league.
+        </p>
+
+    </section>
+
+
+</main>
+
+
+<footer>
+    IGA Tour © 2027 | Internal Golf Association
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/database.js"></script>
+
+<script src="js/components.js"></script>
+
+<script>
+    loadHeader();
+</script>
+
+
+</body>
+
+</html>
