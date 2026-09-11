@@ -2345,7 +2345,8 @@ async function getAuditMasterChampionHistory() {
             event_name,
             event_type,
             season_id,
-            status
+            status,
+            course_id
         `)
 
         .eq(
@@ -2415,6 +2416,9 @@ async function getAuditMasterChampionHistory() {
 
             event_id:
                 event.id,
+
+            course_id:
+                event.course_id,
 
             season_id:
                 event.season_id,
