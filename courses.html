@@ -246,6 +246,7 @@ const { data, error } = await supabaseClient
 
     </div>
 
+${course.required_rounds > 0 ? `
 
     <div class="course-kings">
 
@@ -288,6 +289,8 @@ const { data, error } = await supabaseClient
         }
 
     </div>
+
+` : ""}
 
 `;
 
