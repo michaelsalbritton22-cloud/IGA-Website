@@ -2324,6 +2324,128 @@ async function getKingOfTheCourse() {
 }
 
 // ==========================================
+// GET AUDIT MASTER CHAMPION HISTORY
+// ==========================================
+
+async function getAuditMasterChampionHistory() {
+
+    // ==========================================
+    // GET FINALIZED AUDIT MASTER EVENTS
+    // ==========================================
+
+    const {
+        data: events,
+        error: eventError
+    } = await supabaseClient
+
+        .from("events_table")
+
+        .select(`
+            id,
+            event_name,
+            event_type,
+            season_id,
+            status
+        `)
+
+        .eq(
+            "event_name",
+            "Audit Master"
+        )
+
+        .eq(
+            "status",
+            "Finalized"
+        );
+
+
+    if (eventError) {
+
+        console.error(
+            "ERROR LOADING AUDIT MASTER HISTORY:",
+            eventError
+        );
+
+        throw eventError;
+
+    }
+
+
+    if (!events.length) {
+
+        console.log(
+            "No finalized Audit Master events."
+        );
+
+        return [];
+
+    }
+
+
+    // ==========================================
+    // GET EVENT STANDINGS
+    // ==========================================
+
+    const champions = [];
+
+
+    for (const event of events) {
+
+        const standings =
+            await getEventStandings(
+                event.id
+            );
+
+
+        if (
+            !standings ||
+            !standings.length
+        ) {
+
+            continue;
+
+        }
+
+
+        const winner =
+            standings[0];
+
+
+        champions.push({
+
+            event_id:
+                event.id,
+
+            season_id:
+                event.season_id,
+
+            player_id:
+                winner.player_id,
+
+            player_name:
+                winner.player_name,
+
+            net_score:
+                Number(
+                    winner.net_score
+                )
+
+        });
+
+    }
+
+
+    console.log(
+        "Audit Master champions:",
+        champions
+    );
+
+
+    return champions;
+
+}
+
+// ==========================================
 // GET ACTIVE PLAYERS
 // ==========================================
 
