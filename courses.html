@@ -295,6 +295,53 @@ ${course.required_rounds > 0 ? `
 
 ` : ""}
 
+${course.course_id === 5 ? `
+
+    <div class="course-kings">
+
+        <div class="course-events-title">
+            AUDIT MASTER CHAMPION
+        </div>
+
+        ${
+            auditMasterHistory
+                .filter(
+                    champion =>
+                        champion.course_id ===
+                        course.course_id
+                )
+                .map(
+                    champion => `
+                        <div class="course-king">
+
+                            <div>
+                                <span>
+                                    ${champion.season_id}
+                                </span>
+
+                                <strong>
+                                    ${champion.player_name}
+                                </strong>
+                            </div>
+
+                            <strong>
+                                ${champion.net_score}
+                            </strong>
+
+                        </div>
+                    `
+                )
+                .join("")
+                ||
+                `<div class="course-no-events">
+                    No champion yet
+                </div>`
+        }
+
+    </div>
+
+` : ""}
+
 `;
 
             container.appendChild(card);
