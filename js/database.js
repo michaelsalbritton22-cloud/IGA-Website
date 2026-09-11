@@ -1939,22 +1939,28 @@ async function getKingOfTheCourseHistory() {
     // ==========================================
 
     const {
-        data: events,
-        error: eventError
-    } = await supabaseClient
+    data: events,
+    error: eventError
+} = await supabaseClient
 
-        .from("events_table")
+    .from("events_table")
 
-        .select(`
-            id,
-            event_name,
-            status
-        `)
+    .select(`
+        id,
+        event_name,
+        event_type,
+        status
+    `)
 
-        .eq(
-            "status",
-            "Finalized"
-        );
+    .eq(
+        "status",
+        "Finalized"
+    )
+
+    .eq(
+        "event_type",
+        "Regular Season"
+    );
 
 
     if (eventError) {
