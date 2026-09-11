@@ -4075,3 +4075,13 @@ MOBILE
     font-size: 14px;
     font-weight: 800;
 }
+
+.course-folgers-players {
+    padding: 0 0 12px 54px;
+}
+
+.course-folgers-players div {
+    padding: 4px 0;
+    color: #1f2937;
+    font-size: 12px;
+}

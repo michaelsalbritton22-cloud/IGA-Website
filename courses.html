@@ -345,6 +345,68 @@ ${course.course_id === 5 ? `
 
 ` : ""}
 
+${course.course_id === 5 ? `
+
+    <div class="course-kings">
+
+        <div class="course-events-title">
+            FOLGER'S REDLINE CLASSIC
+        </div>
+
+        ${
+            folgersHistory
+                .filter(
+                    champion =>
+                        champion.event_id
+                )
+                .map(
+                    champion => `
+                        <div class="course-king">
+
+                            <div>
+                                <span>
+                                    ${champion.season_id}
+                                </span>
+
+                                <strong>
+                                    ${champion.team_name}
+                                </strong>
+                            </div>
+
+                            <strong>
+                                ${champion.points}
+                            </strong>
+
+                        </div>
+
+                        <div class="course-folgers-players">
+
+                            ${
+                                champion.players
+                                    .map(
+                                        player => `
+                                            <div>
+                                                ${player}
+                                            </div>
+                                        `
+                                    )
+                                    .join("")
+                            }
+
+                        </div>
+                    `
+                )
+                .join("")
+                ||
+                `<div class="course-no-events">
+                    No champion yet
+                </div>`
+        }
+
+    </div>
+
+` : ""}
+
 `;
 
             container.appendChild(card);
