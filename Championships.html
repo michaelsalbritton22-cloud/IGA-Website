@@ -358,6 +358,82 @@ footer {
     font-weight: normal !important;
 }
 
+/* ==========================================
+   PODIUM PROFILE PHOTOS
+   ========================================== */
+
+.podium-photo {
+
+    width: 110px;
+    height: 110px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+    object-position: top;
+
+    display: block;
+
+    border: 4px solid white;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.18);
+
+}
+
+
+.podium-initials {
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #003b24;
+
+    color: white;
+
+    font-size: 32px;
+
+    font-weight: bold;
+
+}
+
+
+.podium-player {
+
+    position: relative;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+}
+
+
+.podium-medal {
+
+    position: absolute;
+
+    bottom: -8px;
+    right: -8px;
+
+    font-size: 30px;
+
+    line-height: 1;
+
+    filter:
+        drop-shadow(
+            0 2px 3px
+            rgba(0,0,0,0.25)
+        );
+
+}
+
+
+
 </style>
 
 </head>
@@ -410,169 +486,30 @@ Honoring the champions who define the history of the Internal Golf Association.
     </p>
 
 
-    <!-- CURRENT SEASON PODIUM -->
+    ```html
+<!-- CURRENT SEASON PODIUM -->
 
-    <div class="podium-section">
+<div class="podium-section">
 
-        <h3>
-            2027 IGA League
-        </h3>
-
-
-        <div class="podium">
+    <h3 id="podiumSeason">
+        2027 IGA League
+    </h3>
 
 
-            <!-- SECOND PLACE -->
+    <div
+        class="podium"
+        id="leaguePodium"
+    >
 
-            <div class="podium-place second">
-
-                <div class="podium-player">
-
-                    🥈
-
-                </div>
-
-                <div class="podium-name">
-                    Dawson Padgett
-                </div>
-
-                <div class="podium-points">
-                    175
-                </div>
-
-                <div class="podium-label">
-                    POINTS
-                </div>
-
-            </div>
-
-
-
-            <!-- FIRST PLACE -->
-
-            <div class="podium-place first">
-
-                <div class="podium-player">
-
-                    🥇
-
-                </div>
-
-                <div class="podium-name">
-                    Michael Albritton
-                </div>
-
-                <div class="podium-points">
-                    186
-                </div>
-
-                <div class="podium-label">
-                    POINTS
-                </div>
-
-            </div>
-
-
-
-            <!-- THIRD PLACE -->
-
-            <div class="podium-place third">
-
-                <div class="podium-player">
-
-                    🥉
-
-                </div>
-
-                <div class="podium-name">
-                    Connor Williams
-                </div>
-
-                <div class="podium-points">
-                    150
-                </div>
-
-                <div class="podium-label">
-                    POINTS
-                </div>
-
-            </div>
-
-
+        <div class="podium-loading">
+            Loading league champions...
         </div>
 
     </div>
 
-
-
-    <!-- HISTORICAL CHAMPIONS -->
-
-    <div class="champions-history">
-
-        <h3>
-            IGA League Champions
-        </h3>
-
-
-        <table>
-
-            <tr>
-
-                <th>
-                    Season
-                </th>
-
-                <th>
-                    Champion
-                </th>
-
-                <th>
-                    Points
-                </th>
-
-            </tr>
-
-
-            <tr>
-
-                <td>
-                    2027
-                </td>
-
-                <td>
-                    TBD
-                </td>
-
-                <td>
-                    ---
-                </td>
-
-            </tr>
-
-
-            <tr>
-
-                <td>
-                    2028
-                </td>
-
-                <td>
-                    TBD
-                </td>
-
-                <td>
-                    ---
-                </td>
-
-            </tr>
-
-
-        </table>
-
-    </div>
-
-
 </div>
+```
+
 
 
 <!-- ==========================================
@@ -1132,10 +1069,421 @@ function displayCourseKings(
 
 
 // ==========================================
+// LOAD IGA LEAGUE CHAMPIONSHIP PODIUM
+// ==========================================
+
+async function loadLeaguePodium() {
+
+    const podium =
+        document.getElementById(
+            "leaguePodium"
+        );
+
+    const seasonTitle =
+        document.getElementById(
+            "podiumSeason"
+        );
+
+
+    try {
+
+        // ==========================================
+        // GET CURRENT SEASON
+        // ==========================================
+
+        const {
+            data: seasons,
+            error: seasonError
+        } = await supabaseClient
+
+            .from("seasons")
+
+            .select(`
+                id,
+                season_name
+            `)
+
+            .eq(
+                "active",
+                true
+            )
+
+            .limit(1);
+
+
+        if (seasonError) {
+            throw seasonError;
+        }
+
+
+        if (!seasons || !seasons.length) {
+
+            podium.innerHTML = `
+                <div class="podium-loading">
+                    No active season found.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        const currentSeason =
+            seasons[0];
+
+
+        seasonTitle.textContent =
+            currentSeason.season_name
+                + " IGA League";
+
+
+        // ==========================================
+        // GET SEASON POINTS
+        // ==========================================
+
+        const {
+            data: seasonPoints,
+            error: pointsError
+        } = await supabaseClient
+
+            .from("season_points")
+
+            .select(`
+                "Player_id",
+                total_points
+            `)
+
+            .eq(
+                "season_id",
+                currentSeason.id
+            );
+
+
+        if (pointsError) {
+            throw pointsError;
+        }
+
+
+        // ==========================================
+        // GET PLAYERS
+        // ==========================================
+
+        const {
+            data: players,
+            error: playerError
+        } = await supabaseClient
+
+            .from("Players")
+
+            .select(`
+                player_id,
+                "Name"
+            `);
+
+
+        if (playerError) {
+            throw playerError;
+        }
+
+
+        // ==========================================
+        // GET PLAYER PROFILES
+        // ==========================================
+
+        const {
+            data: profiles,
+            error: profileError
+        } = await supabaseClient
+
+            .from("player_profiles")
+
+            .select(`
+                player_id,
+                profile_image_url
+            `);
+
+
+        if (profileError) {
+            throw profileError;
+        }
+
+
+        // ==========================================
+        // BUILD STANDINGS
+        // ==========================================
+
+        const standings =
+            (seasonPoints || [])
+
+                .map(record => {
+
+                    const player =
+                        players.find(
+                            p =>
+                                Number(
+                                    p.player_id
+                                ) ===
+                                Number(
+                                    record.Player_id
+                                )
+                        );
+
+
+                    if (!player) {
+                        return null;
+                    }
+
+
+                    const profile =
+                        (profiles || []).find(
+                            p =>
+                                Number(
+                                    p.player_id
+                                ) ===
+                                Number(
+                                    player.player_id
+                                )
+                        );
+
+
+                    return {
+
+                        player_id:
+                            player.player_id,
+
+                        name:
+                            player.Name,
+
+                        points:
+                            Number(
+                                record.total_points
+                            ) || 0,
+
+                        profile_image_url:
+                            profile
+                                ?.profile_image_url
+                                || null
+
+                    };
+
+                })
+
+                .filter(Boolean)
+
+                .sort(
+                    (a, b) =>
+                        b.points -
+                        a.points
+                );
+
+
+        // ==========================================
+        // TOP THREE
+        // ==========================================
+
+        const topThree =
+            standings.slice(
+                0,
+                3
+            );
+
+
+        if (!topThree.length) {
+
+            podium.innerHTML = `
+                <div class="podium-loading">
+                    No league points recorded yet.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        // ==========================================
+        // MEDALS
+        // ==========================================
+
+        const medalMap = {
+
+            1: "🥇",
+            2: "🥈",
+            3: "🥉"
+
+        };
+
+
+        // ==========================================
+        // BUILD PODIUM
+        // ==========================================
+
+        const podiumOrder = [
+
+            {
+                position: 2,
+                className: "second"
+            },
+
+            {
+                position: 1,
+                className: "first"
+            },
+
+            {
+                position: 3,
+                className: "third"
+            }
+
+        ];
+
+
+        podium.innerHTML =
+            podiumOrder
+
+                .map(place => {
+
+                    const player =
+                        topThree[
+                            place.position - 1
+                        ];
+
+
+                    if (!player) {
+
+                        return `
+                            <div
+                                class="podium-place ${place.className}"
+                            ></div>
+                        `;
+
+                    }
+
+
+                    const initials =
+                        player.name
+
+                            .split(" ")
+
+                            .map(
+                                part =>
+                                    part
+                                        .charAt(0)
+                                        .toUpperCase()
+                            )
+
+                            .join("")
+
+                            .substring(
+                                0,
+                                2
+                            );
+
+
+                    const photoHTML =
+                        player.profile_image_url
+
+                            ? `
+                                <img
+                                    src="${player.profile_image_url}"
+                                    alt="${player.name}"
+                                    class="podium-photo"
+                                >
+                            `
+
+                            : `
+                                <div
+                                    class="podium-photo podium-initials"
+                                >
+                                    ${initials}
+                                </div>
+                            `;
+
+
+                    return `
+
+                        <div
+                            class="
+                                podium-place
+                                ${place.className}
+                            "
+                        >
+
+                            <div class="podium-player">
+
+                                ${photoHTML}
+
+                                <div class="podium-medal">
+
+                                    ${medalMap[
+                                        place.position
+                                    ]}
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="podium-name">
+
+                                ${player.name}
+
+                            </div>
+
+
+                            <div class="podium-points">
+
+                                ${player.points}
+
+                            </div>
+
+
+                            <div class="podium-label">
+
+                                POINTS
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                })
+
+                .join("");
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "ERROR LOADING LEAGUE PODIUM:",
+            error
+        );
+
+
+        podium.innerHTML = `
+
+            <div class="podium-loading">
+
+                Unable to load league standings.
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+
+// ==========================================
 // START CHAMPIONSHIPS PAGE
 // ==========================================
 
 loadChampionships();
+
+loadLeaguePodium();
 
 </script>
 
