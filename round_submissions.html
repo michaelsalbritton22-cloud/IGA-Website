@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Submit a Round | IGA Tour</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/database.js"></script>
+    <script src="js/components.js"></script>
+</head>
+
+<body>
+
+    <div id="header"></div>
+
+    <main class="container">
+
+        <div class="page-header">
+            <div>
+                <h1>SUBMIT A ROUND</h1>
+                <p class="page-subtitle">
+                    Submit your score for commissioner review.
+                </p>
+            </div>
+        </div>
+
+        <div id="message"></div>
+
+        <div class="card">
+
+            <form id="submissionForm">
+
+                <!-- PLAYER -->
+                <div class="form-section">
+                    <h2>Player Information</h2>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+                            <label for="player">
+                                Player
+                            </label>
+
+                            <select id="player" required>
+                                <option value="">
+                                    Select Player
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="handicap">
+                                Handicap Used
+                            </label>
+
+                            <input
+                                type="number"
+                                id="handicap"
+                                min="0"
+                                max="54"
+                                step="0.1"
+                                placeholder="18Birdies handicap"
+                                required
+                            >
+
+                            <small>
+                                Enter the handicap used for this round.
+                            </small>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <!-- EVENT -->
+                <div class="form-section">
+
+                    <h2>Event</h2>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="event">
+                                Event
+                            </label>
+
+                            <select id="event" required>
+                                <option value="">
+                                    Select Event
+                                </option>
+                            </select>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="roundDate">
+                                Round Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="roundDate"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div id="eventInfo" class="event-info" style="display:none;">
+
+                        <div>
+                            <strong>Course</strong>
+                            <span id="courseName">—</span>
+                        </div>
+
+                        <div>
+                            <strong>Location</strong>
+                            <span id="courseLocation">—</span>
+                        </div>
+
+                        <div>
+                            <strong>Par</strong>
+                            <span id="coursePar">—</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SCORECARD -->
+                <div class="form-section">
+
+                    <h2>Scorecard</h2>
+
+                    <p class="form-help">
+                        Enter the gross score for each hole exactly as recorded in 18Birdies.
+                    </p>
+
+                    <div class="scorecard-wrapper">
+
+                        <table class="scorecard">
+
+                            <thead>
+                                <tr>
+                                    <th>Hole</th>
+                                    <th>Par</th>
+                                    <th>HCP</th>
+                                    <th>Gross</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="scorecardBody">
+                                <tr>
+                                    <td colspan="4">
+                                        Select an event to load the scorecard.
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3">
+                                        Gross Total
+                                    </th>
+
+                                    <th id="grossTotal">
+                                        0
+                                    </th>
+                                </tr>
+                            </tfoot>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+                <!-- NET SCORE -->
+                <div class="form-section">
+
+                    <h2>18Birdies Result</h2>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="netScore">
+                                18Birdies Net Score
+                            </label>
+
+                            <input
+                                type="number"
+                                id="netScore"
+                                min="1"
+                                max="150"
+                                step="1"
+                                placeholder="Enter net score"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- NOTES -->
+                <div class="form-section">
+
+                    <h2>Notes</h2>
+
+                    <div class="form-group">
+
+                        <label for="notes">
+                            Optional Notes
+                        </label>
+
+                        <textarea
+                            id="notes"
+                            rows="4"
+                            placeholder="Anything the commissioner should know about this round..."
+                        ></textarea>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SUBMIT -->
+                <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        id="submitButton"
+                        class="btn btn-primary"
+                    >
+                        SUBMIT ROUND
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        onclick="window.history.back()"
+                    >
+                        CANCEL
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </main>
+
+
+<script>
+
+let players = [];
+let events = [];
+let selectedEvent = null;
+
+
+/* ==========================================
+   INITIALIZE
+========================================== */
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+    try {
+
+        await loadPlayers();
+        await loadEvents();
+
+        const params = new URLSearchParams(window.location.search);
+        const eventId = params.get("event");
+
+        if (eventId) {
+
+            const eventSelect = document.getElementById("event");
+
+            eventSelect.value = eventId;
+
+            await handleEventChange();
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            "Unable to load the submission form. Please refresh the page and try again.",
+            "error"
+        );
+
+    }
+
+});
+
+
+/* ==========================================
+   LOAD PLAYERS
+========================================== */
+
+async function loadPlayers() {
+
+    players = await getActivePlayers();
+
+    const select = document.getElementById("player");
+
+    select.innerHTML = `
+        <option value="">
+            Select Player
+        </option>
+    `;
+
+    players.forEach(player => {
+
+        const option = document.createElement("option");
+
+        option.value = player.player_id;
+        option.textContent = player.Name;
+
+        select.appendChild(option);
+
+    });
+
+}
+
+
+/* ==========================================
+   LOAD EVENTS
+========================================== */
+
+async function loadEvents() {
+
+    events = await getOpenEvents();
+
+    const select = document.getElementById("event");
+
+    select.innerHTML = `
+        <option value="">
+            Select Event
+        </option>
+    `;
+
+    events.forEach(event => {
+
+        const option = document.createElement("option");
+
+        option.value = event.id;
+
+        option.textContent = event.event_name;
+
+        select.appendChild(option);
+
+    });
+
+}
+
+
+/* ==========================================
+   PLAYER CHANGE
+========================================== */
+
+document.getElementById("player").addEventListener("change", () => {
+
+    const playerId = Number(
+        document.getElementById("player").value
+    );
+
+    const player = players.find(
+        p => Number(p.player_id) === playerId
+    );
+
+    if (!player) {
+
+        document.getElementById("handicap").value = "";
+
+        return;
+    }
+
+    if (player.Handicap !== null && player.Handicap !== undefined) {
+
+        document.getElementById("handicap").value =
+            Number(player.Handicap).toFixed(1);
+
+    }
+
+});
+
+
+/* ==========================================
+   EVENT CHANGE
+========================================== */
+
+document.getElementById("event").addEventListener(
+    "change",
+    handleEventChange
+);
+
+
+async function handleEventChange() {
+
+    const eventId = Number(
+        document.getElementById("event").value
+    );
+
+    if (!eventId) {
+
+        selectedEvent = null;
+
+        document.getElementById("eventInfo").style.display = "none";
+
+        clearScorecard();
+
+        return;
+
+    }
+
+    selectedEvent = events.find(
+        event => Number(event.id) === eventId
+    );
+
+    if (!selectedEvent) {
+
+        showMessage(
+            "Unable to find that event.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    /* ROUND DATE */
+
+    if (selectedEvent.event_date) {
+
+        document.getElementById("roundDate").value =
+            selectedEvent.event_date.substring(0, 10);
+
+    } else {
+
+        const today = new Date();
+
+        document.getElementById("roundDate").value =
+            today.toISOString().split("T")[0];
+
+    }
+
+
+    /* EVENT INFORMATION */
+
+    document.getElementById("eventInfo").style.display = "grid";
+
+    document.getElementById("courseName").textContent =
+        selectedEvent.courses?.course_name ||
+        selectedEvent.courses?.name ||
+        "—";
+
+    document.getElementById("courseLocation").textContent =
+        selectedEvent.courses?.location ||
+        "—";
+
+    document.getElementById("coursePar").textContent =
+        selectedEvent.courses?.par ||
+        "—";
+
+
+    /* LOAD SCORECARD */
+
+    const courseId = selectedEvent.course_id;
+
+    try {
+
+        const holes = await getCourseHoles(courseId);
+
+        renderScorecard(holes);
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            "Unable to load the course scorecard.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* ==========================================
+   SCORECARD
+========================================== */
+
+function renderScorecard(holes) {
+
+    const tbody = document.getElementById("scorecardBody");
+
+    tbody.innerHTML = "";
+
+
+    holes.forEach(hole => {
+
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+
+            <td>
+                ${hole.hole_number}
+            </td>
+
+            <td>
+                ${hole.par}
+            </td>
+
+            <td>
+                ${hole.handicap_index}
+            </td>
+
+            <td>
+
+                <input
+                    type="number"
+                    class="hole-score"
+                    data-hole="${hole.hole_number}"
+                    min="1"
+                    max="20"
+                    step="1"
+                    inputmode="numeric"
+                    required
+                >
+
+            </td>
+
+        `;
+
+        tbody.appendChild(row);
+
+    });
+
+
+    document
+        .querySelectorAll(".hole-score")
+        .forEach(input => {
+
+            input.addEventListener(
+                "input",
+                updateGrossTotal
+            );
+
+        });
+
+}
+
+
+function clearScorecard() {
+
+    document.getElementById("scorecardBody").innerHTML = `
+
+        <tr>
+            <td colspan="4">
+                Select an event to load the scorecard.
+            </td>
+        </tr>
+
+    `;
+
+    document.getElementById("grossTotal").textContent = "0";
+
+}
+
+
+function updateGrossTotal() {
+
+    let total = 0;
+
+    document
+        .querySelectorAll(".hole-score")
+        .forEach(input => {
+
+            const value = Number(input.value);
+
+            if (Number.isFinite(value)) {
+
+                total += value;
+
+            }
+
+        });
+
+    document.getElementById("grossTotal").textContent = total;
+
+}
+
+
+/* ==========================================
+   FORM SUBMISSION
+========================================== */
+
+document
+    .getElementById("submissionForm")
+    .addEventListener("submit", submitRound);
+
+
+async function submitRound(event) {
+
+    event.preventDefault();
+
+
+    const submitButton =
+        document.getElementById("submitButton");
+
+
+    submitButton.disabled = true;
+    submitButton.textContent = "SUBMITTING...";
+
+
+    try {
+
+        clearMessage();
+
+
+        /* PLAYER */
+
+        const playerId = Number(
+            document.getElementById("player").value
+        );
+
+        if (!playerId) {
+
+            throw new Error(
+                "Please select a player."
+            );
+
+        }
+
+
+        /* EVENT */
+
+        const eventId = Number(
+            document.getElementById("event").value
+        );
+
+        if (!eventId) {
+
+            throw new Error(
+                "Please select an event."
+            );
+
+        }
+
+
+        if (!selectedEvent) {
+
+            selectedEvent = events.find(
+                e => Number(e.id) === eventId
+            );
+
+        }
+
+
+        if (!selectedEvent) {
+
+            throw new Error(
+                "Unable to find the selected event."
+            );
+
+        }
+
+
+        /* HANDICAP */
+
+        const handicapUsed = Number(
+            document.getElementById("handicap").value
+        );
+
+        if (
+            !Number.isFinite(handicapUsed) ||
+            handicapUsed < 0 ||
+            handicapUsed > 54
+        ) {
+
+            throw new Error(
+                "Please enter a valid handicap."
+            );
+
+        }
+
+
+        /* DATE */
+
+        const roundDate =
+            document.getElementById("roundDate").value;
+
+        if (!roundDate) {
+
+            throw new Error(
+                "Please enter the round date."
+            );
+
+        }
+
+
+        /* SCORES */
+
+        const scoreInputs =
+            Array.from(
+                document.querySelectorAll(".hole-score")
+            );
+
+
+        if (scoreInputs.length !== 18) {
+
+            throw new Error(
+                "The course must have exactly 18 holes before a round can be submitted."
+            );
+
+        }
+
+
+        const grossScores = scoreInputs.map(input => {
+
+            const score = Number(input.value);
+
+            if (
+                !Number.isInteger(score) ||
+                score < 1 ||
+                score > 20
+            ) {
+
+                throw new Error(
+                    `Please enter a valid score for hole ${input.dataset.hole}.`
+                );
+
+            }
+
+            return score;
+
+        });
+
+
+        /* NET */
+
+        const netScore = Number(
+            document.getElementById("netScore").value
+        );
+
+
+        if (
+            !Number.isInteger(netScore) ||
+            netScore < 1 ||
+            netScore > 150
+        ) {
+
+            throw new Error(
+                "Please enter a valid 18Birdies net score."
+            );
+
+        }
+
+
+        /* NOTES */
+
+        const notes =
+            document.getElementById("notes").value.trim();
+
+
+        /* ROUND NUMBER */
+
+        let roundNumber = 1;
+
+        const roundMatch =
+            selectedEvent.event_name?.match(
+                /Round\s+(\d+)/i
+            );
+
+        if (roundMatch) {
+
+            roundNumber =
+                Number(roundMatch[1]);
+
+        }
+
+
+        /* CHECK FOR EXISTING OFFICIAL ROUND */
+
+        const { data: existingRounds, error: roundCheckError } =
+            await supabaseClient
+                .from("rounds")
+                .select("id, approval_status")
+                .eq("event_id", eventId)
+                .eq("player_id", playerId)
+                .limit(1);
+
+
+        if (roundCheckError) {
+
+            throw roundCheckError;
+
+        }
+
+
+        if (existingRounds && existingRounds.length > 0) {
+
+            throw new Error(
+                "You already have a round recorded for this event."
+            );
+
+        }
+
+
+        /* CHECK FOR ACTIVE SUBMISSION */
+
+        const { data: existingSubmissions, error: submissionCheckError } =
+            await supabaseClient
+                .from("round_submissions")
+                .select("id, status")
+                .eq("event_id", eventId)
+                .eq("submitted_by", playerId)
+                .in("status", [
+                    "Pending",
+                    "Matched",
+                    "Discrepancy",
+                    "Approved"
+                ])
+                .limit(1);
+
+
+        if (submissionCheckError) {
+
+            throw submissionCheckError;
+
+        }
+
+
+        if (
+            existingSubmissions &&
+            existingSubmissions.length > 0
+        ) {
+
+            throw new Error(
+                "You already have a submission for this event awaiting review or already approved."
+            );
+
+        }
+
+
+        /* INSERT PLAYER SUBMISSION */
+
+        const { data, error } =
+            await supabaseClient
+                .from("round_submissions")
+                .insert({
+
+                    event_id: eventId,
+
+                    round_number: roundNumber,
+
+                    submitted_by: playerId,
+
+                    round_date: roundDate,
+
+                    handicap_used: handicapUsed,
+
+                    net_score: netScore,
+
+                    gross_scores: grossScores,
+
+                    notes: notes || null,
+
+                    status: "Pending"
+
+                })
+                .select()
+                .single();
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        console.log(
+            "Round submission created:",
+            data
+        );
+
+
+        /* SUCCESS */
+
+        document.getElementById("submissionForm").reset();
+
+        clearScorecard();
+
+        document.getElementById("eventInfo").style.display =
+            "none";
+
+        showMessage(
+            `
+            <strong>Round submitted successfully.</strong>
+            <br>
+            Your score has been submitted to the commissioner
+            and is currently <strong>PENDING</strong> review.
+            `,
+            "success"
+        );
+
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Round submission error:",
+            error
+        );
+
+
+        showMessage(
+            error.message ||
+            "Unable to submit the round.",
+            "error"
+        );
+
+
+    } finally {
+
+        submitButton.disabled = false;
+        submitButton.textContent = "SUBMIT ROUND";
+
+    }
+
+}
+
+
+/* ==========================================
+   MESSAGES
+========================================== */
+
+function showMessage(message, type) {
+
+    const container =
+        document.getElementById("message");
+
+
+    container.innerHTML = `
+
+        <div class="alert alert-${type}">
+            ${message}
+        </div>
+
+    `;
+
+}
+
+
+function clearMessage() {
+
+    document.getElementById("message").innerHTML = "";
+
+}
+
+</script>
+
+
+<style>
+
+.form-section {
+    margin-bottom: 32px;
+}
+
+.form-section h2 {
+    margin-bottom: 16px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.form-group small {
+    color: #777;
+}
+
+.form-help {
+    color: #666;
+    margin-bottom: 16px;
+}
+
+.event-info {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.event-info div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.scorecard-wrapper {
+    overflow-x: auto;
+}
+
+.scorecard {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.scorecard th,
+.scorecard td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+.scorecard th {
+    font-weight: 700;
+}
+
+.hole-score {
+    width: 70px;
+    padding: 8px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.alert {
+    padding: 15px 18px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+.alert-success {
+    background: #e8f5e9;
+    border: 1px solid #81c784;
+}
+
+.alert-error {
+    background: #ffebee;
+    border: 1px solid #e57373;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions button {
+        width: 100%;
+    }
+
+}
+
+</style>
+
+</body>
+</html>
