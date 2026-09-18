@@ -15,254 +15,232 @@
 
 <body>
 
-    <div id="header"></div>
+<div id="header"></div>
 
-    <main class="container">
+<main class="container">
 
-        <div class="page-header">
-            <div>
-                <h1>SUBMIT A ROUND</h1>
-                <p class="page-subtitle">
-                    Submit your score for commissioner review.
-                </p>
+    <div class="page-header">
+        <div>
+            <h1>SUBMIT A ROUND</h1>
+            <p class="page-subtitle">
+                Submit the scorecard for everyone who played in your group.
+            </p>
+        </div>
+    </div>
+
+    <div id="message"></div>
+
+
+    <!-- ==========================================
+         STEP 1 — ROUND INFORMATION
+    =========================================== -->
+
+    <div class="card" id="roundInformationCard">
+
+        <div class="section-header">
+            <h2>ROUND INFORMATION</h2>
+        </div>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+
+                <label for="event">
+                    Event
+                </label>
+
+                <select id="event" required>
+                    <option value="">
+                        Select Event
+                    </option>
+                </select>
+
             </div>
-        </div>
 
-        <div id="message"></div>
 
-        <div class="card">
+            <div class="form-group">
 
-            <form id="submissionForm">
+                <label for="roundDate">
+                    Round Date
+                </label>
 
-                <!-- PLAYER -->
-                <div class="form-section">
-                    <h2>Player Information</h2>
+                <input
+                    type="date"
+                    id="roundDate"
+                    required
+                >
 
-                    <div class="form-grid">
+            </div>
 
-                        <div class="form-group">
-                            <label for="player">
-                                Player
-                            </label>
 
-                            <select id="player" required>
-                                <option value="">
-                                    Select Player
-                                </option>
-                            </select>
-                        </div>
+            <div class="form-group">
 
-                        <div class="form-group">
-                            <label for="handicap">
-                                Handicap Used
-                            </label>
+                <label for="submittedBy">
+                    Submitted By
+                </label>
 
-                            <input
-                                type="number"
-                                id="handicap"
-                                min="0"
-                                max="54"
-                                step="0.1"
-                                placeholder="18Birdies handicap"
-                                required
-                            >
+                <select id="submittedBy" required>
+                    <option value="">
+                        Select Your Name
+                    </option>
+                </select>
 
-                            <small>
-                                Enter the handicap used for this round.
-                            </small>
-                        </div>
-
-                    </div>
-                </div>
-
-
-                <!-- EVENT -->
-                <div class="form-section">
-
-                    <h2>Event</h2>
-
-                    <div class="form-grid">
-
-                        <div class="form-group">
-
-                            <label for="event">
-                                Event
-                            </label>
-
-                            <select id="event" required>
-                                <option value="">
-                                    Select Event
-                                </option>
-                            </select>
-
-                        </div>
-
-                        <div class="form-group">
-
-                            <label for="roundDate">
-                                Round Date
-                            </label>
-
-                            <input
-                                type="date"
-                                id="roundDate"
-                                required
-                            >
-
-                        </div>
-
-                    </div>
-
-
-                    <div id="eventInfo" class="event-info" style="display:none;">
-
-                        <div>
-                            <strong>Course</strong>
-                            <span id="courseName">—</span>
-                        </div>
-
-                        <div>
-                            <strong>Location</strong>
-                            <span id="courseLocation">—</span>
-                        </div>
-
-                        <div>
-                            <strong>Par</strong>
-                            <span id="coursePar">—</span>
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- SCORECARD -->
-                <div class="form-section">
-
-                    <h2>Scorecard</h2>
-
-                    <p class="form-help">
-                        Enter the gross score for each hole exactly as recorded in 18Birdies.
-                    </p>
-
-                    <div class="scorecard-wrapper">
-
-                        <table class="scorecard">
-
-                            <thead>
-                                <tr>
-                                    <th>Hole</th>
-                                    <th>Par</th>
-                                    <th>HCP</th>
-                                    <th>Gross</th>
-                                </tr>
-                            </thead>
-
-                            <tbody id="scorecardBody">
-                                <tr>
-                                    <td colspan="4">
-                                        Select an event to load the scorecard.
-                                    </td>
-                                </tr>
-                            </tbody>
-
-                            <tfoot>
-                                <tr>
-                                    <th colspan="3">
-                                        Gross Total
-                                    </th>
-
-                                    <th id="grossTotal">
-                                        0
-                                    </th>
-                                </tr>
-                            </tfoot>
-
-                        </table>
-
-                    </div>
-
-                </div>
-
-
-                <!-- NET SCORE -->
-                <div class="form-section">
-
-                    <h2>18Birdies Result</h2>
-
-                    <div class="form-grid">
-
-                        <div class="form-group">
-
-                            <label for="netScore">
-                                18Birdies Net Score
-                            </label>
-
-                            <input
-                                type="number"
-                                id="netScore"
-                                min="1"
-                                max="150"
-                                step="1"
-                                placeholder="Enter net score"
-                                required
-                            >
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- NOTES -->
-                <div class="form-section">
-
-                    <h2>Notes</h2>
-
-                    <div class="form-group">
-
-                        <label for="notes">
-                            Optional Notes
-                        </label>
-
-                        <textarea
-                            id="notes"
-                            rows="4"
-                            placeholder="Anything the commissioner should know about this round..."
-                        ></textarea>
-
-                    </div>
-
-                </div>
-
-
-                <!-- SUBMIT -->
-                <div class="form-actions">
-
-                    <button
-                        type="submit"
-                        id="submitButton"
-                        class="btn btn-primary"
-                    >
-                        SUBMIT ROUND
-                    </button>
-
-                    <button
-                        type="button"
-                        class="btn btn-secondary"
-                        onclick="window.history.back()"
-                    >
-                        CANCEL
-                    </button>
-
-                </div>
-
-            </form>
+            </div>
 
         </div>
 
-    </main>
+
+        <div
+            id="eventInfo"
+            class="event-info"
+            style="display:none;"
+        >
+
+            <div>
+                <strong>Course</strong>
+                <span id="courseName">—</span>
+            </div>
+
+            <div>
+                <strong>Location</strong>
+                <span id="courseLocation">—</span>
+            </div>
+
+            <div>
+                <strong>Par</strong>
+                <span id="coursePar">—</span>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         STEP 2 — PLAYERS
+    =========================================== -->
+
+    <div
+        class="card"
+        id="playersCard"
+        style="display:none;"
+    >
+
+        <div class="section-header">
+
+            <h2>WHO PLAYED?</h2>
+
+            <p>
+                Select everyone who played in your group.
+            </p>
+
+        </div>
+
+
+        <div
+            id="playerSelection"
+            class="player-selection"
+        ></div>
+
+
+        <div class="selection-actions">
+
+            <button
+                type="button"
+                id="selectAllButton"
+                class="btn btn-secondary"
+            >
+                SELECT ALL
+            </button>
+
+            <button
+                type="button"
+                id="clearAllButton"
+                class="btn btn-secondary"
+            >
+                CLEAR
+            </button>
+
+        </div>
+
+
+        <button
+            type="button"
+            id="continueButton"
+            class="btn btn-primary"
+        >
+            CONTINUE TO SCORECARD
+        </button>
+
+    </div>
+
+
+    <!-- ==========================================
+         STEP 3 — SCORECARDS
+    =========================================== -->
+
+    <div
+        class="card"
+        id="scorecardCard"
+        style="display:none;"
+    >
+
+        <div class="section-header">
+
+            <h2>SCORECARD</h2>
+
+            <p>
+                Enter the gross scores and 18Birdies net score for each player.
+            </p>
+
+        </div>
+
+
+        <div id="playerScorecards"></div>
+
+
+        <div class="form-section">
+
+            <div class="form-group">
+
+                <label for="notes">
+                    Notes
+                </label>
+
+                <textarea
+                    id="notes"
+                    rows="4"
+                    placeholder="Optional notes for the commissioner..."
+                ></textarea>
+
+            </div>
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <button
+                type="button"
+                id="backButton"
+                class="btn btn-secondary"
+            >
+                BACK
+            </button>
+
+            <button
+                type="button"
+                id="submitButton"
+                class="btn btn-primary"
+            >
+                SUBMIT GROUP SCORECARD
+            </button>
+
+        </div>
+
+    </div>
+
+</main>
 
 
 <script>
@@ -270,27 +248,31 @@
 let players = [];
 let events = [];
 let selectedEvent = null;
+let selectedPlayers = [];
+let courseHoles = [];
 
 
 /* ==========================================
    INITIALIZE
 ========================================== */
 
-document.addEventListener("DOMContentLoaded", async () => {
+async function initializePage() {
 
     try {
 
         await loadPlayers();
         await loadEvents();
 
-        const params = new URLSearchParams(window.location.search);
-        const eventId = params.get("event");
+        const params =
+            new URLSearchParams(window.location.search);
+
+        const eventId =
+            params.get("event");
 
         if (eventId) {
 
-            const eventSelect = document.getElementById("event");
-
-            eventSelect.value = eventId;
+            document.getElementById("event").value =
+                eventId;
 
             await handleEventChange();
 
@@ -301,13 +283,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.error(error);
 
         showMessage(
-            "Unable to load the submission form. Please refresh the page and try again.",
+            error.message ||
+            "Unable to load the submission page.",
             "error"
         );
 
     }
 
-});
+}
 
 
 /* ==========================================
@@ -318,26 +301,150 @@ async function loadPlayers() {
 
     players = await getActivePlayers();
 
-    const select = document.getElementById("player");
+    const submittedBy =
+        document.getElementById("submittedBy");
 
-    select.innerHTML = `
+    submittedBy.innerHTML = `
         <option value="">
-            Select Player
+            Select Your Name
         </option>
     `;
 
+
     players.forEach(player => {
 
-        const option = document.createElement("option");
+        const option =
+            document.createElement("option");
 
-        option.value = player.player_id;
-        option.textContent = player.Name;
+        option.value =
+            player.player_id;
 
-        select.appendChild(option);
+        option.textContent =
+            player.Name;
+
+        submittedBy.appendChild(option);
 
     });
 
+
+    renderPlayerSelection();
+
 }
+
+
+/* ==========================================
+   PLAYER SELECTION
+========================================== */
+
+function renderPlayerSelection() {
+
+    const container =
+        document.getElementById("playerSelection");
+
+    container.innerHTML = "";
+
+
+    players.forEach(player => {
+
+        const label =
+            document.createElement("label");
+
+        label.className =
+            "player-checkbox";
+
+
+        label.innerHTML = `
+
+            <input
+                type="checkbox"
+                class="player-select"
+                value="${player.player_id}"
+            >
+
+            <span>
+                ${escapeHtml(player.Name)}
+            </span>
+
+        `;
+
+
+        container.appendChild(label);
+
+    });
+
+
+    document
+        .querySelectorAll(".player-select")
+        .forEach(checkbox => {
+
+            checkbox.addEventListener(
+                "change",
+                updateSelectedPlayers
+            );
+
+        });
+
+}
+
+
+/* ==========================================
+   UPDATE SELECTED PLAYERS
+========================================== */
+
+function updateSelectedPlayers() {
+
+    selectedPlayers =
+        Array.from(
+            document.querySelectorAll(
+                ".player-select:checked"
+            )
+        ).map(
+            checkbox => Number(checkbox.value)
+        );
+
+}
+
+
+/* ==========================================
+   SELECT ALL
+========================================== */
+
+document
+    .getElementById("selectAllButton")
+    .addEventListener("click", () => {
+
+        document
+            .querySelectorAll(".player-select")
+            .forEach(checkbox => {
+
+                checkbox.checked = true;
+
+            });
+
+        updateSelectedPlayers();
+
+    });
+
+
+/* ==========================================
+   CLEAR ALL
+========================================== */
+
+document
+    .getElementById("clearAllButton")
+    .addEventListener("click", () => {
+
+        document
+            .querySelectorAll(".player-select")
+            .forEach(checkbox => {
+
+                checkbox.checked = false;
+
+            });
+
+        updateSelectedPlayers();
+
+    });
 
 
 /* ==========================================
@@ -348,7 +455,8 @@ async function loadEvents() {
 
     events = await getOpenEvents();
 
-    const select = document.getElementById("event");
+    const select =
+        document.getElementById("event");
 
     select.innerHTML = `
         <option value="">
@@ -356,13 +464,17 @@ async function loadEvents() {
         </option>
     `;
 
+
     events.forEach(event => {
 
-        const option = document.createElement("option");
+        const option =
+            document.createElement("option");
 
-        option.value = event.id;
+        option.value =
+            event.id;
 
-        option.textContent = event.event_name;
+        option.textContent =
+            event.event_name;
 
         select.appendChild(option);
 
@@ -372,123 +484,119 @@ async function loadEvents() {
 
 
 /* ==========================================
-   PLAYER CHANGE
-========================================== */
-
-document.getElementById("player").addEventListener("change", () => {
-
-    const playerId = Number(
-        document.getElementById("player").value
-    );
-
-    const player = players.find(
-        p => Number(p.player_id) === playerId
-    );
-
-    if (!player) {
-
-        document.getElementById("handicap").value = "";
-
-        return;
-    }
-
-    if (player.Handicap !== null && player.Handicap !== undefined) {
-
-        document.getElementById("handicap").value =
-            Number(player.Handicap).toFixed(1);
-
-    }
-
-});
-
-
-/* ==========================================
    EVENT CHANGE
 ========================================== */
 
-document.getElementById("event").addEventListener(
-    "change",
-    handleEventChange
-);
+document
+    .getElementById("event")
+    .addEventListener(
+        "change",
+        handleEventChange
+    );
 
 
 async function handleEventChange() {
 
-    const eventId = Number(
-        document.getElementById("event").value
-    );
+    const eventId =
+        Number(
+            document.getElementById("event").value
+        );
+
 
     if (!eventId) {
 
         selectedEvent = null;
 
-        document.getElementById("eventInfo").style.display = "none";
+        document
+            .getElementById("eventInfo")
+            .style.display = "none";
 
-        clearScorecard();
+        document
+            .getElementById("playersCard")
+            .style.display = "none";
 
         return;
 
     }
 
-    selectedEvent = events.find(
-        event => Number(event.id) === eventId
-    );
+
+    selectedEvent =
+        events.find(
+            event =>
+                Number(event.id) === eventId
+        );
+
 
     if (!selectedEvent) {
 
         showMessage(
-            "Unable to find that event.",
+            "Unable to find the selected event.",
             "error"
         );
 
         return;
+
     }
 
 
-    /* ROUND DATE */
+    /* DATE */
 
     if (selectedEvent.event_date) {
 
-        document.getElementById("roundDate").value =
+        document
+            .getElementById("roundDate")
+            .value =
             selectedEvent.event_date.substring(0, 10);
-
-    } else {
-
-        const today = new Date();
-
-        document.getElementById("roundDate").value =
-            today.toISOString().split("T")[0];
 
     }
 
 
-    /* EVENT INFORMATION */
+    /* COURSE INFORMATION */
 
-    document.getElementById("eventInfo").style.display = "grid";
+    const course =
+        selectedEvent.courses;
 
-    document.getElementById("courseName").textContent =
-        selectedEvent.courses?.course_name ||
-        selectedEvent.courses?.name ||
-        "—";
 
-    document.getElementById("courseLocation").textContent =
-        selectedEvent.courses?.location ||
-        "—";
-
-    document.getElementById("coursePar").textContent =
-        selectedEvent.courses?.par ||
+    document
+        .getElementById("courseName")
+        .textContent =
+        course?.Name ||
+        course?.name ||
+        course?.course_name ||
         "—";
 
 
-    /* LOAD SCORECARD */
+    document
+        .getElementById("courseLocation")
+        .textContent =
+        course?.Location ||
+        course?.location ||
+        course?.City ||
+        course?.city ||
+        "—";
 
-    const courseId = selectedEvent.course_id;
+
+    document
+        .getElementById("coursePar")
+        .textContent =
+        course?.Par ||
+        course?.par ||
+        "—";
+
+
+    document
+        .getElementById("eventInfo")
+        .style.display = "grid";
+
+
+    /* LOAD HOLES */
 
     try {
 
-        const holes = await getCourseHoles(courseId);
-
-        renderScorecard(holes);
+        courseHoles =
+            await getCourseHoles(
+                selectedEvent.course_id
+            );
 
     } catch (error) {
 
@@ -499,58 +607,332 @@ async function handleEventChange() {
             "error"
         );
 
+        return;
+
     }
+
+
+    document
+        .getElementById("playersCard")
+        .style.display = "block";
+
+
+    document
+        .getElementById("playersCard")
+        .scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
 
 }
 
 
 /* ==========================================
-   SCORECARD
+   CONTINUE TO SCORECARD
 ========================================== */
 
-function renderScorecard(holes) {
+document
+    .getElementById("continueButton")
+    .addEventListener(
+        "click",
+        continueToScorecard
+    );
 
-    const tbody = document.getElementById("scorecardBody");
 
-    tbody.innerHTML = "";
+function continueToScorecard() {
+
+    clearMessage();
+
+    updateSelectedPlayers();
 
 
-    holes.forEach(hole => {
+    if (!selectedEvent) {
 
-        const row = document.createElement("tr");
+        showMessage(
+            "Please select an event.",
+            "error"
+        );
 
-        row.innerHTML = `
+        return;
 
-            <td>
-                ${hole.hole_number}
-            </td>
+    }
 
-            <td>
-                ${hole.par}
-            </td>
 
-            <td>
-                ${hole.handicap_index}
-            </td>
+    if (!document.getElementById("submittedBy").value) {
 
-            <td>
+        showMessage(
+            "Please select who is submitting the scorecard.",
+            "error"
+        );
 
-                <input
-                    type="number"
-                    class="hole-score"
-                    data-hole="${hole.hole_number}"
-                    min="1"
-                    max="20"
-                    step="1"
-                    inputmode="numeric"
-                    required
-                >
+        return;
 
-            </td>
+    }
+
+
+    if (selectedPlayers.length === 0) {
+
+        showMessage(
+            "Please select at least one player who played.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const submittedBy =
+        Number(
+            document.getElementById("submittedBy").value
+        );
+
+
+    /*
+     * The person submitting the scorecard should
+     * normally be included among the players.
+     */
+
+    if (!selectedPlayers.includes(submittedBy)) {
+
+        const submitter =
+            players.find(
+                p =>
+                    Number(p.player_id) === submittedBy
+            );
+
+
+        const addSubmitter =
+            confirm(
+                `${submitter?.Name || "The selected submitter"} is not currently selected as a player. Add them to the group?`
+            );
+
+
+        if (addSubmitter) {
+
+            selectedPlayers.push(submittedBy);
+
+            const checkbox =
+                document.querySelector(
+                    `.player-select[value="${submittedBy}"]`
+                );
+
+            if (checkbox) {
+
+                checkbox.checked = true;
+
+            }
+
+        }
+
+    }
+
+
+    renderPlayerScorecards();
+
+
+    document
+        .getElementById("scorecardCard")
+        .style.display = "block";
+
+
+    document
+        .getElementById("scorecardCard")
+        .scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+}
+
+
+/* ==========================================
+   RENDER PLAYER SCORECARDS
+========================================== */
+
+function renderPlayerScorecards() {
+
+    const container =
+        document.getElementById("playerScorecards");
+
+    container.innerHTML = "";
+
+
+    selectedPlayers.forEach(playerId => {
+
+        const player =
+            players.find(
+                p =>
+                    Number(p.player_id) ===
+                    Number(playerId)
+            );
+
+
+        if (!player) return;
+
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "player-scorecard";
+
+
+        const handicap =
+            player.Handicap !== null &&
+            player.Handicap !== undefined
+                ? Number(player.Handicap)
+                : "";
+
+
+        card.innerHTML = `
+
+            <div class="player-scorecard-header">
+
+                <div>
+
+                    <h3>
+                        ${escapeHtml(player.Name)}
+                    </h3>
+
+                    <span>
+                        Handicap: ${
+                            handicap !== ""
+                                ? handicap.toFixed(1)
+                                : "Enter below"
+                        }
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label>
+                        Handicap Used
+                    </label>
+
+                    <input
+                        type="number"
+                        class="player-handicap"
+                        data-player="${playerId}"
+                        value="${handicap}"
+                        min="0"
+                        max="54"
+                        step="0.1"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        18Birdies Net Score
+                    </label>
+
+                    <input
+                        type="number"
+                        class="player-net"
+                        data-player="${playerId}"
+                        min="1"
+                        max="150"
+                        step="1"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="scorecard-wrapper">
+
+                <table class="scorecard">
+
+                    <thead>
+
+                        <tr>
+                            <th>Hole</th>
+                            <th>Par</th>
+                            <th>HCP</th>
+                            <th>Gross</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        ${courseHoles.map(hole => `
+
+                            <tr>
+
+                                <td>
+                                    ${hole.hole_number}
+                                </td>
+
+                                <td>
+                                    ${hole.par}
+                                </td>
+
+                                <td>
+                                    ${hole.handicap_index}
+                                </td>
+
+                                <td>
+
+                                    <input
+                                        type="number"
+                                        class="hole-score"
+                                        data-player="${playerId}"
+                                        data-hole="${hole.hole_number}"
+                                        min="1"
+                                        max="20"
+                                        step="1"
+                                        inputmode="numeric"
+                                        required
+                                    >
+
+                                </td>
+
+                            </tr>
+
+                        `).join("")}
+
+                    </tbody>
+
+                    <tfoot>
+
+                        <tr>
+
+                            <th colspan="3">
+                                Gross Total
+                            </th>
+
+                            <th
+                                class="gross-total"
+                                data-player="${playerId}"
+                            >
+                                0
+                            </th>
+
+                        </tr>
+
+                    </tfoot>
+
+                </table>
+
+            </div>
 
         `;
 
-        tbody.appendChild(row);
+
+        container.appendChild(card);
 
     });
 
@@ -561,103 +943,114 @@ function renderScorecard(holes) {
 
             input.addEventListener(
                 "input",
-                updateGrossTotal
+                updatePlayerGrossTotal
             );
 
         });
-
-}
-
-
-function clearScorecard() {
-
-    document.getElementById("scorecardBody").innerHTML = `
-
-        <tr>
-            <td colspan="4">
-                Select an event to load the scorecard.
-            </td>
-        </tr>
-
-    `;
-
-    document.getElementById("grossTotal").textContent = "0";
-
-}
-
-
-function updateGrossTotal() {
-
-    let total = 0;
-
-    document
-        .querySelectorAll(".hole-score")
-        .forEach(input => {
-
-            const value = Number(input.value);
-
-            if (Number.isFinite(value)) {
-
-                total += value;
-
-            }
-
-        });
-
-    document.getElementById("grossTotal").textContent = total;
 
 }
 
 
 /* ==========================================
-   FORM SUBMISSION
+   GROSS TOTAL
+========================================== */
+
+function updatePlayerGrossTotal(event) {
+
+    const playerId =
+        event.target.dataset.player;
+
+
+    let total = 0;
+
+
+    document
+        .querySelectorAll(
+            `.hole-score[data-player="${playerId}"]`
+        )
+        .forEach(input => {
+
+            const score =
+                Number(input.value);
+
+
+            if (
+                Number.isFinite(score)
+            ) {
+
+                total += score;
+
+            }
+
+        });
+
+
+    const totalElement =
+        document.querySelector(
+            `.gross-total[data-player="${playerId}"]`
+        );
+
+
+    if (totalElement) {
+
+        totalElement.textContent =
+            total;
+
+    }
+
+}
+
+
+/* ==========================================
+   BACK
 ========================================== */
 
 document
-    .getElementById("submissionForm")
-    .addEventListener("submit", submitRound);
+    .getElementById("backButton")
+    .addEventListener("click", () => {
+
+        document
+            .getElementById("scorecardCard")
+            .style.display = "none";
+
+        window.scrollTo({
+            top: document
+                .getElementById("playersCard")
+                .offsetTop - 20,
+            behavior: "smooth"
+        });
+
+    });
 
 
-async function submitRound(event) {
+/* ==========================================
+   SUBMIT
+========================================== */
 
-    event.preventDefault();
+document
+    .getElementById("submitButton")
+    .addEventListener(
+        "click",
+        submitGroupScorecard
+    );
 
 
-    const submitButton =
+async function submitGroupScorecard() {
+
+    clearMessage();
+
+
+    const button =
         document.getElementById("submitButton");
 
 
-    submitButton.disabled = true;
-    submitButton.textContent = "SUBMITTING...";
+    button.disabled = true;
+    button.textContent = "SUBMITTING...";
 
 
     try {
 
-        clearMessage();
-
-
-        /* PLAYER */
-
-        const playerId = Number(
-            document.getElementById("player").value
-        );
-
-        if (!playerId) {
-
-            throw new Error(
-                "Please select a player."
-            );
-
-        }
-
-
-        /* EVENT */
-
-        const eventId = Number(
-            document.getElementById("event").value
-        );
-
-        if (!eventId) {
+        if (!selectedEvent) {
 
             throw new Error(
                 "Please select an event."
@@ -666,47 +1059,24 @@ async function submitRound(event) {
         }
 
 
-        if (!selectedEvent) {
-
-            selectedEvent = events.find(
-                e => Number(e.id) === eventId
+        const submittedBy =
+            Number(
+                document.getElementById("submittedBy").value
             );
 
-        }
 
-
-        if (!selectedEvent) {
+        if (!submittedBy) {
 
             throw new Error(
-                "Unable to find the selected event."
+                "Please select who is submitting the scorecard."
             );
 
         }
 
-
-        /* HANDICAP */
-
-        const handicapUsed = Number(
-            document.getElementById("handicap").value
-        );
-
-        if (
-            !Number.isFinite(handicapUsed) ||
-            handicapUsed < 0 ||
-            handicapUsed > 54
-        ) {
-
-            throw new Error(
-                "Please enter a valid handicap."
-            );
-
-        }
-
-
-        /* DATE */
 
         const roundDate =
             document.getElementById("roundDate").value;
+
 
         if (!roundDate) {
 
@@ -717,78 +1087,35 @@ async function submitRound(event) {
         }
 
 
-        /* SCORES */
-
-        const scoreInputs =
-            Array.from(
-                document.querySelectorAll(".hole-score")
-            );
-
-
-        if (scoreInputs.length !== 18) {
+        if (selectedPlayers.length === 0) {
 
             throw new Error(
-                "The course must have exactly 18 holes before a round can be submitted."
+                "Please select at least one player."
             );
 
         }
 
 
-        const grossScores = scoreInputs.map(input => {
+        /*
+         * Generate one ID for the entire group submission.
+         */
 
-            const score = Number(input.value);
-
-            if (
-                !Number.isInteger(score) ||
-                score < 1 ||
-                score > 20
-            ) {
-
-                throw new Error(
-                    `Please enter a valid score for hole ${input.dataset.hole}.`
-                );
-
-            }
-
-            return score;
-
-        });
+        const submissionGroupId =
+            crypto.randomUUID();
 
 
-        /* NET */
-
-        const netScore = Number(
-            document.getElementById("netScore").value
-        );
-
-
-        if (
-            !Number.isInteger(netScore) ||
-            netScore < 1 ||
-            netScore > 150
-        ) {
-
-            throw new Error(
-                "Please enter a valid 18Birdies net score."
-            );
-
-        }
-
-
-        /* NOTES */
-
-        const notes =
-            document.getElementById("notes").value.trim();
-
-
-        /* ROUND NUMBER */
+        /*
+         * Determine round number from event name.
+         */
 
         let roundNumber = 1;
+
 
         const roundMatch =
             selectedEvent.event_name?.match(
                 /Round\s+(\d+)/i
             );
+
 
         if (roundMatch) {
 
@@ -798,97 +1125,377 @@ async function submitRound(event) {
         }
 
 
-        /* CHECK FOR EXISTING OFFICIAL ROUND */
-
-        const { data: existingRounds, error: roundCheckError } =
-            await supabaseClient
-                .from("rounds")
-                .select("id, approval_status")
-                .eq("event_id", eventId)
-                .eq("player_id", playerId)
-                .limit(1);
+        const notes =
+            document
+                .getElementById("notes")
+                .value
+                .trim();
 
 
-        if (roundCheckError) {
-
-            throw roundCheckError;
-
-        }
+        const submissions = [];
 
 
-        if (existingRounds && existingRounds.length > 0) {
+        /*
+         * Build one submission for every player.
+         */
 
-            throw new Error(
-                "You already have a round recorded for this event."
-            );
+        for (const playerId of selectedPlayers) {
 
-        }
+            const player =
+                players.find(
+                    p =>
+                        Number(p.player_id) ===
+                        Number(playerId)
+                );
 
 
-        /* CHECK FOR ACTIVE SUBMISSION */
+            if (!player) {
 
-        const { data: existingSubmissions, error: submissionCheckError } =
-            await supabaseClient
-                .from("round_submissions")
-                .select("id, status")
-                .eq("event_id", eventId)
-                .eq("submitted_by", playerId)
-                .in("status", [
+                throw new Error(
+                    "Unable to find one of the selected players."
+                );
+
+            }
+
+
+            /* HANDICAP */
+
+            const handicapInput =
+                document.querySelector(
+                    `.player-handicap[data-player="${playerId}"]`
+                );
+
+
+            const handicapUsed =
+                Number(handicapInput?.value);
+
+
+            if (
+                !Number.isFinite(handicapUsed) ||
+                handicapUsed < 0 ||
+                handicapUsed > 54
+            ) {
+
+                throw new Error(
+                    `Please enter a valid handicap for ${player.Name}.`
+                );
+
+            }
+
+
+            /* NET */
+
+            const netInput =
+                document.querySelector(
+                    `.player-net[data-player="${playerId}"]`
+                );
+
+
+            const netScore =
+                Number(netInput?.value);
+
+
+            if (
+                !Number.isInteger(netScore) ||
+                netScore < 1 ||
+                netScore > 150
+            ) {
+
+                throw new Error(
+                    `Please enter a valid 18Birdies net score for ${player.Name}.`
+                );
+
+            }
+
+
+            /* GROSS */
+
+            const scoreInputs =
+                Array.from(
+                    document.querySelectorAll(
+                        `.hole-score[data-player="${playerId}"]`
+                    )
+                );
+
+
+            if (scoreInputs.length !== 18) {
+
+                throw new Error(
+                    `The scorecard for ${player.Name} does not contain 18 holes.`
+                );
+
+            }
+
+
+            const grossScores =
+                scoreInputs.map(input => {
+
+                    const score =
+                        Number(input.value);
+
+
+                    if (
+                        !Number.isInteger(score) ||
+                        score < 1 ||
+                        score > 20
+                    ) {
+
+                        throw new Error(
+                            `Please enter a valid score for ${player.Name}, hole ${input.dataset.hole}.`
+                        );
+
+                    }
+
+
+                    return score;
+
+                });
+
+
+            submissions.push({
+
+                event_id:
+                    Number(selectedEvent.id),
+
+                round_number:
+                    roundNumber,
+
+                submitted_by:
+                    submittedBy,
+
+                submitted_at:
+                    new Date().toISOString(),
+
+                status:
                     "Pending",
-                    "Matched",
-                    "Discrepancy",
-                    "Approved"
-                ])
-                .limit(1);
 
+                notes:
+                    notes || null,
 
-        if (submissionCheckError) {
+                round_date:
+                    roundDate,
 
-            throw submissionCheckError;
+                handicap_used:
+                    handicapUsed,
+
+                net_score:
+                    netScore,
+
+                gross_scores:
+                    grossScores,
+
+                submission_group_id:
+                    submissionGroupId
+
+            });
 
         }
 
 
-        if (
-            existingSubmissions &&
-            existingSubmissions.length > 0
-        ) {
+        /*
+         * Check whether any selected player already
+         * has an official round or active submission.
+         */
 
-            throw new Error(
-                "You already have a submission for this event awaiting review or already approved."
+        for (const submission of submissions) {
+
+            const playerId =
+                submission.submitted_by ===
+                submission.submitted_by
+                    ? null
+                    : null;
+
+            /*
+             * The actual player receiving this submission
+             * is determined below.
+             */
+
+        }
+
+
+        /*
+         * Rebuild the records with the actual player.
+         */
+
+        submissions.forEach(
+            (submission, index) => {
+
+                submission.submitted_player_id =
+                    selectedPlayers[index];
+
+            }
+        );
+
+
+        /*
+         * Check for existing official rounds.
+         */
+
+        for (const submission of submissions) {
+
+            const { data: existingRounds, error } =
+                await supabaseClient
+                    .from("rounds")
+                    .select("id")
+                    .eq(
+                        "event_id",
+                        submission.event_id
+                    )
+                    .eq(
+                        "player_id",
+                        submission.submitted_player_id
+                    )
+                    .limit(1);
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            if (
+                existingRounds &&
+                existingRounds.length > 0
+            ) {
+
+                const player =
+                    players.find(
+                        p =>
+                            Number(p.player_id) ===
+                            Number(
+                                submission.submitted_player_id
+                            )
+                    );
+
+
+                throw new Error(
+                    `${player?.Name || "A selected player"} already has an official round for this event.`
+                );
+
+            }
+
+        }
+
+
+        /*
+         * Check for existing active submissions.
+         */
+
+        for (const submission of submissions) {
+
+            const { data: existingSubmissions, error } =
+                await supabaseClient
+                    .from("round_submissions")
+                    .select("id, status")
+                    .eq(
+                        "event_id",
+                        submission.event_id
+                    )
+                    .eq(
+                        "submitted_by",
+                        submission.submitted_player_id
+                    )
+                    .in(
+                        "status",
+                        [
+                            "Pending",
+                            "Matched",
+                            "Discrepancy",
+                            "Approved"
+                        ]
+                    )
+                    .limit(1);
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            if (
+                existingSubmissions &&
+                existingSubmissions.length > 0
+            ) {
+
+                const player =
+                    players.find(
+                        p =>
+                            Number(p.player_id) ===
+                            Number(
+                                submission.submitted_player_id
+                            )
+                    );
+
+
+                throw new Error(
+                    `${player?.Name || "A selected player"} already has a submission awaiting review.`
+                );
+
+            }
+
+        }
+
+
+        /*
+         * The database column "submitted_by" identifies
+         * who entered the scorecard.
+         *
+         * The actual player needs its own column.
+         */
+
+        const rows =
+            submissions.map(
+                submission => ({
+
+                    event_id:
+                        submission.event_id,
+
+                    round_number:
+                        submission.round_number,
+
+                    submitted_by:
+                        submission.submitted_by,
+
+                    submitted_at:
+                        submission.submitted_at,
+
+                    status:
+                        submission.status,
+
+                    notes:
+                        submission.notes,
+
+                    round_date:
+                        submission.round_date,
+
+                    handicap_used:
+                        submission.handicap_used,
+
+                    net_score:
+                        submission.net_score,
+
+                    gross_scores:
+                        submission.gross_scores,
+
+                    submission_group_id:
+                        submission.submission_group_id,
+
+                    player_id:
+                        submission.submitted_player_id
+
+                })
             );
 
-        }
-
-
-        /* INSERT PLAYER SUBMISSION */
 
         const { data, error } =
             await supabaseClient
                 .from("round_submissions")
-                .insert({
-
-                    event_id: eventId,
-
-                    round_number: roundNumber,
-
-                    submitted_by: playerId,
-
-                    round_date: roundDate,
-
-                    handicap_used: handicapUsed,
-
-                    net_score: netScore,
-
-                    gross_scores: grossScores,
-
-                    notes: notes || null,
-
-                    status: "Pending"
-
-                })
-                .select()
-                .single();
+                .insert(rows)
+                .select();
 
 
         if (error) {
@@ -899,26 +1506,32 @@ async function submitRound(event) {
 
 
         console.log(
-            "Round submission created:",
+            "Group submission created:",
             data
         );
 
 
-        /* SUCCESS */
+        /*
+         * SUCCESS
+         */
 
-        document.getElementById("submissionForm").reset();
+        document
+            .getElementById("scorecardCard")
+            .style.display = "none";
 
-        clearScorecard();
-
-        document.getElementById("eventInfo").style.display =
-            "none";
+        document
+            .getElementById("playersCard")
+            .style.display = "none";
 
         showMessage(
             `
-            <strong>Round submitted successfully.</strong>
-            <br>
-            Your score has been submitted to the commissioner
-            and is currently <strong>PENDING</strong> review.
+            <strong>Scorecard submitted successfully.</strong>
+            <br><br>
+            ${selectedPlayers.length} player
+            ${selectedPlayers.length === 1 ? "score has" : "scores have"}
+            been submitted for commissioner review.
+            <br><br>
+            Status: <strong>PENDING</strong>
             `,
             "success"
         );
@@ -933,22 +1546,23 @@ async function submitRound(event) {
     } catch (error) {
 
         console.error(
-            "Round submission error:",
+            "Group submission error:",
             error
         );
 
 
         showMessage(
             error.message ||
-            "Unable to submit the round.",
+            "Unable to submit the scorecard.",
             "error"
         );
 
 
     } finally {
 
-        submitButton.disabled = false;
-        submitButton.textContent = "SUBMIT ROUND";
+        button.disabled = false;
+        button.textContent =
+            "SUBMIT GROUP SCORECARD";
 
     }
 
@@ -956,31 +1570,54 @@ async function submitRound(event) {
 
 
 /* ==========================================
-   MESSAGES
+   MESSAGE
 ========================================== */
 
 function showMessage(message, type) {
 
-    const container =
-        document.getElementById("message");
+    document
+        .getElementById("message")
+        .innerHTML = `
 
+            <div class="alert alert-${type}">
+                ${message}
+            </div>
 
-    container.innerHTML = `
-
-        <div class="alert alert-${type}">
-            ${message}
-        </div>
-
-    `;
+        `;
 
 }
 
 
 function clearMessage() {
 
-    document.getElementById("message").innerHTML = "";
+    document
+        .getElementById("message")
+        .innerHTML = "";
 
 }
+
+
+/* ==========================================
+   ESCAPE HTML
+========================================== */
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+
+/* ==========================================
+   START
+========================================== */
+
+initializePage();
 
 </script>
 
@@ -988,11 +1625,20 @@ function clearMessage() {
 <style>
 
 .form-section {
-    margin-bottom: 32px;
+    margin-bottom: 30px;
 }
 
-.form-section h2 {
-    margin-bottom: 16px;
+.section-header {
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    margin-bottom: 6px;
+}
+
+.section-header p {
+    color: #666;
+    margin: 0;
 }
 
 .form-grid {
@@ -1022,15 +1668,6 @@ function clearMessage() {
     box-sizing: border-box;
 }
 
-.form-group small {
-    color: #777;
-}
-
-.form-help {
-    color: #666;
-    margin-bottom: 16px;
-}
-
 .event-info {
     margin-top: 20px;
     display: grid;
@@ -1048,6 +1685,66 @@ function clearMessage() {
     gap: 4px;
 }
 
+.event-info span {
+    font-weight: 600;
+}
+
+.player-selection {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.player-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.player-checkbox:hover {
+    background: #f5f5f5;
+}
+
+.player-checkbox input {
+    width: 18px;
+    height: 18px;
+}
+
+.selection-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.player-scorecard {
+    border-top: 2px solid #ddd;
+    padding: 25px 0;
+    margin-bottom: 25px;
+}
+
+.player-scorecard:first-child {
+    border-top: none;
+    padding-top: 0;
+}
+
+.player-scorecard-header {
+    margin-bottom: 20px;
+}
+
+.player-scorecard-header h3 {
+    margin: 0 0 5px;
+}
+
+.player-scorecard-header span {
+    color: #666;
+}
+
 .scorecard-wrapper {
     overflow-x: auto;
 }
@@ -1059,7 +1756,7 @@ function clearMessage() {
 
 .scorecard th,
 .scorecard td {
-    padding: 10px;
+    padding: 9px;
     border-bottom: 1px solid #ddd;
     text-align: center;
 }
@@ -1069,10 +1766,14 @@ function clearMessage() {
 }
 
 .hole-score {
-    width: 70px;
+    width: 65px;
     padding: 8px;
     text-align: center;
     font-size: 16px;
+}
+
+.gross-total {
+    font-weight: 700;
 }
 
 .form-actions {
@@ -1104,11 +1805,13 @@ button:disabled {
 
 @media (max-width: 600px) {
 
-    .form-actions {
+    .form-actions,
+    .selection-actions {
         flex-direction: column;
     }
 
-    .form-actions button {
+    .form-actions button,
+    .selection-actions button {
         width: 100%;
     }
 
