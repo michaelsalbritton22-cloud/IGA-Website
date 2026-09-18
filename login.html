@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>Member Login | IGA Tour</title>
+
+<link rel="stylesheet" href="css/styles.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/database.js"></script>
+<script src="js/components.js"></script>
+```
+
+</head>
+
+<body>
+
+<div id="header"></div>
+
+<main class="container">
+
+```
+<div class="page-header">
+    <div>
+        <h1>MEMBER LOGIN</h1>
+        <p class="page-subtitle">
+            Sign in to submit IGA Tour rounds.
+        </p>
+    </div>
+</div>
+
+<div id="message"></div>
+
+<div class="card login-card">
+
+    <div class="form-group">
+
+        <label for="email">
+            Email
+        </label>
+
+        <input
+            type="email"
+            id="email"
+            autocomplete="email"
+            required
+        >
+
+    </div>
+
+    <div class="form-group">
+
+        <label for="password">
+            Password
+        </label>
+
+        <input
+            type="password"
+            id="password"
+            autocomplete="current-password"
+            required
+        >
+
+    </div>
+
+    <button
+        type="button"
+        id="loginButton"
+        class="btn btn-primary"
+    >
+        LOG IN
+    </button>
+
+</div>
+```
+
+</main>
+
+<script>
+
+async function login() {
+
+    const button =
+        document.getElementById("loginButton");
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+
+    if (!email || !password) {
+
+        showMessage(
+            "Please enter your email and password.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    button.disabled = true;
+    button.textContent = "LOGGING IN...";
+
+
+    try {
+
+        const { data, error } =
+            await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        if (!data.user) {
+
+            throw new Error(
+                "Unable to verify your login."
+            );
+
+        }
+
+
+        /*
+         * Verify that this authenticated account
+         * is connected to an active IGA player.
+         */
+
+        const { data: player, error: playerError } =
+            await supabaseClient
+                .from("Players")
+                .select(`
+                    player_id,
+                    "Name",
+                    "Active"
+                `)
+                .eq(
+                    "auth_user_id",
+                    data.user.id
+                )
+                .eq(
+                    "Active",
+                    true
+                )
+                .maybeSingle();
+
+
+        if (playerError) {
+
+            throw playerError;
+
+        }
+
+
+        if (!player) {
+
+            await supabaseClient.auth.signOut();
+
+            throw new Error(
+                "Your login is not currently connected to an active IGA player. Please contact the commissioner."
+            );
+
+        }
+
+
+        /*
+         * Login successful.
+         */
+
+        window.location.href = "Index.html";
+
+    } catch (error) {
+
+        console.error(
+            "Login error:",
+            error
+        );
+
+        showMessage(
+            error.message ||
+            "Unable to log in.",
+            "error"
+        );
+
+    } finally {
+
+        button.disabled = false;
+        button.textContent = "LOG IN";
+
+    }
+
+}
+
+
+document
+    .getElementById("loginButton")
+    .addEventListener(
+        "click",
+        login
+    );
+
+
+/*
+ * Allow Enter key to submit the login form.
+ */
+
+document
+    .getElementById("password")
+    .addEventListener(
+        "keydown",
+        event => {
+
+            if (event.key === "Enter") {
+
+                login();
+
+            }
+
+        }
+    );
+
+
+function showMessage(message, type) {
+
+    document
+        .getElementById("message")
+        .innerHTML = `
+
+            <div class="alert alert-${type}">
+                ${message}
+            </div>
+
+        `;
+
+}
+
+</script>
+
+<style>
+
+.login-card {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.login-card .form-group {
+    margin-bottom: 20px;
+}
+
+.login-card button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.alert {
+    padding: 15px 18px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+.alert-error {
+    background: #ffebee;
+    border: 1px solid #e57373;
+}
+
+</style>
+
+</body>
+</html>
