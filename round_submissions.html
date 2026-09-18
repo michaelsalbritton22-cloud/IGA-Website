@@ -72,21 +72,19 @@
 
             </div>
 
-
             <div class="form-group">
 
-                <label for="submittedBy">
-                    Submitted By
-                </label>
+    <label>
+        Submitted By
+    </label>
 
-                <select id="submittedBy" required>
-                    <option value="">
-                        Select Your Name
-                    </option>
-                </select>
+    <input
+        type="text"
+        id="loggedInPlayer"
+        readonly
+    >
 
-            </div>
-
+</div>
         </div>
 
 
@@ -251,6 +249,94 @@ let selectedEvent = null;
 let selectedPlayers = [];
 let courseHoles = [];
 
+let currentUser = null;
+let currentPlayer = null;
+
+async function loadAuthenticatedPlayer() {
+
+    const {
+        data: {
+            user
+        },
+        error
+    } = await supabaseClient.auth.getUser();
+
+
+    if (error) {
+
+        throw error;
+
+    }
+
+
+    if (!user) {
+
+        window.location.href =
+            "login.html?redirect=submit-round.html";
+
+        return false;
+
+    }
+
+
+    currentUser = user;
+
+
+    const {
+        data: player,
+        error: playerError
+    } = await supabaseClient
+        .from("Players")
+        .select(`
+            player_id,
+            "Name",
+            "Home Town",
+            "Handicap",
+            "Active",
+            auth_user_id
+        `)
+        .eq(
+            "auth_user_id",
+            user.id
+        )
+        .eq(
+            "Active",
+            true
+        )
+        .maybeSingle();
+
+
+    if (playerError) {
+
+        throw playerError;
+
+    }
+
+
+    if (!player) {
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href =
+            "login.html";
+
+        return false;
+
+    }
+
+
+    currentPlayer = player;
+
+
+    document
+        .getElementById("loggedInPlayer")
+        .value =
+        player.Name;
+
+
+    return true;
+
+}
 
 /* ==========================================
    INITIALIZE
@@ -259,6 +345,16 @@ let courseHoles = [];
 async function initializePage() {
 
     try {
+
+        const authenticated =
+            await loadAuthenticatedPlayer();
+
+        if (!authenticated) {
+
+            return;
+
+        }
+
 
         await loadPlayers();
         await loadEvents();
@@ -300,32 +396,6 @@ async function initializePage() {
 async function loadPlayers() {
 
     players = await getActivePlayers();
-
-    const submittedBy =
-        document.getElementById("submittedBy");
-
-    submittedBy.innerHTML = `
-        <option value="">
-            Select Your Name
-        </option>
-    `;
-
-
-    players.forEach(player => {
-
-        const option =
-            document.createElement("option");
-
-        option.value =
-            player.player_id;
-
-        option.textContent =
-            player.Name;
-
-        submittedBy.appendChild(option);
-
-    });
-
 
     renderPlayerSelection();
 
@@ -656,18 +726,6 @@ function continueToScorecard() {
     }
 
 
-    if (!document.getElementById("submittedBy").value) {
-
-        showMessage(
-            "Please select who is submitting the scorecard.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
     if (selectedPlayers.length === 0) {
 
         showMessage(
@@ -680,50 +738,41 @@ function continueToScorecard() {
     }
 
 
-    const submittedBy =
-        Number(
-            document.getElementById("submittedBy").value
+   /*
+ * The authenticated player should normally
+ * be included among the players.
+ */
+
+if (!selectedPlayers.includes(currentPlayer.player_id)) {
+
+    const addSubmitter =
+        confirm(
+            `${currentPlayer.Name} is not currently selected as a player. Add them to the group?`
         );
 
 
-    /*
-     * The person submitting the scorecard should
-     * normally be included among the players.
-     */
+    if (addSubmitter) {
 
-    if (!selectedPlayers.includes(submittedBy)) {
+        selectedPlayers.push(
+            currentPlayer.player_id
+        );
 
-        const submitter =
-            players.find(
-                p =>
-                    Number(p.player_id) === submittedBy
+
+        const checkbox =
+            document.querySelector(
+                `.player-select[value="${currentPlayer.player_id}"]`
             );
 
 
-        const addSubmitter =
-            confirm(
-                `${submitter?.Name || "The selected submitter"} is not currently selected as a player. Add them to the group?`
-            );
+        if (checkbox) {
 
-
-        if (addSubmitter) {
-
-            selectedPlayers.push(submittedBy);
-
-            const checkbox =
-                document.querySelector(
-                    `.player-select[value="${submittedBy}"]`
-                );
-
-            if (checkbox) {
-
-                checkbox.checked = true;
-
-            }
+            checkbox.checked = true;
 
         }
 
     }
+
+}
 
 
     renderPlayerScorecards();
@@ -1057,19 +1106,16 @@ async function submitGroupScorecard() {
         }
 
 
-        const submittedBy =
-            Number(
-                document.getElementById("submittedBy").value
-            );
+        if (!currentPlayer) {
 
+    throw new Error(
+        "Unable to identify the logged-in IGA player."
+    );
 
-        if (!submittedBy) {
+}
 
-            throw new Error(
-                "Please select who is submitting the scorecard."
-            );
-
-        }
+const submittedBy =
+    currentPlayer.player_id;
 
 
         const roundDate =
