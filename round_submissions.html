@@ -1250,80 +1250,47 @@ async function submitGroupScorecard() {
                 });
 
 
-            submissions.push({
+           submissions.push({
 
-                event_id:
-                    Number(selectedEvent.id),
+    event_id:
+        Number(selectedEvent.id),
 
-                round_number:
-                    roundNumber,
+    round_number:
+        roundNumber,
 
-                submitted_by:
-                    submittedBy,
+    submitted_by:
+        submittedBy,
 
-                submitted_at:
-                    new Date().toISOString(),
+    player_id:
+        Number(playerId),
 
-                status:
-                    "Pending",
+    submitted_at:
+        new Date().toISOString(),
 
-                notes:
-                    notes || null,
+    status:
+        "Pending",
 
-                round_date:
-                    roundDate,
+    notes:
+        notes || null,
 
-                handicap_used:
-                    handicapUsed,
+    round_date:
+        roundDate,
 
-                net_score:
-                    netScore,
+    handicap_used:
+        handicapUsed,
 
-                gross_scores:
-                    grossScores,
+    net_score:
+        netScore,
 
-                submission_group_id:
-                    submissionGroupId
+    gross_scores:
+        grossScores,
 
-            });
+    submission_group_id:
+        submissionGroupId
 
-        }
-
-
-        /*
-         * Check whether any selected player already
-         * has an official round or active submission.
-         */
-
-        for (const submission of submissions) {
-
-            const playerId =
-                submission.submitted_by ===
-                submission.submitted_by
-                    ? null
-                    : null;
-
-            /*
-             * The actual player receiving this submission
-             * is determined below.
-             */
+});
 
         }
-
-
-        /*
-         * Rebuild the records with the actual player.
-         */
-
-        submissions.forEach(
-            (submission, index) => {
-
-                submission.submitted_player_id =
-                    selectedPlayers[index];
-
-            }
-        );
-
 
         /*
          * Check for existing official rounds.
@@ -1341,8 +1308,8 @@ async function submitGroupScorecard() {
                     )
                     .eq(
                         "player_id",
-                        submission.submitted_player_id
-                    )
+                        submission.player_id
+)
                     .limit(1);
 
 
@@ -1392,8 +1359,8 @@ async function submitGroupScorecard() {
                         submission.event_id
                     )
                     .eq(
-                        "submitted_by",
-                        submission.submitted_player_id
+                        "player_id",
+                        submission.player_id
                     )
                     .in(
                         "status",
@@ -1424,7 +1391,7 @@ async function submitGroupScorecard() {
                         p =>
                             Number(p.player_id) ===
                             Number(
-                                submission.submitted_player_id
+                                submission.player_id
                             )
                     );
 
@@ -1445,48 +1412,7 @@ async function submitGroupScorecard() {
          * The actual player needs its own column.
          */
 
-        const rows =
-            submissions.map(
-                submission => ({
-
-                    event_id:
-                        submission.event_id,
-
-                    round_number:
-                        submission.round_number,
-
-                    submitted_by:
-                        submission.submitted_by,
-
-                    submitted_at:
-                        submission.submitted_at,
-
-                    status:
-                        submission.status,
-
-                    notes:
-                        submission.notes,
-
-                    round_date:
-                        submission.round_date,
-
-                    handicap_used:
-                        submission.handicap_used,
-
-                    net_score:
-                        submission.net_score,
-
-                    gross_scores:
-                        submission.gross_scores,
-
-                    submission_group_id:
-                        submission.submission_group_id,
-
-                    player_id:
-                        submission.submitted_player_id
-
-                })
-            );
+        const rows = submissions;
 
 
         const { data, error } =
