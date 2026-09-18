@@ -205,6 +205,54 @@ td {
 }
 
 /* ==========================================
+   LEAGUE CHAMPION HISTORY
+========================================== */
+
+.champion-history-entry {
+    background: #f5f5f2;
+    border-radius: 12px;
+    padding: 20px 25px;
+    margin-top: 15px;
+    border-left: 5px solid #d4af37;
+}
+
+.champion-history-winner {
+    font-size: 22px;
+    font-weight: bold;
+    color: #003b24;
+}
+
+.champion-history-season {
+    font-size: 14px;
+    color: #707070;
+    margin-top: 3px;
+}
+
+.champion-history-stats {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #444;
+}
+
+.champion-history-podium {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+    font-size: 14px;
+    color: #555;
+}
+
+.champion-history-podium div {
+    margin-top: 4px;
+}
+
+.champion-history-loading {
+    padding: 20px;
+    text-align: center;
+    color: #707070;
+}
+
+/* ==========================================
    KINGS OF THE COURSES
 ========================================== */
 
@@ -509,7 +557,25 @@ Honoring the champions who define the history of the Internal Golf Association.
 
 </div>
 
+<!-- ==========================================
+     LEAGUE CHAMPION HISTORY
+=========================================== -->
 
+<div class="champions-history">
+
+    <h3>
+        League Champion History
+    </h3>
+
+    <div id="leagueChampionHistory">
+
+        <div class="champion-history-loading">
+            League history will appear after the season is complete.
+        </div>
+
+    </div>
+
+</div>
 
 
 <!-- ==========================================
