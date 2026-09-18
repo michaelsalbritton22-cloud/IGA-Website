@@ -407,6 +407,55 @@ footer {
 }
 
 /* ==========================================
+   AUDIT MASTER
+========================================== */
+
+.audit-master-card {
+    width: 100%;
+    background: white;
+    border-radius: 16px;
+    margin: 30px 0;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    border: 1px solid #d8d8d2;
+}
+
+.audit-master-header {
+    background: #003b24;
+    color: white;
+    padding: 25px 30px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.audit-master-trophy {
+    font-size: 42px;
+}
+
+.audit-master-header h2 {
+    margin: 0;
+    font-size: 30px;
+}
+
+.audit-master-header p {
+    margin: 5px 0 0;
+    color: #dfe8e2;
+    font-size: 14px;
+}
+
+.audit-master-scoreboard {
+    padding: 25px;
+    overflow: hidden;
+}
+
+.audit-loading {
+    text-align: center;
+    padding: 30px;
+    color: #707070;
+}
+
+/* ==========================================
    PODIUM PROFILE PHOTOS
    ========================================== */
 
@@ -582,87 +631,35 @@ Honoring the champions who define the history of the Internal Golf Association.
      AUDIT MASTER
 =========================================== -->
 
-<div class="card audit-master-card">
+<div class="audit-master-card">
 
-    <div class="trophy">
-        🏆
+    <div class="audit-master-header">
+
+        <div class="audit-master-trophy">
+            🏆
+        </div>
+
+        <div>
+            <h2>Audit Master</h2>
+
+            <p>
+                The IGA's premier individual championship.
+                Every hole counts.
+            </p>
+        </div>
+
     </div>
 
-    <h2>
-        Audit Master
-    </h2>
 
-    <p>
-        The premier individual championship of the
-        Internal Golf Association.
-    </p>
+    <div class="audit-master-scoreboard">
 
+        <div id="auditLeaderboard">
 
-    <!-- AUDIT MASTER LEADERBOARD -->
+            <div class="audit-loading">
+                Audit Master scores will appear here.
+            </div>
 
-    <div class="audit-leaderboard-wrapper">
-
-        <table
-            class="audit-leaderboard"
-            id="auditLeaderboard"
-        >
-
-            <thead>
-
-                <tr>
-
-                    <th class="position-column">
-                        POS
-                    </th>
-
-                    <th class="player-column">
-                        PLAYER
-                    </th>
-
-                    <th>1</th>
-                    <th>2</th>
-                    <th>3</th>
-                    <th>4</th>
-                    <th>5</th>
-                    <th>6</th>
-                    <th>7</th>
-                    <th>8</th>
-                    <th>9</th>
-                    <th>10</th>
-                    <th>11</th>
-                    <th>12</th>
-                    <th>13</th>
-                    <th>14</th>
-                    <th>15</th>
-                    <th>16</th>
-                    <th>17</th>
-                    <th>18</th>
-
-                    <th class="total-column">
-                        TOTAL
-                    </th>
-
-                </tr>
-
-            </thead>
-
-
-            <tbody id="auditLeaderboardBody">
-
-                <tr>
-
-                    <td
-                        colspan="21"
-                        class="audit-loading"
-                    >
-                        Audit Master scores will appear here.
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
+        </div>
 
     </div>
 
