@@ -1376,7 +1376,7 @@ const submittedBy =
                         p =>
                             Number(p.player_id) ===
                             Number(
-                                submission.submitted_player_id
+                                submission.player_id
                             )
                     );
 
@@ -1390,65 +1390,65 @@ const submittedBy =
         }
 
 
-        /*
-         * Check for existing active submissions.
-         */
+/*
+ * Check for an existing submission by the
+ * SAME PERSON who is currently submitting.
+ *
+ * A different player must be allowed to submit
+ * the same group independently for verification.
+ */
 
-        for (const submission of submissions) {
-
-            const { data: existingSubmissions, error } =
-                await supabaseClient
-                    .from("round_submissions")
-                    .select("id, status")
-                    .eq(
-                        "event_id",
-                        submission.event_id
-                    )
-                    .eq(
-                        "player_id",
-                        submission.player_id
-                    )
-                    .in(
-                        "status",
-                        [
-                            "Pending",
-                            "Matched",
-                            "Discrepancy",
-                            "Approved"
-                        ]
-                    )
-                    .limit(1);
-
-
-            if (error) {
-
-                throw error;
-
-            }
-
-
-            if (
-                existingSubmissions &&
-                existingSubmissions.length > 0
-            ) {
-
-                const player =
-                    players.find(
-                        p =>
-                            Number(p.player_id) ===
-                            Number(
-                                submission.player_id
-                            )
-                    );
+const { data: existingSubmissions, error } =
+    await supabaseClient
+        .from("round_submissions")
+        .select(`
+            id,
+            status,
+            submitted_by,
+            submission_group_id
+        `)
+        .eq(
+            "event_id",
+            selectedEvent.id
+        )
+        .eq(
+            "submitted_by",
+            submittedBy
+        )
+        .in(
+            "status",
+            [
+                "Pending",
+                "Matched",
+                "Discrepancy",
+                "Approved"
+            ]
+        );
 
 
-                throw new Error(
-                    `${player?.Name || "A selected player"} already has a submission awaiting review.`
-                );
+if (error) {
 
-            }
+    throw error;
 
-        }
+}
+
+
+/*
+ * If this person already submitted a scorecard
+ * for this event, don't allow them to submit
+ * another one.
+ */
+
+if (
+    existingSubmissions &&
+    existingSubmissions.length > 0
+) {
+
+    throw new Error(
+        "You already have a submission for this event awaiting review."
+    );
+
+}
 
 
         /*
