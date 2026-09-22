@@ -856,6 +856,651 @@ async function approveIndividualRound(
 
 }
 
+async function processSubmissionGroup(submissionGroupId) {
+
+    console.log(
+        "Processing submission group:",
+        submissionGroupId
+    );
+
+    // ==========================================
+    // GET THE SUBMISSION GROUP
+    // ==========================================
+
+    const {
+        data: submissionGroup,
+        error: submissionError
+    } = await supabaseClient
+
+        .from("round_submissions")
+
+        .select(`
+            id,
+            event_id,
+            round_number,
+            submitted_by,
+            submitted_at,
+            status,
+            notes,
+            round_date,
+            handicap_used,
+            net_score,
+            gross_scores,
+            submission_group_id,
+            player_id
+        `)
+
+        .eq(
+            "submission_group_id",
+            submissionGroupId
+        )
+        .order(
+            "player_id",
+            {
+                ascending: true
+            }
+        );
+
+
+    if (submissionError) {
+
+        console.error(
+            "ERROR LOADING SUBMISSION GROUP:",
+            submissionError
+        );
+
+        throw submissionError;
+
+    }
+
+
+    if (
+        !submissionGroup ||
+        submissionGroup.length === 0
+    ) {
+
+        throw new Error(
+            "Submission group could not be found."
+        );
+
+    }
+
+
+    // ==========================================
+    // MAKE SURE WE HAVE A COMPLETE GROUP
+    // ==========================================
+
+    const eventId =
+        submissionGroup[0].event_id;
+
+    const roundNumber =
+        submissionGroup[0].round_number;
+
+    const submittedBy =
+        submissionGroup[0].submitted_by;
+
+
+    // ==========================================
+    // FIND OTHER PENDING SUBMISSION GROUPS
+    //
+    // Must:
+    // - Be same event
+    // - Be same round
+    // - Be Pending
+    // - Be submitted by another player
+    // ==========================================
+
+    const {
+        data: otherSubmissions,
+        error: otherError
+    } = await supabaseClient
+
+        .from("round_submissions")
+
+        .select(`
+            id,
+            event_id,
+            round_number,
+            submitted_by,
+            submitted_at,
+            status,
+            notes,
+            round_date,
+            handicap_used,
+            net_score,
+            gross_scores,
+            submission_group_id,
+            player_id
+        `)
+
+        .eq(
+            "event_id",
+            eventId
+        )
+
+        .eq(
+            "round_number",
+            roundNumber
+        )
+
+        .eq(
+            "status",
+            "Pending"
+        )
+
+        .neq(
+            "submitted_by",
+            submittedBy
+        )
+
+        .neq(
+            "submission_group_id",
+            submissionGroupId
+        )
+
+        .order(
+            "submitted_at",
+            {
+                ascending: true
+            }
+        );
+
+
+    if (otherError) {
+
+        console.error(
+            "ERROR FINDING OTHER SUBMISSIONS:",
+            otherError
+        );
+
+        throw otherError;
+
+    }
+
+
+    // ==========================================
+    // NO OTHER SUBMISSION YET
+    // ==========================================
+
+    if (
+        !otherSubmissions ||
+        otherSubmissions.length === 0
+    ) {
+
+        console.log(
+            "No independent submission found. Waiting for verification."
+        );
+
+        return {
+
+            status:
+                "Pending",
+
+            message:
+                "Waiting for an independent player submission."
+
+        };
+
+    }
+
+
+    // ==========================================
+    // GET UNIQUE SUBMISSION GROUPS
+    // ==========================================
+
+    const groupIds = [];
+
+    otherSubmissions.forEach(
+        submission => {
+
+            if (
+                !groupIds.includes(
+                    submission.submission_group_id
+                )
+            ) {
+
+                groupIds.push(
+                    submission.submission_group_id
+                );
+
+            }
+
+        }
+    );
+
+
+    // ==========================================
+    // COMPARE AGAINST EACH OTHER GROUP
+    //
+    // We look for an EXACT MATCH.
+    // ==========================================
+
+    for (
+        const otherGroupId
+        of groupIds
+    ) {
+
+        const {
+            data: otherGroup,
+            error: groupError
+        } = await supabaseClient
+
+            .from("round_submissions")
+
+            .select(`
+                id,
+                event_id,
+                round_number,
+                submitted_by,
+                submitted_at,
+                status,
+                notes,
+                round_date,
+                handicap_used,
+                net_score,
+                gross_scores,
+                submission_group_id,
+                player_id
+            `)
+
+            .eq(
+                "submission_group_id",
+                otherGroupId
+            )
+
+            .order(
+                "player_id",
+                {
+                    ascending: true
+                }
+            );
+
+
+        if (groupError) {
+
+            throw groupError;
+
+        }
+
+
+        if (
+            !otherGroup ||
+            otherGroup.length === 0
+        ) {
+
+            continue;
+
+        }
+
+
+        // ==========================================
+        // CHECK SAME NUMBER OF PLAYERS
+        // ==========================================
+
+        if (
+            submissionGroup.length !==
+            otherGroup.length
+        ) {
+
+            continue;
+
+        }
+
+
+        // ==========================================
+        // CHECK PLAYERS
+        // ==========================================
+
+        const playersMatch =
+            submissionGroup.every(
+                submission => {
+
+                    return otherGroup.some(
+                        other =>
+
+                            Number(
+                                other.player_id
+                            ) ===
+                            Number(
+                                submission.player_id
+                            )
+
+                    );
+
+                }
+            );
+
+
+        if (!playersMatch) {
+
+            continue;
+
+        }
+
+
+        // ==========================================
+        // CHECK EVERY PLAYER'S SCORECARD
+        // ==========================================
+
+        let everythingMatches = true;
+
+
+        for (
+            const submission
+            of submissionGroup
+        ) {
+
+            const other =
+                otherGroup.find(
+                    row =>
+                        Number(
+                            row.player_id
+                        ) ===
+                        Number(
+                            submission.player_id
+                        )
+                );
+
+
+            if (!other) {
+
+                everythingMatches = false;
+                break;
+
+            }
+
+
+            // ======================================
+            // ROUND DATE
+            // ======================================
+
+            if (
+                submission.round_date !==
+                other.round_date
+            ) {
+
+                everythingMatches = false;
+                break;
+
+            }
+
+
+            // ======================================
+            // HANDICAP USED
+            // ======================================
+
+            if (
+                Number(
+                    submission.handicap_used
+                ) !==
+                Number(
+                    other.handicap_used
+                )
+            ) {
+
+                everythingMatches = false;
+                break;
+
+            }
+
+
+            // ======================================
+            // 18BIRDIES NET SCORE
+            // ======================================
+
+            if (
+                Number(
+                    submission.net_score
+                ) !==
+                Number(
+                    other.net_score
+                )
+            ) {
+
+                everythingMatches = false;
+                break;
+
+            }
+
+
+            // ======================================
+            // GROSS SCORES
+            // ======================================
+
+            const grossA =
+                Array.isArray(
+                    submission.gross_scores
+                )
+                    ? submission.gross_scores
+                    : [];
+
+            const grossB =
+                Array.isArray(
+                    other.gross_scores
+                )
+                    ? other.gross_scores
+                    : [];
+
+
+            if (
+                grossA.length !== 18 ||
+                grossB.length !== 18
+            ) {
+
+                everythingMatches = false;
+                break;
+
+            }
+
+
+            for (
+                let i = 0;
+                i < 18;
+                i++
+            ) {
+
+                if (
+                    Number(
+                        grossA[i]
+                    ) !==
+                    Number(
+                        grossB[i]
+                    )
+                ) {
+
+                    everythingMatches = false;
+                    break;
+
+                }
+
+            }
+
+
+            if (!everythingMatches) {
+
+                break;
+
+            }
+
+        }
+
+
+        // ==========================================
+        // NOT A MATCH
+        //
+        // Continue looking in case there is another
+        // independent submission that DOES match.
+        // ==========================================
+
+        if (!everythingMatches) {
+
+            continue;
+
+        }
+
+
+        // ==========================================
+        // MATCH FOUND
+        // ==========================================
+
+        console.log(
+            "MATCH FOUND:",
+            {
+                submissionGroupId,
+                otherGroupId
+            }
+        );
+
+
+        // ==========================================
+        // CREATE OFFICIAL ROUNDS
+        // ==========================================
+
+        const createdRounds = [];
+
+
+        for (
+            const submission
+            of submissionGroup
+        ) {
+
+            const result =
+                await saveCommissionerRound({
+
+                    eventId:
+                        submission.event_id,
+
+                    playerId:
+                        submission.player_id,
+
+                    handicapUsed:
+                        submission.handicap_used,
+
+                    roundDate:
+                        submission.round_date,
+
+                    grossScores:
+                        submission.gross_scores,
+
+                    netScore:
+                        submission.net_score,
+
+                    notes:
+                        submission.notes || ""
+
+                });
+
+
+            createdRounds.push(
+                result
+            );
+
+        }
+
+
+        // ==========================================
+        // APPROVE THE OFFICIAL ROUNDS
+        // ==========================================
+
+        for (
+            const round
+            of createdRounds
+        ) {
+
+            await approveIndividualRound(
+                round.roundId,
+                "Automatic Match"
+            );
+
+        }
+
+
+        // ==========================================
+        // MARK BOTH SUBMISSION GROUPS APPROVED
+        // ==========================================
+
+        const {
+            error: approvalError
+        } = await supabaseClient
+
+            .from("round_submissions")
+
+            .update({
+
+                status:
+                    "Approved",
+
+                notes:
+                    "Automatically approved after matching independent submission."
+
+            })
+
+            .in(
+                "submission_group_id",
+                [
+                    submissionGroupId,
+                    otherGroupId
+                ]
+            );
+
+
+        if (approvalError) {
+
+            console.error(
+                "ERROR APPROVING SUBMISSIONS:",
+                approvalError
+            );
+
+            throw approvalError;
+
+        }
+
+
+        console.log(
+            "Submission groups automatically approved."
+        );
+
+
+        return {
+
+            status:
+                "Approved",
+
+            message:
+                "Matching independent submissions were automatically approved.",
+
+            roundIds:
+                createdRounds.map(
+                    round =>
+                        round.roundId
+                )
+
+        };
+
+    }
+
+
+    // ==========================================
+    // NO MATCH FOUND
+    // ==========================================
+
+    console.log(
+        "No matching independent submission found yet."
+    );
+
+
+    return {
+
+        status:
+            "Pending",
+
+        message:
+            "An independent submission exists, but the scorecards do not yet match."
+
+    };
+
+}
+
 // ==========================================
 // GET PROVISIONAL EVENT STANDINGS
 // ==========================================
