@@ -35,6 +35,41 @@
         </section>
 
 
+        <!-- SCORECARD SUBMISSION REVIEW -->
+
+        <section>
+
+            <h2>
+                Scorecard Submission Review
+            </h2>
+
+            <div id="submissionReviews">
+                <div class="card">
+                    <h3>Loading Scorecard Submissions...</h3>
+                    <p>Checking submissions awaiting verification or Commissioner review.</p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- SCORECARD SUBMISSION DETAIL -->
+
+        <section id="submissionReviewDetail" class="round-review" style="display:none;">
+
+            <div class="card">
+                <div class="approval-header">
+                    <div>
+                        <h2 id="submissionDetailTitle">Scorecard Submission Review</h2>
+                        <p id="submissionDetailMeta"></p>
+                    </div>
+                    <button type="button" onclick="closeSubmissionReview()">CLOSE</button>
+                </div>
+
+                <div id="submissionDetailContent"></div>
+            </div>
+
+        </section>
+
         <!-- PENDING APPROVALS -->
 
         <section>
@@ -2018,10 +2053,557 @@ function closeRoundReview() {
 
 
 // ==========================================
+// SCORECARD SUBMISSION REVIEW
+// ==========================================
+
+let submissionPlayerMap = new Map();
+let currentSubmissionGroups = [];
+
+function escapeSubmissionHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function formatSubmissionDate(value) {
+    if (!value) return "—";
+    const date = new Date(`${value}T00:00:00`);
+    return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString();
+}
+
+function formatSubmittedAt(value) {
+    if (!value) return "—";
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
+}
+
+function submissionRowsMatch(groupA, groupB) {
+    if (!groupA || !groupB || groupA.length !== groupB.length) return false;
+
+    const idsA = groupA.map(row => Number(row.player_id)).sort((a, b) => a - b);
+    const idsB = groupB.map(row => Number(row.player_id)).sort((a, b) => a - b);
+
+    if (idsA.some((id, index) => id !== idsB[index])) return false;
+
+    for (const rowA of groupA) {
+        const rowB = groupB.find(row => Number(row.player_id) === Number(rowA.player_id));
+        if (!rowB) return false;
+        if (rowA.round_date !== rowB.round_date) return false;
+        if (Number(rowA.handicap_used) !== Number(rowB.handicap_used)) return false;
+        if (Number(rowA.net_score) !== Number(rowB.net_score)) return false;
+
+        const scoresA = Array.isArray(rowA.gross_scores) ? rowA.gross_scores : [];
+        const scoresB = Array.isArray(rowB.gross_scores) ? rowB.gross_scores : [];
+        if (scoresA.length !== 18 || scoresB.length !== 18) return false;
+        for (let i = 0; i < 18; i++) {
+            if (Number(scoresA[i]) !== Number(scoresB[i])) return false;
+        }
+    }
+
+    return true;
+}
+
+function submissionDifferenceSummary(groupA, groupB) {
+    const differences = [];
+    const allPlayerIds = [...new Set([
+        ...groupA.map(row => Number(row.player_id)),
+        ...groupB.map(row => Number(row.player_id))
+    ])].sort((a, b) => a - b);
+
+    for (const playerId of allPlayerIds) {
+        const a = groupA.find(row => Number(row.player_id) === playerId);
+        const b = groupB.find(row => Number(row.player_id) === playerId);
+        const playerName = submissionPlayerMap.get(playerId) || `Player ${playerId}`;
+
+        if (!a || !b) {
+            differences.push(`${playerName}: player is missing from one submission.`);
+            continue;
+        }
+
+        if (a.round_date !== b.round_date) {
+            differences.push(`${playerName}: round date differs.`);
+        }
+        if (Number(a.handicap_used) !== Number(b.handicap_used)) {
+            differences.push(`${playerName}: handicap differs (${a.handicap_used} vs ${b.handicap_used}).`);
+        }
+        if (Number(a.net_score) !== Number(b.net_score)) {
+            differences.push(`${playerName}: net score differs (${a.net_score} vs ${b.net_score}).`);
+        }
+
+        const scoresA = Array.isArray(a.gross_scores) ? a.gross_scores : [];
+        const scoresB = Array.isArray(b.gross_scores) ? b.gross_scores : [];
+        for (let i = 0; i < 18; i++) {
+            if (Number(scoresA[i]) !== Number(scoresB[i])) {
+                differences.push(`${playerName}: hole ${i + 1} differs (${scoresA[i] ?? "—"} vs ${scoresB[i] ?? "—"}).`);
+            }
+        }
+    }
+
+    return differences;
+}
+
+async function loadSubmissionReviews() {
+    const container = document.getElementById("submissionReviews");
+    if (!container) return;
+
+    try {
+        const events = await getOpenEvents();
+
+        const { data: activePlayers, error: playerError } = await supabaseClient
+            .from("Players")
+            .select('player_id,"Name"')
+            .eq("Active", true);
+
+        if (playerError) throw playerError;
+
+        submissionPlayerMap = new Map(
+            (activePlayers || []).map(player => [Number(player.player_id), player.Name])
+        );
+
+        const allSubmissions = [];
+
+        for (const event of events) {
+            const { data, error } = await supabaseClient
+                .from("round_submissions")
+                .select(`
+                    id,
+                    event_id,
+                    round_number,
+                    submitted_by,
+                    submitted_at,
+                    status,
+                    notes,
+                    round_date,
+                    handicap_used,
+                    net_score,
+                    gross_scores,
+                    submission_group_id,
+                    player_id
+                `)
+                .eq("event_id", event.id)
+                .in("status", ["Pending", "Matched", "Discrepancy"])
+                .order("submitted_at", { ascending: true });
+
+            if (error) throw error;
+
+            (data || []).forEach(row => {
+                allSubmissions.push({
+                    ...row,
+                    event_name: event.event_name,
+                    course_name: event.course_name || event.Course || ""
+                });
+            });
+        }
+
+        const groups = new Map();
+
+        allSubmissions.forEach(row => {
+            const groupId = row.submission_group_id || `single-${row.id}`;
+            if (!groups.has(groupId)) groups.set(groupId, []);
+            groups.get(groupId).push(row);
+        });
+
+        currentSubmissionGroups = Array.from(groups.entries()).map(([groupId, rows]) => {
+            rows.sort((a, b) => Number(a.player_id) - Number(b.player_id));
+            return { groupId, rows };
+        });
+
+        if (!currentSubmissionGroups.length) {
+            container.innerHTML = `
+                <div class="card">
+                    <h3>No Submissions Awaiting Review</h3>
+                    <p>There are currently no pending, matched, or discrepancy scorecard submissions for open events.</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = currentSubmissionGroups.map(group => {
+            const first = group.rows[0];
+            const independentGroups = currentSubmissionGroups.filter(other =>
+                other.groupId !== group.groupId &&
+                Number(other.rows[0]?.event_id) === Number(first.event_id) &&
+                Number(other.rows[0]?.round_number) === Number(first.round_number) &&
+                Number(other.rows[0]?.submitted_by) !== Number(first.submitted_by)
+            );
+
+            const matchingGroup = independentGroups.find(other =>
+                submissionRowsMatch(group.rows, other.rows)
+            );
+
+            let statusLabel = "WAITING FOR INDEPENDENT VERIFICATION";
+            let statusClass = "";
+            let detailText = "No independent submission has been received yet.";
+
+            if (first.status === "Discrepancy") {
+                statusLabel = "⚠️ COMMISSIONER REVIEW REQUIRED";
+                detailText = "This submission has been flagged as a discrepancy.";
+                statusClass = "submission-discrepancy";
+            } else if (matchingGroup) {
+                statusLabel = "MATCH FOUND";
+                detailText = "An independent submission matches this scorecard.";
+            } else if (independentGroups.length) {
+                statusLabel = "⚠️ MISMATCH — COMMISSIONER REVIEW";
+                detailText = "An independent submission exists, but the scorecards do not match.";
+                statusClass = "submission-discrepancy";
+            }
+
+            const playerNames = group.rows
+                .map(row => submissionPlayerMap.get(Number(row.player_id)) || `Player ${row.player_id}`)
+                .join(", ");
+
+            const submittedBy = submissionPlayerMap.get(Number(first.submitted_by)) || `Player ${first.submitted_by}`;
+
+            return `
+                <div class="card ${statusClass}" style="margin-bottom:16px;">
+                    <div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;">
+                        <div>
+                            <h3 style="margin-bottom:6px;">${escapeSubmissionHtml(first.event_name || `Event ${first.event_id}`)}</h3>
+                            <p style="margin:3px 0;"><strong>Round:</strong> ${escapeSubmissionHtml(first.round_number)}</p>
+                            <p style="margin:3px 0;"><strong>Date:</strong> ${escapeSubmissionHtml(formatSubmissionDate(first.round_date))}</p>
+                            <p style="margin:3px 0;"><strong>Submitted By:</strong> ${escapeSubmissionHtml(submittedBy)}</p>
+                            <p style="margin:3px 0;"><strong>Players:</strong> ${escapeSubmissionHtml(playerNames)}</p>
+                        </div>
+                        <div style="min-width:280px;">
+                            <strong>${escapeSubmissionHtml(statusLabel)}</strong>
+                            <p style="margin:6px 0 12px;">${escapeSubmissionHtml(detailText)}</p>
+                            <button type="button" onclick="reviewSubmissionGroup('${escapeSubmissionHtml(group.groupId)}')">REVIEW SUBMISSION</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+    } catch (error) {
+        console.error("SUBMISSION REVIEW LOAD ERROR:", error);
+        container.innerHTML = `
+            <div class="card">
+                <h3>Unable to Load Scorecard Submissions</h3>
+                <p>${escapeSubmissionHtml(error.message || "Unknown error")}</p>
+            </div>
+        `;
+    }
+}
+
+async function reviewSubmissionGroup(groupId) {
+    const detail = document.getElementById("submissionReviewDetail");
+    const content = document.getElementById("submissionDetailContent");
+    const title = document.getElementById("submissionDetailTitle");
+    const meta = document.getElementById("submissionDetailMeta");
+
+    try {
+        const { data: groupRows, error } = await supabaseClient
+            .from("round_submissions")
+            .select(`
+                id,
+                event_id,
+                round_number,
+                submitted_by,
+                submitted_at,
+                status,
+                notes,
+                round_date,
+                handicap_used,
+                net_score,
+                gross_scores,
+                submission_group_id,
+                player_id
+            `)
+            .eq("submission_group_id", groupId)
+            .order("player_id", { ascending: true });
+
+        if (error) throw error;
+        if (!groupRows || !groupRows.length) throw new Error("Submission group could not be found.");
+
+        const first = groupRows[0];
+        const event = pendingRounds.find(item => Number(item.id) === Number(first.event_id));
+        const eventName = event?.event_name || `Event ${first.event_id}`;
+
+        const { data: otherRows, error: otherError } = await supabaseClient
+            .from("round_submissions")
+            .select(`
+                id,
+                event_id,
+                round_number,
+                submitted_by,
+                submitted_at,
+                status,
+                notes,
+                round_date,
+                handicap_used,
+                net_score,
+                gross_scores,
+                submission_group_id,
+                player_id
+            `)
+            .eq("event_id", first.event_id)
+            .eq("round_number", first.round_number)
+            .neq("submission_group_id", groupId)
+            .neq("submitted_by", first.submitted_by)
+            .in("status", ["Pending", "Matched", "Discrepancy"]);
+
+        if (otherError) throw otherError;
+
+        const candidateGroups = new Map();
+        (otherRows || []).forEach(row => {
+            if (!candidateGroups.has(row.submission_group_id)) candidateGroups.set(row.submission_group_id, []);
+            candidateGroups.get(row.submission_group_id).push(row);
+        });
+
+        const comparisonGroups = Array.from(candidateGroups.values());
+        const exactMatch = comparisonGroups.find(group => submissionRowsMatch(groupRows, group));
+        const mismatchGroup = comparisonGroups.find(group => !submissionRowsMatch(groupRows, group));
+
+        title.textContent = `${eventName} — Round ${first.round_number}`;
+        meta.textContent = `Submitted by ${submissionPlayerMap.get(Number(first.submitted_by)) || `Player ${first.submitted_by}`} on ${formatSubmittedAt(first.submitted_at)}`;
+
+        content.innerHTML = `
+            <div style="margin:16px 0;">
+                <strong>Commissioner Review</strong>
+                <p>Review and correct the submitted scorecard below. Changes are saved to the submission record before approval.</p>
+            </div>
+
+            <div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left;padding:8px;">Player</th>
+                            <th style="text-align:left;padding:8px;">Date</th>
+                            <th style="text-align:left;padding:8px;">Handicap</th>
+                            <th style="text-align:left;padding:8px;">Net</th>
+                            ${Array.from({length:18}, (_,i) => `<th style="padding:8px;">${i+1}</th>`).join("")}
+                            <th style="text-align:left;padding:8px;">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${groupRows.map(row => {
+                            const scores = Array.isArray(row.gross_scores) ? row.gross_scores : [];
+                            const playerName = submissionPlayerMap.get(Number(row.player_id)) || `Player ${row.player_id}`;
+                            return `
+                                <tr data-submission-row="${row.id}">
+                                    <td style="padding:8px;white-space:nowrap;"><strong>${escapeSubmissionHtml(playerName)}</strong></td>
+                                    <td style="padding:8px;"><input type="date" id="submission-date-${row.id}" value="${escapeSubmissionHtml(row.round_date || "")}"></td>
+                                    <td style="padding:8px;"><input type="number" min="0" max="54" step="0.1" id="submission-handicap-${row.id}" value="${escapeSubmissionHtml(row.handicap_used ?? "")}" style="width:70px;"></td>
+                                    <td style="padding:8px;"><input type="number" min="1" max="150" id="submission-net-${row.id}" value="${escapeSubmissionHtml(row.net_score ?? "")}" style="width:70px;"></td>
+                                    ${Array.from({length:18}, (_,i) => `<td style="padding:8px;"><input type="number" min="1" max="20" id="submission-score-${row.id}-${i}" value="${escapeSubmissionHtml(scores[i] ?? "")}" style="width:55px;"></td>`).join("")}
+                                    <td style="padding:8px;"><input type="text" id="submission-notes-${row.id}" value="${escapeSubmissionHtml(row.notes || "")}" style="min-width:180px;"></td>
+                                </tr>
+                            `;
+                        }).join("")}
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top:20px;">
+                <h3>Verification</h3>
+                ${exactMatch ? `<p><strong>Matching independent submission found.</strong> The submitted scorecards currently match exactly.</p>` : mismatchGroup ? `<p><strong>⚠️ Independent submission differs.</strong> Review the other submission below or correct the scorecard before approval.</p>` : `<p>No independent submission is currently available. The Commissioner may still approve this submission manually if the scorecard has been independently verified outside the system.</p>`}
+            </div>
+
+            ${mismatchGroup ? `
+                <div class="card" style="margin-top:16px;">
+                    <h3>Other Submission</h3>
+                    <p><strong>Submitted By:</strong> ${escapeSubmissionHtml(submissionPlayerMap.get(Number(mismatchGroup[0].submitted_by)) || `Player ${mismatchGroup[0].submitted_by}`)}</p>
+                    <ul>
+                        ${submissionDifferenceSummary(groupRows, mismatchGroup).slice(0, 30).map(item => `<li>${escapeSubmissionHtml(item)}</li>`).join("")}
+                    </ul>
+                    ${submissionDifferenceSummary(groupRows, mismatchGroup).length > 30 ? `<p>Additional differences exist beyond the first 30 shown.</p>` : ""}
+                </div>
+            ` : ""}
+
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;">
+                <button type="button" onclick="saveSubmissionEdits('${escapeSubmissionHtml(groupId)}')">SAVE CHANGES</button>
+                <button type="button" onclick="approveSubmissionGroup('${escapeSubmissionHtml(groupId)}')">APPROVE SCORECARD</button>
+                <button type="button" onclick="rejectSubmissionGroup('${escapeSubmissionHtml(groupId)}')">REJECT SUBMISSION</button>
+            </div>
+        `;
+
+        detail.style.display = "block";
+        detail.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    } catch (error) {
+        console.error("SUBMISSION REVIEW ERROR:", error);
+        alert("Unable to load submission review.\n\n" + (error.message || "Unknown error"));
+    }
+}
+
+function readSubmissionForm(groupRows) {
+    return groupRows.map(row => {
+        const scores = Array.from({length:18}, (_,i) => {
+            const value = Number(document.getElementById(`submission-score-${row.id}-${i}`)?.value);
+            if (!Number.isInteger(value) || value < 1 || value > 20) {
+                throw new Error(`Invalid score for ${submissionPlayerMap.get(Number(row.player_id)) || `Player ${row.player_id}`}, hole ${i + 1}.`);
+            }
+            return value;
+        });
+
+        const handicap = Number(document.getElementById(`submission-handicap-${row.id}`)?.value);
+        if (!Number.isFinite(handicap) || handicap < 0 || handicap > 54) {
+            throw new Error(`Invalid handicap for ${submissionPlayerMap.get(Number(row.player_id)) || `Player ${row.player_id}`}.`);
+        }
+
+        const net = Number(document.getElementById(`submission-net-${row.id}`)?.value);
+        if (!Number.isInteger(net) || net < 1 || net > 150) {
+            throw new Error(`Invalid net score for ${submissionPlayerMap.get(Number(row.player_id)) || `Player ${row.player_id}`}.`);
+        }
+
+        return {
+            id: row.id,
+            event_id: row.event_id,
+            player_id: row.player_id,
+            round_number: row.round_number,
+            round_date: document.getElementById(`submission-date-${row.id}`)?.value || null,
+            handicap_used: handicap,
+            net_score: net,
+            gross_scores: scores,
+            notes: document.getElementById(`submission-notes-${row.id}`)?.value.trim() || null
+        };
+    });
+}
+
+async function saveSubmissionEdits(groupId, refresh = true) {
+    try {
+        const { data: groupRows, error } = await supabaseClient
+            .from("round_submissions")
+            .select("id,event_id,player_id,round_number,round_date,handicap_used,net_score,gross_scores,notes")
+            .eq("submission_group_id", groupId)
+            .order("player_id", { ascending: true });
+
+        if (error) throw error;
+        if (!groupRows?.length) throw new Error("Submission group could not be found.");
+
+        const editedRows = readSubmissionForm(groupRows);
+
+        for (const row of editedRows) {
+            const { error: updateError } = await supabaseClient
+                .from("round_submissions")
+                .update({
+                    round_date: row.round_date,
+                    handicap_used: row.handicap_used,
+                    net_score: row.net_score,
+                    gross_scores: row.gross_scores,
+                    notes: row.notes
+                })
+                .eq("id", row.id);
+
+            if (updateError) throw updateError;
+        }
+
+        if (refresh) {
+            alert("Submission changes saved.");
+            await loadSubmissionReviews();
+            await reviewSubmissionGroup(groupId);
+        }
+
+        return editedRows;
+
+    } catch (error) {
+        console.error("SAVE SUBMISSION EDIT ERROR:", error);
+        alert("Unable to save submission changes.\n\n" + (error.message || "Unknown error"));
+        throw error;
+    }
+}
+
+async function approveSubmissionGroup(groupId) {
+    if (!confirm("Approve this scorecard and create the official round records?")) return;
+
+    try {
+        const editedRows = await saveSubmissionEdits(groupId, false);
+        const createdRounds = [];
+
+        for (const row of editedRows) {
+            const { data: existingRounds, error: existingError } = await supabaseClient
+                .from("rounds")
+                .select("id")
+                .eq("event_id", row.event_id)
+                .eq("player_id", row.player_id)
+                .limit(1);
+
+            if (existingError) throw existingError;
+            if (existingRounds?.length) {
+                throw new Error(`${submissionPlayerMap.get(Number(row.player_id)) || `Player ${row.player_id}`} already has an official round for this event.`);
+            }
+
+            const result = await saveCommissionerRound({
+                eventId: row.event_id,
+                playerId: row.player_id,
+                handicapUsed: row.handicap_used,
+                roundDate: row.round_date,
+                grossScores: row.gross_scores,
+                netScore: row.net_score,
+                notes: row.notes || "Commissioner approved submission"
+            });
+
+            createdRounds.push(result);
+        }
+
+        for (const round of createdRounds) {
+            await approveIndividualRound(round.roundId, "Commissioner Submission Review");
+        }
+
+        const { error: approvalError } = await supabaseClient
+            .from("round_submissions")
+            .update({
+                status: "Approved",
+                notes: "Approved by Commissioner after submission review."
+            })
+            .eq("submission_group_id", groupId);
+
+        if (approvalError) throw approvalError;
+
+        alert("Scorecard approved and official round records created.");
+        closeSubmissionReview();
+        await loadSubmissionReviews();
+        await loadPendingRounds();
+
+    } catch (error) {
+        console.error("APPROVE SUBMISSION ERROR:", error);
+        alert("Unable to approve submission.\n\n" + (error.message || "Unknown error"));
+    }
+}
+
+async function rejectSubmissionGroup(groupId) {
+    const reason = prompt("Enter the reason for rejecting this submission:");
+    if (reason === null) return;
+
+    try {
+        const { error } = await supabaseClient
+            .from("round_submissions")
+            .update({
+                status: "Rejected",
+                notes: reason.trim() || "Rejected by Commissioner."
+            })
+            .eq("submission_group_id", groupId);
+
+        if (error) throw error;
+
+        alert("Submission rejected.");
+        closeSubmissionReview();
+        await loadSubmissionReviews();
+
+    } catch (error) {
+        console.error("REJECT SUBMISSION ERROR:", error);
+        alert("Unable to reject submission.\n\n" + (error.message || "Unknown error"));
+    }
+}
+
+function closeSubmissionReview() {
+    const detail = document.getElementById("submissionReviewDetail");
+    if (detail) detail.style.display = "none";
+}
+
+// ==========================================
 // LOAD PAGE
 // ==========================================
 
-loadPendingRounds();
+async function loadCommissionerDashboard() {
+    await loadPendingRounds();
+    await loadSubmissionReviews();
+}
+
+loadCommissionerDashboard();
 
 
 // ==========================================
