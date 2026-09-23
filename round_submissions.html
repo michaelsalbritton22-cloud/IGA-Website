@@ -1426,9 +1426,9 @@ const { data: existingSubmissions, error } =
         );
 
 
-if (error) {
+if (existingSubmissionError) {
 
-    throw error;
+    throw existingSubmissionError;
 
 }
 
