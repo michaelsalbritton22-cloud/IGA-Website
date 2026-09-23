@@ -1086,16 +1086,17 @@ async function submitGroupScorecard() {
 
     clearMessage();
 
-
     const button =
         document.getElementById("submitButton");
-
 
     button.disabled = true;
     button.textContent = "SUBMITTING...";
 
-
     try {
+
+        // ==========================================
+        // BASIC VALIDATION
+        // ==========================================
 
         if (!selectedEvent) {
 
@@ -1105,22 +1106,19 @@ async function submitGroupScorecard() {
 
         }
 
-
         if (!currentPlayer) {
 
-    throw new Error(
-        "Unable to identify the logged-in IGA player."
-    );
+            throw new Error(
+                "Unable to identify the logged-in IGA player."
+            );
 
-}
+        }
 
-const submittedBy =
-    currentPlayer.player_id;
-
+        const submittedBy =
+            currentPlayer.player_id;
 
         const roundDate =
             document.getElementById("roundDate").value;
-
 
         if (!roundDate) {
 
@@ -1129,7 +1127,6 @@ const submittedBy =
             );
 
         }
-
 
         if (selectedPlayers.length === 0) {
 
@@ -1140,26 +1137,24 @@ const submittedBy =
         }
 
 
-        /*
-         * Generate one ID for the entire group submission.
-         */
+        // ==========================================
+        // SUBMISSION GROUP
+        // ==========================================
 
         const submissionGroupId =
             crypto.randomUUID();
 
 
-        /*
-         * Determine round number from event name.
-         */
+        // ==========================================
+        // ROUND NUMBER
+        // ==========================================
 
         let roundNumber = 1;
-
 
         const roundMatch =
             selectedEvent.event_name?.match(
                 /Round\s+(\d+)/i
             );
-
 
         if (roundMatch) {
 
@@ -1169,6 +1164,10 @@ const submittedBy =
         }
 
 
+        // ==========================================
+        // NOTES
+        // ==========================================
+
         const notes =
             document
                 .getElementById("notes")
@@ -1176,12 +1175,11 @@ const submittedBy =
                 .trim();
 
 
+        // ==========================================
+        // BUILD SUBMISSIONS
+        // ==========================================
+
         const submissions = [];
-
-
-        /*
-         * Build one submission for every player.
-         */
 
         for (const playerId of selectedPlayers) {
 
@@ -1192,7 +1190,6 @@ const submittedBy =
                         Number(playerId)
                 );
 
-
             if (!player) {
 
                 throw new Error(
@@ -1202,17 +1199,17 @@ const submittedBy =
             }
 
 
-            /* HANDICAP */
+            // ------------------------------------------
+            // HANDICAP
+            // ------------------------------------------
 
             const handicapInput =
                 document.querySelector(
                     `.player-handicap[data-player="${playerId}"]`
                 );
 
-
             const handicapUsed =
                 Number(handicapInput?.value);
-
 
             if (
                 !Number.isFinite(handicapUsed) ||
@@ -1227,17 +1224,17 @@ const submittedBy =
             }
 
 
-            /* NET */
+            // ------------------------------------------
+            // NET SCORE
+            // ------------------------------------------
 
             const netInput =
                 document.querySelector(
                     `.player-net[data-player="${playerId}"]`
                 );
 
-
             const netScore =
                 Number(netInput?.value);
-
 
             if (
                 !Number.isInteger(netScore) ||
@@ -1252,7 +1249,9 @@ const submittedBy =
             }
 
 
-            /* GROSS */
+            // ------------------------------------------
+            // GROSS SCORES
+            // ------------------------------------------
 
             const scoreInputs =
                 Array.from(
@@ -1260,7 +1259,6 @@ const submittedBy =
                         `.hole-score[data-player="${playerId}"]`
                     )
                 );
-
 
             if (scoreInputs.length !== 18) {
 
@@ -1270,13 +1268,11 @@ const submittedBy =
 
             }
 
-
             const grossScores =
                 scoreInputs.map(input => {
 
                     const score =
                         Number(input.value);
-
 
                     if (
                         !Number.isInteger(score) ||
@@ -1290,61 +1286,68 @@ const submittedBy =
 
                     }
 
-
                     return score;
 
                 });
 
 
-           submissions.push({
+            // ------------------------------------------
+            // BUILD ROW
+            // ------------------------------------------
 
-    event_id:
-        Number(selectedEvent.id),
+            submissions.push({
 
-    round_number:
-        roundNumber,
+                event_id:
+                    Number(selectedEvent.id),
 
-    submitted_by:
-        submittedBy,
+                round_number:
+                    roundNumber,
 
-    player_id:
-        Number(playerId),
+                submitted_by:
+                    submittedBy,
 
-    submitted_at:
-        new Date().toISOString(),
+                player_id:
+                    Number(playerId),
 
-    status:
-        "Pending",
+                submitted_at:
+                    new Date().toISOString(),
 
-    notes:
-        notes || null,
+                status:
+                    "Pending",
 
-    round_date:
-        roundDate,
+                notes:
+                    notes || null,
 
-    handicap_used:
-        handicapUsed,
+                round_date:
+                    roundDate,
 
-    net_score:
-        netScore,
+                handicap_used:
+                    handicapUsed,
 
-    gross_scores:
-        grossScores,
+                net_score:
+                    netScore,
 
-    submission_group_id:
-        submissionGroupId
+                gross_scores:
+                    grossScores,
 
-});
+                submission_group_id:
+                    submissionGroupId
+
+            });
 
         }
 
-        /*
-         * Check for existing official rounds.
-         */
+
+        // ==========================================
+        // CHECK FOR EXISTING OFFICIAL ROUNDS
+        // ==========================================
 
         for (const submission of submissions) {
 
-            const { data: existingRounds, error } =
+            const {
+                data: existingRounds,
+                error: existingRoundError
+            } =
                 await supabaseClient
                     .from("rounds")
                     .select("id")
@@ -1355,13 +1358,13 @@ const submittedBy =
                     .eq(
                         "player_id",
                         submission.player_id
-)
+                    )
                     .limit(1);
 
 
-            if (error) {
+            if (existingRoundError) {
 
-                throw error;
+                throw existingRoundError;
 
             }
 
@@ -1380,7 +1383,6 @@ const submittedBy =
                             )
                     );
 
-
                 throw new Error(
                     `${player?.Name || "A selected player"} already has an official round for this event.`
                 );
@@ -1390,148 +1392,138 @@ const submittedBy =
         }
 
 
-/*
- * Check for an existing submission by the
- * SAME PERSON who is currently submitting.
- *
- * A different player must be allowed to submit
- * the same group independently for verification.
- */
+        // ==========================================
+        // CHECK FOR EXISTING SUBMISSION
+        // BY THE SAME SUBMITTER
+        // ==========================================
 
-const { data: existingSubmissions, error } =
-    await supabaseClient
-        .from("round_submissions")
-        .select(`
-            id,
-            status,
-            submitted_by,
-            submission_group_id
-        `)
-        .eq(
-            "event_id",
-            selectedEvent.id
-        )
-        .eq(
-            "submitted_by",
-            submittedBy
-        )
-        .in(
-            "status",
-            [
-                "Pending",
-                "Matched",
-                "Discrepancy",
-                "Approved"
-            ]
+        const {
+            data: existingSubmissions,
+            error: existingSubmissionError
+        } =
+            await supabaseClient
+                .from("round_submissions")
+                .select(`
+                    id,
+                    status,
+                    submitted_by,
+                    submission_group_id
+                `)
+                .eq(
+                    "event_id",
+                    selectedEvent.id
+                )
+                .eq(
+                    "submitted_by",
+                    submittedBy
+                )
+                .in(
+                    "status",
+                    [
+                        "Pending",
+                        "Matched",
+                        "Discrepancy",
+                        "Approved"
+                    ]
+                );
+
+
+        if (existingSubmissionError) {
+
+            throw existingSubmissionError;
+
+        }
+
+
+        if (
+            existingSubmissions &&
+            existingSubmissions.length > 0
+        ) {
+
+            throw new Error(
+                "You already have a submission for this event awaiting review."
+            );
+
+        }
+
+
+        // ==========================================
+        // INSERT SUBMISSIONS
+        // ==========================================
+
+        const rows =
+            submissions;
+
+
+        const {
+            data: insertedSubmissions,
+            error: insertError
+        } =
+            await supabaseClient
+                .from("round_submissions")
+                .insert(rows)
+                .select();
+
+
+        if (insertError) {
+
+            console.error(
+                "ERROR SAVING SUBMISSIONS:",
+                insertError
+            );
+
+            throw insertError;
+
+        }
+
+
+        console.log(
+            "Group submission created:",
+            insertedSubmissions
         );
 
 
-if (existingSubmissionError) {
+        // ==========================================
+        // AUTOMATIC VERIFICATION
+        // ==========================================
 
-    throw existingSubmissionError;
-
-}
-
-
-/*
- * If this person already submitted a scorecard
- * for this event, don't allow them to submit
- * another one.
- */
-
-if (
-    existingSubmissions &&
-    existingSubmissions.length > 0
-) {
-
-    throw new Error(
-        "You already have a submission for this event awaiting review."
-    );
-
-}
+        const verificationResult =
+            await processSubmissionGroup(
+                submissionGroupId
+            );
 
 
-        /*
-         * The database column "submitted_by" identifies
-         * who entered the scorecard.
-         *
-         * The actual player needs its own column.
-         */
-
-        const rows = submissions;
+        console.log(
+            "AUTOMATIC VERIFICATION RESULT:",
+            verificationResult
+        );
 
 
-     const {
-    data,
-    error
-} = await supabaseClient
+        // ==========================================
+        // USER MESSAGE
+        // ==========================================
 
-    .from("round_submissions")
+        if (
+            verificationResult.status ===
+            "Approved"
+        ) {
 
-    .insert(rows)
+            alert(
+                "Scorecard submitted and automatically verified! Your round has been approved."
+            );
 
-    .select();
+        } else {
 
+            alert(
+                "Scorecard submitted successfully. It is waiting for an independent player submission to verify the scores."
+            );
 
-if (error) {
-
-    console.error(
-        "ERROR SAVING SUBMISSIONS:",
-        error
-    );
-
-    throw error;
-
-}
+        }
 
 
-console.log(
-    "Group submission created:",
-    data
-);
-
-
-// ==========================================
-// AUTOMATIC VERIFICATION
-// ==========================================
-
-const verificationResult =
-    await processSubmissionGroup(
-        submissionGroupId
-    );
-
-
-console.log(
-    "AUTOMATIC VERIFICATION RESULT:",
-    verificationResult
-);
-
-
-// ==========================================
-// USER MESSAGE
-// ==========================================
-
-if (
-    verificationResult.status ===
-    "Approved"
-) {
-
-    alert(
-        "Scorecard submitted and automatically verified! Your round has been approved."
-    );
-
-} else {
-
-    alert(
-        "Scorecard submitted successfully. It is waiting for an independent player submission to verify the scores."
-    );
-
-}
-
-
-        /*
-         * SUCCESS
-         */
+        // ==========================================
+        // SUCCESS
+        // ==========================================
 
         document
             .getElementById("scorecardCard")
@@ -1541,15 +1533,16 @@ if (
             .getElementById("playersCard")
             .style.display = "none";
 
+
         showMessage(
             `
             <strong>Scorecard submitted successfully.</strong>
             <br><br>
             ${selectedPlayers.length} player
             ${selectedPlayers.length === 1 ? "score has" : "scores have"}
-            been submitted for commissioner review.
+            been submitted for verification.
             <br><br>
-            Status: <strong>PENDING</strong>
+            Status: <strong>${verificationResult.status.toUpperCase()}</strong>
             `,
             "success"
         );
@@ -1579,6 +1572,7 @@ if (
     } finally {
 
         button.disabled = false;
+
         button.textContent =
             "SUBMIT GROUP SCORECARD";
 
