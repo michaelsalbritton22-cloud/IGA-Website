@@ -3746,6 +3746,74 @@ function closeSubmissionReview() {
 
 }
 
+// ==========================================
+// LOAD COMMISSIONER DASHBOARD
+// ==========================================
+
+async function loadCommissionerDashboard() {
+
+    try {
+
+        console.log(
+            "Loading Commissioner Dashboard..."
+        );
+
+
+        // Load pending official rounds
+        if (
+            typeof loadPendingRounds ===
+            "function"
+        ) {
+
+            await loadPendingRounds();
+
+        }
+
+
+        // Load scorecard submissions
+        if (
+            typeof loadSubmissionReviews ===
+            "function"
+        ) {
+
+            await loadSubmissionReviews();
+
+        }
+
+
+        // Load commissioner round-entry events
+        if (
+            typeof loadRoundEntryEvents ===
+            "function"
+        ) {
+
+            await loadRoundEntryEvents();
+
+        }
+
+
+        console.log(
+            "Commissioner Dashboard loaded."
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Error loading Commissioner Dashboard:",
+            error
+        );
+
+        alert(
+            "Unable to load the Commissioner Dashboard:\n\n" +
+            error.message
+        );
+
+    }
+
+}
+
 loadCommissionerDashboard();
 
 
