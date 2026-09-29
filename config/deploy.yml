@@ -1,0 +1,23 @@
+service: iga-website
+image: iga-website
+
+servers:
+  web:
+    - 178.104.95.80
+
+proxy:
+  host: iga.boltmediaokc.com
+  ssl: true
+  app_port: 80
+  healthcheck:
+    path: /
+
+# Local registry: Kamal pushes the image to the server over SSH, no Docker Hub needed
+registry:
+  server: localhost:5555
+
+builder:
+  arch: amd64
+
+ssh:
+  user: root
