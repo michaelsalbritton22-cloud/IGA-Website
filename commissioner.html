@@ -2055,120 +2055,197 @@ function closeRoundReview() {
 
 // ==========================================
 // SCORECARD SUBMISSION REVIEW
+// RECONCILIATION WORKFLOW
 // ==========================================
 
 let submissionPlayerMap = new Map();
 let currentSubmissionGroups = [];
+let currentReviewGroupId = null;
+let currentReviewEventId = null;
+let currentReviewRoundNumber = null;
+let currentReviewGroups = [];
+
+
+/* ==========================================
+   BASIC HELPERS
+========================================== */
 
 function escapeSubmissionHtml(value) {
-    return String(value ?? "")
+
+    if (value === null || value === undefined) {
+        return "";
+    }
+
+    return String(value)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+
 }
+
 
 function formatSubmissionDate(value) {
-    if (!value) return "—";
-    const date = new Date(`${value}T00:00:00`);
-    return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString();
+
+    if (!value) {
+        return "—";
+    }
+
+    const date =
+        new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return value;
+    }
+
+    return date.toLocaleDateString();
+
 }
+
 
 function formatSubmittedAt(value) {
-    if (!value) return "—";
-    const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
-}
 
-function submissionRowsMatch(groupA, groupB) {
-    if (!groupA || !groupB || groupA.length !== groupB.length) return false;
-
-    const idsA = groupA.map(row => Number(row.player_id)).sort((a, b) => a - b);
-    const idsB = groupB.map(row => Number(row.player_id)).sort((a, b) => a - b);
-
-    if (idsA.some((id, index) => id !== idsB[index])) return false;
-
-    for (const rowA of groupA) {
-        const rowB = groupB.find(row => Number(row.player_id) === Number(rowA.player_id));
-        if (!rowB) return false;
-        if (rowA.round_date !== rowB.round_date) return false;
-        if (Number(rowA.handicap_used) !== Number(rowB.handicap_used)) return false;
-        if (Number(rowA.net_score) !== Number(rowB.net_score)) return false;
-
-        const scoresA = Array.isArray(rowA.gross_scores) ? rowA.gross_scores : [];
-        const scoresB = Array.isArray(rowB.gross_scores) ? rowB.gross_scores : [];
-        if (scoresA.length !== 18 || scoresB.length !== 18) return false;
-        for (let i = 0; i < 18; i++) {
-            if (Number(scoresA[i]) !== Number(scoresB[i])) return false;
-        }
+    if (!value) {
+        return "—";
     }
 
-    return true;
-}
+    const date =
+        new Date(value);
 
-function submissionDifferenceSummary(groupA, groupB) {
-    const differences = [];
-    const allPlayerIds = [...new Set([
-        ...groupA.map(row => Number(row.player_id)),
-        ...groupB.map(row => Number(row.player_id))
-    ])].sort((a, b) => a - b);
-
-    for (const playerId of allPlayerIds) {
-        const a = groupA.find(row => Number(row.player_id) === playerId);
-        const b = groupB.find(row => Number(row.player_id) === playerId);
-        const playerName = submissionPlayerMap.get(playerId) || `Player ${playerId}`;
-
-        if (!a || !b) {
-            differences.push(`${playerName}: player is missing from one submission.`);
-            continue;
-        }
-
-        if (a.round_date !== b.round_date) {
-            differences.push(`${playerName}: round date differs.`);
-        }
-        if (Number(a.handicap_used) !== Number(b.handicap_used)) {
-            differences.push(`${playerName}: handicap differs (${a.handicap_used} vs ${b.handicap_used}).`);
-        }
-        if (Number(a.net_score) !== Number(b.net_score)) {
-            differences.push(`${playerName}: net score differs (${a.net_score} vs ${b.net_score}).`);
-        }
-
-        const scoresA = Array.isArray(a.gross_scores) ? a.gross_scores : [];
-        const scoresB = Array.isArray(b.gross_scores) ? b.gross_scores : [];
-        for (let i = 0; i < 18; i++) {
-            if (Number(scoresA[i]) !== Number(scoresB[i])) {
-                differences.push(`${playerName}: hole ${i + 1} differs (${scoresA[i] ?? "—"} vs ${scoresB[i] ?? "—"}).`);
-            }
-        }
+    if (Number.isNaN(date.getTime())) {
+        return value;
     }
 
-    return differences;
+    return date.toLocaleString();
+
 }
 
-async function loadSubmissionReviews() {
-    const container = document.getElementById("submissionReviews");
-    if (!container) return;
 
-    try {
-        const events = await getOpenEvents();
+function getSubmissionGroupKey(row) {
 
-        const { data: activePlayers, error: playerError } = await supabaseClient
-            .from("Players")
-            .select('player_id,"Name"')
-            .eq("Active", true);
+    return (
+        row.submission_group_id ||
+        `single-${row.id}`
+    );
 
-        if (playerError) throw playerError;
+}
 
-        submissionPlayerMap = new Map(
-            (activePlayers || []).map(player => [Number(player.player_id), player.Name])
+
+function getGroupRows(groupId) {
+
+    const group =
+        currentSubmissionGroups.find(
+            group =>
+                group.groupId === groupId
         );
 
-        const allSubmissions = [];
+    return group
+        ? group.rows
+        : [];
+
+}
+
+
+function getPlayerName(playerId) {
+
+    return (
+        submissionPlayerMap.get(
+            Number(playerId)
+        ) ||
+        `Player ${playerId}`
+    );
+
+}
+
+
+/* ==========================================
+   LOAD SUBMISSION REVIEWS
+========================================== */
+
+async function loadSubmissionReviews() {
+
+    const container =
+        document.getElementById(
+            "submissionReviews"
+        );
+
+    if (!container) {
+        return;
+    }
+
+
+    try {
+
+        const events =
+            await getOpenEvents();
+
+
+        if (!events || !events.length) {
+
+            container.innerHTML = `
+                <h3>Scorecard Submission Review</h3>
+
+                <p>
+                    No open events currently have
+                    scorecard submissions requiring review.
+                </p>
+            `;
+
+            return;
+        }
+
+
+        const {
+            data: players,
+            error: playerError
+        } = await supabaseClient
+
+            .from("Players")
+
+            .select(`
+                player_id,
+                "Name"
+            `)
+
+            .eq(
+                "Active",
+                true
+            );
+
+
+        if (playerError) {
+            throw playerError;
+        }
+
+
+        submissionPlayerMap =
+            new Map(
+                (players || []).map(
+                    player => [
+                        Number(player.player_id),
+                        player.Name
+                    ]
+                )
+            );
+
+
+        currentSubmissionGroups = [];
+
+
+        /*
+         * Load submissions for every open event.
+         */
 
         for (const event of events) {
-            const { data, error } = await supabaseClient
+
+            const {
+                data: rows,
+                error
+            } = await supabaseClient
+
                 .from("round_submissions")
+
                 .select(`
                     id,
                     event_id,
@@ -2184,424 +2261,1489 @@ async function loadSubmissionReviews() {
                     submission_group_id,
                     player_id
                 `)
-                .eq("event_id", event.id)
-                .in("status", ["Pending", "Matched", "Discrepancy"])
-                .order("submitted_at", { ascending: true });
 
-            if (error) throw error;
+                .eq(
+                    "event_id",
+                    event.id
+                )
 
-            (data || []).forEach(row => {
-                allSubmissions.push({
-                    ...row,
-                    event_name: event.event_name,
-                    course_name: event.course_name || event.Course || ""
-                });
-            });
+                .in(
+                    "status",
+                    [
+                        "Pending",
+                        "Matched",
+                        "Discrepancy"
+                    ]
+                )
+
+                .order(
+                    "submitted_at",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            const groups =
+                new Map();
+
+
+            (rows || []).forEach(
+                row => {
+
+                    const groupId =
+                        getSubmissionGroupKey(
+                            row
+                        );
+
+
+                    if (!groups.has(groupId)) {
+
+                        groups.set(
+                            groupId,
+                            []
+                        );
+
+                    }
+
+
+                    groups
+                        .get(groupId)
+                        .push(row);
+
+                }
+            );
+
+
+            groups.forEach(
+                (groupRows, groupId) => {
+
+                    currentSubmissionGroups.push({
+
+                        groupId,
+
+                        eventId:
+                            event.id,
+
+                        eventName:
+                            event.event_name,
+
+                        roundNumber:
+                            groupRows[0]
+                                .round_number,
+
+                        submittedBy:
+                            groupRows[0]
+                                .submitted_by,
+
+                        submittedAt:
+                            groupRows[0]
+                                .submitted_at,
+
+                        rows:
+                            groupRows
+
+                    });
+
+                }
+            );
+
         }
 
-        const groups = new Map();
 
-        allSubmissions.forEach(row => {
-            const groupId = row.submission_group_id || `single-${row.id}`;
-            if (!groups.has(groupId)) groups.set(groupId, []);
-            groups.get(groupId).push(row);
-        });
-
-        currentSubmissionGroups = Array.from(groups.entries()).map(([groupId, rows]) => {
-            rows.sort((a, b) => Number(a.player_id) - Number(b.player_id));
-            return { groupId, rows };
-        });
+        /*
+         * No submissions.
+         */
 
         if (!currentSubmissionGroups.length) {
+
             container.innerHTML = `
-                <div class="card">
-                    <h3>No Submissions Awaiting Review</h3>
-                    <p>There are currently no pending, matched, or discrepancy scorecard submissions for open events.</p>
-                </div>
+                <h3>Scorecard Submission Review</h3>
+
+                <p>
+                    No scorecard submissions are currently
+                    waiting for commissioner review.
+                </p>
             `;
+
             return;
         }
 
-        container.innerHTML = currentSubmissionGroups.map(group => {
-            const first = group.rows[0];
-            const independentGroups = currentSubmissionGroups.filter(other =>
-                other.groupId !== group.groupId &&
-                Number(other.rows[0]?.event_id) === Number(first.event_id) &&
-                Number(other.rows[0]?.round_number) === Number(first.round_number) &&
-                Number(other.rows[0]?.submitted_by) !== Number(first.submitted_by)
-            );
 
-            const matchingGroup = independentGroups.find(other =>
-                submissionRowsMatch(group.rows, other.rows)
-            );
+        /*
+         * Build review cards.
+         */
 
-            let statusLabel = "WAITING FOR INDEPENDENT VERIFICATION";
-            let statusClass = "";
-            let detailText = "No independent submission has been received yet.";
+        const cards = [];
 
-            if (first.status === "Discrepancy") {
-                statusLabel = "⚠️ COMMISSIONER REVIEW REQUIRED";
-                detailText = "This submission has been flagged as a discrepancy.";
-                statusClass = "submission-discrepancy";
-            } else if (matchingGroup) {
-                statusLabel = "MATCH FOUND";
-                detailText = "An independent submission matches this scorecard.";
-            } else if (independentGroups.length) {
-                statusLabel = "⚠️ MISMATCH — COMMISSIONER REVIEW";
-                detailText = "An independent submission exists, but the scorecards do not match.";
-                statusClass = "submission-discrepancy";
+
+        currentSubmissionGroups.forEach(
+            group => {
+
+                const otherGroups =
+                    currentSubmissionGroups.filter(
+                        other =>
+                            other.eventId === group.eventId &&
+                            other.roundNumber === group.roundNumber &&
+                            other.groupId !== group.groupId &&
+                            other.submittedBy !== group.submittedBy
+                    );
+
+
+                if (!otherGroups.length) {
+
+                    cards.push({
+
+                        group,
+
+                        status:
+                            "Waiting for another submission",
+
+                        statusClass:
+                            "pending"
+
+                    });
+
+                    return;
+                }
+
+
+                const exactMatch =
+                    otherGroups.find(
+                        other =>
+                            submissionRowsMatch(
+                                group.rows,
+                                other.rows
+                            )
+                    );
+
+
+                if (exactMatch) {
+
+                    cards.push({
+
+                        group,
+
+                        status:
+                            "Matching submission found",
+
+                        statusClass:
+                            "matched",
+
+                        comparisonGroup:
+                            exactMatch
+
+                    });
+
+                    return;
+                }
+
+
+                cards.push({
+
+                    group,
+
+                    status:
+                        "Discrepancy requires review",
+
+                    statusClass:
+                        "discrepancy",
+
+                    comparisonGroup:
+                        otherGroups[0]
+
+                });
+
             }
+        );
 
-            const playerNames = group.rows
-                .map(row => submissionPlayerMap.get(Number(row.player_id)) || `Player ${row.player_id}`)
-                .join(", ");
 
-            const submittedBy = submissionPlayerMap.get(Number(first.submitted_by)) || `Player ${first.submitted_by}`;
-
-            return `
-                <div class="card ${statusClass}" style="margin-bottom:16px;">
-                    <div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;">
-                        <div>
-                            <h3 style="margin-bottom:6px;">${escapeSubmissionHtml(first.event_name || `Event ${first.event_id}`)}</h3>
-                            <p style="margin:3px 0;"><strong>Round:</strong> ${escapeSubmissionHtml(first.round_number)}</p>
-                            <p style="margin:3px 0;"><strong>Date:</strong> ${escapeSubmissionHtml(formatSubmissionDate(first.round_date))}</p>
-                            <p style="margin:3px 0;"><strong>Submitted By:</strong> ${escapeSubmissionHtml(submittedBy)}</p>
-                            <p style="margin:3px 0;"><strong>Players:</strong> ${escapeSubmissionHtml(playerNames)}</p>
-                        </div>
-                        <div style="min-width:280px;">
-                            <strong>${escapeSubmissionHtml(statusLabel)}</strong>
-                            <p style="margin:6px 0 12px;">${escapeSubmissionHtml(detailText)}</p>
-                            <button type="button" onclick="reviewSubmissionGroup('${escapeSubmissionHtml(group.groupId)}')">REVIEW SUBMISSION</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }).join("");
-
-    } catch (error) {
-        console.error("SUBMISSION REVIEW LOAD ERROR:", error);
         container.innerHTML = `
-            <div class="card">
-                <h3>Unable to Load Scorecard Submissions</h3>
-                <p>${escapeSubmissionHtml(error.message || "Unknown error")}</p>
-            </div>
-        `;
-    }
-}
 
-async function reviewSubmissionGroup(groupId) {
-    const detail = document.getElementById("submissionReviewDetail");
-    const content = document.getElementById("submissionDetailContent");
-    const title = document.getElementById("submissionDetailTitle");
-    const meta = document.getElementById("submissionDetailMeta");
+            <h3>
+                Scorecard Submission Review
+            </h3>
 
-    try {
-        const { data: groupRows, error } = await supabaseClient
-            .from("round_submissions")
-            .select(`
-                id,
-                event_id,
-                round_number,
-                submitted_by,
-                submitted_at,
-                status,
-                notes,
-                round_date,
-                handicap_used,
-                net_score,
-                gross_scores,
-                submission_group_id,
-                player_id
-            `)
-            .eq("submission_group_id", groupId)
-            .order("player_id", { ascending: true });
+            <p>
+                Compare player scorecards before creating
+                official rounds.
+            </p>
 
-        if (error) throw error;
-        if (!groupRows || !groupRows.length) throw new Error("Submission group could not be found.");
+            <div class="submission-review-list">
 
-        const first = groupRows[0];
-        const event = pendingRounds.find(item => Number(item.id) === Number(first.event_id));
-        const eventName = event?.event_name || `Event ${first.event_id}`;
+                ${cards.map(
+                    item => {
 
-        const { data: otherRows, error: otherError } = await supabaseClient
-            .from("round_submissions")
-            .select(`
-                id,
-                event_id,
-                round_number,
-                submitted_by,
-                submitted_at,
-                status,
-                notes,
-                round_date,
-                handicap_used,
-                net_score,
-                gross_scores,
-                submission_group_id,
-                player_id
-            `)
-            .eq("event_id", first.event_id)
-            .eq("round_number", first.round_number)
-            .neq("submission_group_id", groupId)
-            .neq("submitted_by", first.submitted_by)
-            .in("status", ["Pending", "Matched", "Discrepancy"]);
+                        const group =
+                            item.group;
 
-        if (otherError) throw otherError;
 
-        const candidateGroups = new Map();
-        (otherRows || []).forEach(row => {
-            if (!candidateGroups.has(row.submission_group_id)) candidateGroups.set(row.submission_group_id, []);
-            candidateGroups.get(row.submission_group_id).push(row);
-        });
+                        const playerNames =
+                            group.rows
+                                .map(
+                                    row =>
+                                        getPlayerName(
+                                            row.player_id
+                                        )
+                                )
+                                .join(", ");
 
-        const comparisonGroups = Array.from(candidateGroups.values());
-        const exactMatch = comparisonGroups.find(group => submissionRowsMatch(groupRows, group));
-        const mismatchGroup = comparisonGroups.find(group => !submissionRowsMatch(groupRows, group));
 
-        title.textContent = `${eventName} — Round ${first.round_number}`;
-        meta.textContent = `Submitted by ${submissionPlayerMap.get(Number(first.submitted_by)) || `Player ${first.submitted_by}`} on ${formatSubmittedAt(first.submitted_at)}`;
+                        return `
 
-        content.innerHTML = `
-            <div style="margin:16px 0;">
-                <strong>Commissioner Review</strong>
-                <p>Review and correct the submitted scorecard below. Changes are saved to the submission record before approval.</p>
-            </div>
+                            <div class="submission-review-card">
 
-            <div style="overflow-x:auto;">
-                <table style="width:100%;border-collapse:collapse;">
-                    <thead>
-                        <tr>
-                            <th style="text-align:left;padding:8px;">Player</th>
-                            <th style="text-align:left;padding:8px;">Date</th>
-                            <th style="text-align:left;padding:8px;">Handicap</th>
-                            <th style="text-align:left;padding:8px;">Net</th>
-                            ${Array.from({length:18}, (_,i) => `<th style="padding:8px;">${i+1}</th>`).join("")}
-                            <th style="text-align:left;padding:8px;">Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${groupRows.map(row => {
-                            const scores = Array.isArray(row.gross_scores) ? row.gross_scores : [];
-                            const playerName = submissionPlayerMap.get(Number(row.player_id)) || `Player ${row.player_id}`;
-                            return `
-                                <tr data-submission-row="${row.id}">
-                                    <td style="padding:8px;white-space:nowrap;"><strong>${escapeSubmissionHtml(playerName)}</strong></td>
-                                    <td style="padding:8px;"><input type="date" id="submission-date-${row.id}" value="${escapeSubmissionHtml(row.round_date || "")}"></td>
-                                    <td style="padding:8px;"><input type="number" min="0" max="54" step="0.1" id="submission-handicap-${row.id}" value="${escapeSubmissionHtml(row.handicap_used ?? "")}" style="width:70px;"></td>
-                                    <td style="padding:8px;"><input type="number" min="1" max="150" id="submission-net-${row.id}" value="${escapeSubmissionHtml(row.net_score ?? "")}" style="width:70px;"></td>
-                                    ${Array.from({length:18}, (_,i) => `<td style="padding:8px;"><input type="number" min="1" max="20" id="submission-score-${row.id}-${i}" value="${escapeSubmissionHtml(scores[i] ?? "")}" style="width:55px;"></td>`).join("")}
-                                    <td style="padding:8px;"><input type="text" id="submission-notes-${row.id}" value="${escapeSubmissionHtml(row.notes || "")}" style="min-width:180px;"></td>
-                                </tr>
-                            `;
-                        }).join("")}
-                    </tbody>
-                </table>
-            </div>
+                                <div>
 
-            <div style="margin-top:20px;">
-                <h3>Verification</h3>
-                ${exactMatch ? `<p><strong>Matching independent submission found.</strong> The submitted scorecards currently match exactly.</p>` : mismatchGroup ? `<p><strong>⚠️ Independent submission differs.</strong> Review the other submission below or correct the scorecard before approval.</p>` : `<p>No independent submission is currently available. The Commissioner may still approve this submission manually if the scorecard has been independently verified outside the system.</p>`}
-            </div>
+                                    <strong>
+                                        ${escapeSubmissionHtml(
+                                            group.eventName
+                                        )}
+                                    </strong>
 
-            ${mismatchGroup ? `
-                <div class="card" style="margin-top:16px;">
-                    <h3>Other Submission</h3>
-                    <p><strong>Submitted By:</strong> ${escapeSubmissionHtml(submissionPlayerMap.get(Number(mismatchGroup[0].submitted_by)) || `Player ${mismatchGroup[0].submitted_by}`)}</p>
-                    <ul>
-                        ${submissionDifferenceSummary(groupRows, mismatchGroup).slice(0, 30).map(item => `<li>${escapeSubmissionHtml(item)}</li>`).join("")}
-                    </ul>
-                    ${submissionDifferenceSummary(groupRows, mismatchGroup).length > 30 ? `<p>Additional differences exist beyond the first 30 shown.</p>` : ""}
-                </div>
-            ` : ""}
+                                    <div>
+                                        Round
+                                        ${escapeSubmissionHtml(
+                                            group.roundNumber
+                                        )}
+                                    </div>
 
-            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;">
-                <button type="button" onclick="saveSubmissionEdits('${escapeSubmissionHtml(groupId)}')">SAVE CHANGES</button>
-                <button type="button" onclick="approveSubmissionGroup('${escapeSubmissionHtml(groupId)}')">APPROVE SCORECARD</button>
-                <button type="button" onclick="rejectSubmissionGroup('${escapeSubmissionHtml(groupId)}')">REJECT SUBMISSION</button>
+                                    <div>
+                                        Submitted by:
+                                        ${escapeSubmissionHtml(
+                                            group.submittedBy
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        Players:
+                                        ${escapeSubmissionHtml(
+                                            playerNames
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        Submitted:
+                                        ${escapeSubmissionHtml(
+                                            formatSubmittedAt(
+                                                group.submittedAt
+                                            )
+                                        )}
+                                    </div>
+
+                                </div>
+
+
+                                <div class="submission-status ${item.statusClass}">
+
+                                    ${escapeSubmissionHtml(
+                                        item.status
+                                    )}
+
+                                </div>
+
+
+                                <button
+                                    type="button"
+                                    onclick="reviewSubmissionGroup('${escapeSubmissionHtml(group.groupId)}')"
+                                >
+                                    Review Scorecard
+                                </button>
+
+                            </div>
+
+                        `;
+
+                    }
+                ).join("")}
+
             </div>
         `;
 
-        detail.style.display = "block";
-        detail.scrollIntoView({ behavior: "smooth", block: "start" });
-
-    } catch (error) {
-        console.error("SUBMISSION REVIEW ERROR:", error);
-        alert("Unable to load submission review.\n\n" + (error.message || "Unknown error"));
     }
+
+    catch (error) {
+
+        console.error(
+            "Error loading submission reviews:",
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <h3>
+                Scorecard Submission Review
+            </h3>
+
+            <p>
+                Unable to load scorecard submissions.
+            </p>
+
+            <p>
+                ${escapeSubmissionHtml(
+                    error.message
+                )}
+            </p>
+
+        `;
+
+    }
+
 }
 
-function readSubmissionForm(groupRows) {
-    return groupRows.map(row => {
-        const scores = Array.from({length:18}, (_,i) => {
-            const value = Number(document.getElementById(`submission-score-${row.id}-${i}`)?.value);
-            if (!Number.isInteger(value) || value < 1 || value > 20) {
-                throw new Error(`Invalid score for ${submissionPlayerMap.get(Number(row.player_id)) || `Player ${row.player_id}`}, hole ${i + 1}.`);
+
+/* ==========================================
+   COMPARE TWO SUBMISSIONS
+========================================== */
+
+function submissionRowsMatch(
+    groupA,
+    groupB
+) {
+
+    if (
+        !groupA ||
+        !groupB ||
+        groupA.length !== groupB.length
+    ) {
+
+        return false;
+
+    }
+
+
+    for (const rowA of groupA) {
+
+        const rowB =
+            groupB.find(
+                row =>
+                    Number(row.player_id) ===
+                    Number(rowA.player_id)
+            );
+
+
+        if (!rowB) {
+            return false;
+        }
+
+
+        if (
+            rowA.round_date !==
+            rowB.round_date
+        ) {
+
+            return false;
+
+        }
+
+
+        if (
+            Number(rowA.handicap_used) !==
+            Number(rowB.handicap_used)
+        ) {
+
+            return false;
+
+        }
+
+
+        if (
+            Number(rowA.net_score) !==
+            Number(rowB.net_score)
+        ) {
+
+            return false;
+
+        }
+
+
+        const scoresA =
+            Array.isArray(rowA.gross_scores)
+                ? rowA.gross_scores
+                : [];
+
+
+        const scoresB =
+            Array.isArray(rowB.gross_scores)
+                ? rowB.gross_scores
+                : [];
+
+
+        if (
+            scoresA.length !== 18 ||
+            scoresB.length !== 18
+        ) {
+
+            return false;
+
+        }
+
+
+        for (
+            let hole = 0;
+            hole < 18;
+            hole++
+        ) {
+
+            if (
+                Number(scoresA[hole]) !==
+                Number(scoresB[hole])
+            ) {
+
+                return false;
+
             }
-            return value;
+
+        }
+
+    }
+
+
+    return true;
+
+}
+
+
+/* ==========================================
+   FIND COMPARISON GROUPS
+========================================== */
+
+function getComparisonGroups(
+    selectedGroup
+) {
+
+    return currentSubmissionGroups.filter(
+        group =>
+            group.eventId ===
+                selectedGroup.eventId &&
+
+            group.roundNumber ===
+                selectedGroup.roundNumber &&
+
+            group.groupId !==
+                selectedGroup.groupId &&
+
+            group.submittedBy !==
+                selectedGroup.submittedBy
+    );
+
+}
+
+
+/* ==========================================
+   BUILD RECONCILED SCORECARD
+========================================== */
+
+function buildReconciledRows(
+    groups
+) {
+
+    const playerIds =
+        [
+            ...new Set(
+                groups.flatMap(
+                    group =>
+                        group.rows.map(
+                            row =>
+                                Number(
+                                    row.player_id
+                                )
+                        )
+                )
+            )
+        ]
+        .sort(
+            (a, b) =>
+                a - b
+        );
+
+
+    return playerIds.map(
+        playerId => {
+
+            const submissions =
+                groups
+                    .map(
+                        group =>
+                            group.rows.find(
+                                row =>
+                                    Number(
+                                        row.player_id
+                                    ) ===
+                                    playerId
+                            )
+                    )
+                    .filter(Boolean);
+
+
+            const first =
+                submissions[0];
+
+
+            const holes =
+                Array.from(
+                    {
+                        length: 18
+                    },
+                    (_, index) => {
+
+                        const values =
+                            submissions
+                                .map(
+                                    row =>
+                                        Array.isArray(
+                                            row.gross_scores
+                                        )
+                                            ? Number(
+                                                row.gross_scores[
+                                                    index
+                                                ]
+                                            )
+                                            : null
+                                )
+                                .filter(
+                                    value =>
+                                        Number.isFinite(
+                                            value
+                                        )
+                                );
+
+
+                        const unique =
+                            [
+                                ...new Set(
+                                    values
+                                )
+                            ];
+
+
+                        return {
+
+                            hole:
+                                index + 1,
+
+                            values,
+
+                            resolved:
+                                unique.length === 1
+                                    ? unique[0]
+                                    : null,
+
+                            conflict:
+                                unique.length > 1
+
+                        };
+
+                    }
+                );
+
+
+            return {
+
+                playerId,
+
+                playerName:
+                    getPlayerName(
+                        playerId
+                    ),
+
+                submissions,
+
+                roundDate:
+                    first?.round_date ||
+                    null,
+
+                handicapUsed:
+                    first?.handicap_used ??
+                    null,
+
+                netScore:
+                    first?.net_score ??
+                    null,
+
+                holes
+
+            };
+
+        }
+    );
+
+}
+
+
+/* ==========================================
+   REVIEW SUBMISSION GROUP
+========================================== */
+
+async function reviewSubmissionGroup(
+    groupId
+) {
+
+    const detail =
+        document.getElementById(
+            "submissionReviewDetail"
+        );
+
+
+    const title =
+        document.getElementById(
+            "submissionReviewDetailTitle"
+        );
+
+
+    const meta =
+        document.getElementById(
+            "submissionReviewDetailMeta"
+        );
+
+
+    const content =
+        document.getElementById(
+            "submissionReviewDetailContent"
+        );
+
+
+    if (
+        !detail ||
+        !content
+    ) {
+
+        return;
+
+    }
+
+
+    const selectedGroup =
+        currentSubmissionGroups.find(
+            group =>
+                group.groupId ===
+                groupId
+        );
+
+
+    if (!selectedGroup) {
+
+        alert(
+            "The selected submission could not be found."
+        );
+
+        return;
+
+    }
+
+
+    const comparisonGroups =
+        getComparisonGroups(
+            selectedGroup
+        );
+
+
+    currentReviewGroupId =
+        groupId;
+
+    currentReviewEventId =
+        selectedGroup.eventId;
+
+    currentReviewRoundNumber =
+        selectedGroup.roundNumber;
+
+    currentReviewGroups =
+        [
+            selectedGroup,
+            ...comparisonGroups
+        ];
+
+
+    const reconciledRows =
+        buildReconciledRows(
+            currentReviewGroups
+        );
+
+
+    if (title) {
+
+        title.textContent =
+            "Scorecard Reconciliation";
+
+    }
+
+
+    if (meta) {
+
+        meta.innerHTML = `
+
+            <strong>
+                ${escapeSubmissionHtml(
+                    selectedGroup.eventName
+                )}
+            </strong>
+
+            <br>
+
+            Round
+            ${escapeSubmissionHtml(
+                selectedGroup.roundNumber
+            )}
+
+            <br>
+
+            ${currentReviewGroups.length}
+            submission(s) being compared.
+
+        `;
+
+    }
+
+
+    content.innerHTML = `
+
+        <div class="submission-verification">
+
+            <h4>
+                Commissioner Reconciliation
+            </h4>
+
+            <p>
+                Matching values are automatically accepted.
+                Any conflicting value must be selected
+                by the commissioner.
+            </p>
+
+        </div>
+
+
+        <div class="reconciled-scorecards">
+
+            ${reconciledRows.map(
+                player =>
+                    buildReconciledPlayerCard(
+                        player
+                    )
+            ).join("")}
+
+        </div>
+
+
+        <div class="submission-review-actions">
+
+            <button
+                type="button"
+                onclick="saveReconciledSubmission()"
+            >
+                Approve & Create Official Rounds
+            </button>
+
+            <button
+                type="button"
+                onclick="closeSubmissionReview()"
+            >
+                Cancel
+            </button>
+
+        </div>
+
+    `;
+
+
+    detail.style.display =
+        "block";
+
+
+    detail.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+}
+
+
+/* ==========================================
+   BUILD PLAYER RECONCILIATION CARD
+========================================== */
+
+function buildReconciledPlayerCard(
+    player
+) {
+
+    const conflictCount =
+        player.holes.filter(
+            hole =>
+                hole.conflict
+        ).length;
+
+
+    return `
+
+        <div
+            class="reconciled-player-card"
+            data-player-id="${player.playerId}"
+        >
+
+            <h4>
+                ${escapeSubmissionHtml(
+                    player.playerName
+                )}
+            </h4>
+
+
+            <div class="reconciled-player-meta">
+
+                <label>
+
+                    Round Date
+
+                    <input
+                        type="date"
+                        class="resolved-round-date"
+                        value="${escapeSubmissionHtml(
+                            player.roundDate ||
+                            ""
+                        )}"
+                    >
+
+                </label>
+
+
+                <label>
+
+                    Handicap Used
+
+                    <input
+                        type="number"
+                        class="resolved-handicap"
+                        min="0"
+                        max="54"
+                        step="0.1"
+                        value="${escapeSubmissionHtml(
+                            player.handicapUsed ??
+                            ""
+                        )}"
+                    >
+
+                </label>
+
+
+                <label>
+
+                    18Birdies Net
+
+                    <input
+                        type="number"
+                        class="resolved-net"
+                        min="1"
+                        max="150"
+                        value="${escapeSubmissionHtml(
+                            player.netScore ??
+                            ""
+                        )}"
+                    >
+
+                </label>
+
+            </div>
+
+
+            <div class="reconciliation-summary">
+
+                ${
+                    conflictCount === 0
+
+                        ? `
+                            <strong>
+                                ✓ No hole conflicts
+                            </strong>
+                          `
+
+                        : `
+                            <strong>
+                                ⚠ ${conflictCount}
+                                hole conflict(s)
+                                require a decision
+                            </strong>
+                          `
+                }
+
+            </div>
+
+
+            <div class="reconciled-scorecard-grid">
+
+                ${player.holes.map(
+                    hole =>
+                        buildReconciledHole(
+                            player.playerId,
+                            hole
+                        )
+                ).join("")}
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* ==========================================
+   BUILD ONE HOLE
+========================================== */
+
+function buildReconciledHole(
+    playerId,
+    hole
+) {
+
+    const values =
+        hole.values;
+
+
+    const uniqueValues =
+        [
+            ...new Set(
+                values
+            )
+        ];
+
+
+    /*
+     * Matching hole:
+     * one value can simply be used.
+     */
+
+    if (
+        uniqueValues.length === 1
+    ) {
+
+        return `
+
+            <div
+                class="reconciled-hole"
+                data-player-id="${playerId}"
+                data-hole="${hole.hole}"
+            >
+
+                <div>
+                    Hole ${hole.hole}
+                </div>
+
+                <strong>
+                    ${uniqueValues[0]}
+                </strong>
+
+                <input
+                    type="hidden"
+                    class="resolved-hole-score"
+                    value="${uniqueValues[0]}"
+                >
+
+            </div>
+
+        `;
+
+    }
+
+
+    /*
+     * Conflict:
+     * commissioner must choose.
+     */
+
+    return `
+
+        <div
+            class="reconciled-hole conflict"
+            data-player-id="${playerId}"
+            data-hole="${hole.hole}"
+        >
+
+            <div>
+
+                <strong>
+                    Hole ${hole.hole}
+                </strong>
+
+                <span>
+                    CONFLICT
+                </span>
+
+            </div>
+
+
+            <div class="conflicting-values">
+
+                ${uniqueValues.map(
+                    value => `
+
+                        <label>
+
+                            <input
+                                type="radio"
+                                name="hole-${playerId}-${hole.hole}"
+                                value="${value}"
+                            >
+
+                            ${value}
+
+                        </label>
+
+                    `
+                ).join("")}
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* ==========================================
+   READ RECONCILED FORM
+========================================== */
+
+function readReconciledForm() {
+
+    const cards =
+        [
+            ...document.querySelectorAll(
+                ".reconciled-player-card"
+            )
+        ];
+
+
+    if (!cards.length) {
+
+        throw new Error(
+            "No player scorecards were found."
+        );
+
+    }
+
+
+    const players = [];
+
+
+    for (const card of cards) {
+
+        const playerId =
+            Number(
+                card.dataset.playerId
+            );
+
+
+        const dateInput =
+            card.querySelector(
+                ".resolved-round-date"
+            );
+
+
+        const handicapInput =
+            card.querySelector(
+                ".resolved-handicap"
+            );
+
+
+        const netInput =
+            card.querySelector(
+                ".resolved-net"
+            );
+
+
+        const holeElements =
+            [
+                ...card.querySelectorAll(
+                    ".reconciled-hole"
+                )
+            ];
+
+
+        const grossScores = [];
+
+
+        for (
+            let holeNumber = 1;
+            holeNumber <= 18;
+            holeNumber++
+        ) {
+
+            const holeElement =
+                holeElements.find(
+                    element =>
+                        Number(
+                            element.dataset.hole
+                        ) ===
+                        holeNumber
+                );
+
+
+            if (!holeElement) {
+
+                throw new Error(
+                    `${getPlayerName(playerId)} is missing hole ${holeNumber}.`
+                );
+
+            }
+
+
+            const resolvedInput =
+                holeElement.querySelector(
+                    ".resolved-hole-score"
+                );
+
+
+            let value;
+
+
+            if (resolvedInput) {
+
+                value =
+                    Number(
+                        resolvedInput.value
+                    );
+
+            }
+
+            else {
+
+                const selected =
+                    holeElement.querySelector(
+                        "input[type='radio']:checked"
+                    );
+
+
+                if (!selected) {
+
+                    throw new Error(
+                        `${getPlayerName(playerId)} hole ${holeNumber} still requires a commissioner decision.`
+                    );
+
+                }
+
+
+                value =
+                    Number(
+                        selected.value
+                    );
+
+            }
+
+
+            if (
+                !Number.isInteger(value) ||
+                value < 1 ||
+                value > 20
+            ) {
+
+                throw new Error(
+                    `${getPlayerName(playerId)} hole ${holeNumber} must be a whole number from 1 through 20.`
+                );
+
+            }
+
+
+            grossScores.push(
+                value
+            );
+
+        }
+
+
+        const handicap =
+            Number(
+                handicapInput.value
+            );
+
+
+        if (
+            !Number.isFinite(handicap) ||
+            handicap < 0 ||
+            handicap > 54
+        ) {
+
+            throw new Error(
+                `${getPlayerName(playerId)} has an invalid handicap.`
+            );
+
+        }
+
+
+        const netScore =
+            Number(
+                netInput.value
+            );
+
+
+        if (
+            !Number.isFinite(netScore) ||
+            netScore < 1 ||
+            netScore > 150
+        ) {
+
+            throw new Error(
+                `${getPlayerName(playerId)} has an invalid net score.`
+            );
+
+        }
+
+
+        players.push({
+
+            playerId,
+
+            roundDate:
+                dateInput.value,
+
+            handicapUsed:
+                handicap,
+
+            netScore,
+
+            grossScores
+
         });
 
-        const handicap = Number(document.getElementById(`submission-handicap-${row.id}`)?.value);
-        if (!Number.isFinite(handicap) || handicap < 0 || handicap > 54) {
-            throw new Error(`Invalid handicap for ${submissionPlayerMap.get(Number(row.player_id)) || `Player ${row.player_id}`}.`);
-        }
-
-        const net = Number(document.getElementById(`submission-net-${row.id}`)?.value);
-        if (!Number.isInteger(net) || net < 1 || net > 150) {
-            throw new Error(`Invalid net score for ${submissionPlayerMap.get(Number(row.player_id)) || `Player ${row.player_id}`}.`);
-        }
-
-        return {
-            id: row.id,
-            event_id: row.event_id,
-            player_id: row.player_id,
-            round_number: row.round_number,
-            round_date: document.getElementById(`submission-date-${row.id}`)?.value || null,
-            handicap_used: handicap,
-            net_score: net,
-            gross_scores: scores,
-            notes: document.getElementById(`submission-notes-${row.id}`)?.value.trim() || null
-        };
-    });
-}
-
-async function saveSubmissionEdits(groupId, refresh = true) {
-    try {
-        const { data: groupRows, error } = await supabaseClient
-            .from("round_submissions")
-            .select("id,event_id,player_id,round_number,round_date,handicap_used,net_score,gross_scores,notes")
-            .eq("submission_group_id", groupId)
-            .order("player_id", { ascending: true });
-
-        if (error) throw error;
-        if (!groupRows?.length) throw new Error("Submission group could not be found.");
-
-        const editedRows = readSubmissionForm(groupRows);
-
-        for (const row of editedRows) {
-            const { error: updateError } = await supabaseClient
-                .from("round_submissions")
-                .update({
-                    round_date: row.round_date,
-                    handicap_used: row.handicap_used,
-                    net_score: row.net_score,
-                    gross_scores: row.gross_scores,
-                    notes: row.notes
-                })
-                .eq("id", row.id);
-
-            if (updateError) throw updateError;
-        }
-
-        if (refresh) {
-            alert("Submission changes saved.");
-            await loadSubmissionReviews();
-            await reviewSubmissionGroup(groupId);
-        }
-
-        return editedRows;
-
-    } catch (error) {
-        console.error("SAVE SUBMISSION EDIT ERROR:", error);
-        alert("Unable to save submission changes.\n\n" + (error.message || "Unknown error"));
-        throw error;
     }
+
+
+    return players;
+
 }
 
-async function approveSubmissionGroup(groupId) {
-    if (!confirm("Approve this scorecard and create the official round records?")) return;
+
+/* ==========================================
+   APPROVE RECONCILED SUBMISSION
+========================================== */
+
+async function saveReconciledSubmission() {
+
+    if (
+        !currentReviewGroups.length
+    ) {
+
+        alert(
+            "There is no submission currently being reviewed."
+        );
+
+        return;
+
+    }
+
 
     try {
-        const editedRows = await saveSubmissionEdits(groupId, false);
+
+        const players =
+            readReconciledForm();
+
+
+        const confirmed =
+            confirm(
+                "Create the official rounds from the reconciled scorecards?"
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        /*
+         * First create all official rounds.
+         *
+         * We intentionally do not mark the submissions
+         * approved until every player has been successfully
+         * saved.
+         */
+
         const createdRounds = [];
 
-        for (const row of editedRows) {
-            const { data: existingRounds, error: existingError } = await supabaseClient
-                .from("rounds")
-                .select("id")
-                .eq("event_id", row.event_id)
-                .eq("player_id", row.player_id)
-                .limit(1);
 
-            if (existingError) throw existingError;
-            if (existingRounds?.length) {
-                throw new Error(`${submissionPlayerMap.get(Number(row.player_id)) || `Player ${row.player_id}`} already has an official round for this event.`);
-            }
+        for (const player of players) {
 
-            const result = await saveCommissionerRound({
-                eventId: row.event_id,
-                playerId: row.player_id,
-                handicapUsed: row.handicap_used,
-                roundDate: row.round_date,
-                grossScores: row.gross_scores,
-                netScore: row.net_score,
-                notes: row.notes || "Commissioner approved submission"
-            });
+            const saved =
+                await saveCommissionerRound({
 
-            createdRounds.push(result);
+                    eventId:
+                        currentReviewEventId,
+
+                    playerId:
+                        player.playerId,
+
+                    handicapUsed:
+                        player.handicapUsed,
+
+                    roundDate:
+                        player.roundDate,
+
+                    grossScores:
+                        player.grossScores,
+
+                    netScore:
+                        player.netScore,
+
+                    notes:
+                        "Created from reconciled scorecard submission review."
+
+                });
+
+
+            createdRounds.push(
+                saved
+            );
+
         }
+
+
+        /*
+         * Approve the newly created official rounds.
+         */
 
         for (const round of createdRounds) {
-            await approveIndividualRound(round.roundId, "Commissioner Submission Review");
+
+            await approveIndividualRound(
+                round.roundId,
+                "Commissioner Submission Review"
+            );
+
         }
 
-        const { error: approvalError } = await supabaseClient
-            .from("round_submissions")
-            .update({
-                status: "Approved",
-                notes: "Approved by Commissioner after submission review."
-            })
-            .eq("submission_group_id", groupId);
 
-        if (approvalError) throw approvalError;
+        /*
+         * Mark every submission involved in this
+         * reconciliation as approved.
+         */
 
-        alert("Scorecard approved and official round records created.");
+        const submissionGroupIds =
+            [
+                ...new Set(
+                    currentReviewGroups.map(
+                        group =>
+                            group.groupId
+                    )
+                )
+            ];
+
+
+        for (
+            const groupId
+            of submissionGroupIds
+        ) {
+
+            const {
+                error
+            } =
+                await supabaseClient
+
+                    .from(
+                        "round_submissions"
+                    )
+
+                    .update({
+
+                        status:
+                            "Approved",
+
+                        notes:
+                            "Approved by Commissioner after scorecard reconciliation."
+
+                    })
+
+                    .eq(
+                        "submission_group_id",
+                        groupId
+                    );
+
+
+            if (error) {
+                throw error;
+            }
+
+        }
+
+
+        alert(
+            "The reconciled scorecards were approved and official rounds were created."
+        );
+
+
         closeSubmissionReview();
-        await loadSubmissionReviews();
-        await loadPendingRounds();
 
-    } catch (error) {
-        console.error("APPROVE SUBMISSION ERROR:", error);
-        alert("Unable to approve submission.\n\n" + (error.message || "Unknown error"));
+
+        await loadSubmissionReviews();
+
+
+        /*
+         * Refresh pending rounds if that section exists.
+         */
+
+        if (
+            typeof loadPendingRounds ===
+            "function"
+        ) {
+
+            await loadPendingRounds();
+
+        }
+
     }
+
+    catch (error) {
+
+        console.error(
+            "Error approving reconciled submission:",
+            error
+        );
+
+
+        alert(
+            "Unable to approve the reconciled scorecard:\n\n" +
+            error.message
+        );
+
+    }
+
 }
 
-async function rejectSubmissionGroup(groupId) {
-    const reason = prompt("Enter the reason for rejecting this submission:");
-    if (reason === null) return;
 
-    try {
-        const { error } = await supabaseClient
-            .from("round_submissions")
-            .update({
-                status: "Rejected",
-                notes: reason.trim() || "Rejected by Commissioner."
-            })
-            .eq("submission_group_id", groupId);
-
-        if (error) throw error;
-
-        alert("Submission rejected.");
-        closeSubmissionReview();
-        await loadSubmissionReviews();
-
-    } catch (error) {
-        console.error("REJECT SUBMISSION ERROR:", error);
-        alert("Unable to reject submission.\n\n" + (error.message || "Unknown error"));
-    }
-}
+/* ==========================================
+   CLOSE REVIEW
+========================================== */
 
 function closeSubmissionReview() {
-    const detail = document.getElementById("submissionReviewDetail");
-    if (detail) detail.style.display = "none";
-}
 
-// ==========================================
-// LOAD PAGE
-// ==========================================
+    const detail =
+        document.getElementById(
+            "submissionReviewDetail"
+        );
 
-async function loadCommissionerDashboard() {
-    await loadPendingRounds();
-    await loadSubmissionReviews();
+
+    if (detail) {
+
+        detail.style.display =
+            "none";
+
+    }
+
+
+    currentReviewGroupId =
+        null;
+
+    currentReviewEventId =
+        null;
+
+    currentReviewRoundNumber =
+        null;
+
+    currentReviewGroups =
+        [];
+
 }
 
 loadCommissionerDashboard();
