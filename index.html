@@ -457,129 +457,121 @@
     // AUTHENTICATION STATUS
     // ==========================================
 
-    async function loadAuthStatus() {
-
-        const loggedInAs =
-            document.getElementById("loggedInAs");
-
-        const logoutButton =
-            document.getElementById("logoutButton");
-
-        try {
-
-            const {
-                data: { user },
-                error
-            } = await supabaseClient.auth.getUser();
-
-            if (error) {
-                throw error;
-            }
-
-            // ------------------------------------------
-            // NOT LOGGED IN
-            // ------------------------------------------
-
-            if (!user) {
-
-                loggedInAs.textContent =
-                    "Not logged in";
-
-                logoutButton.style.display =
-                    "none";
-
-                return;
-            }
+async function loadAuthStatus() {
 
 
-            // ------------------------------------------
-            // FIND IGA PLAYER
-            // ------------------------------------------
+const loggedInAs =
+    document.getElementById("loggedInAs");
 
-            const {
-                data: player,
-                error: playerError
-            } = await supabaseClient
-                .from("Players")
-                .select(`
-                    player_id,
-                    "Name",
-                    "Active"
-                `)
-                .eq("auth_user_id", user.id)
-                .eq("Active", true)
-                .maybeSingle();
+const logoutButton =
+    document.getElementById("logoutButton");
 
+try {
 
-            if (playerError) {
-                throw playerError;
-            }
+    // Check the current session. No session is a normal
+    // state for visitors who have not signed in.
+    const {
+        data: { session },
+        error
+    } = await supabaseClient.auth.getSession();
 
-
-            // ------------------------------------------
-            // PLAYER FOUND
-            // ------------------------------------------
-
-            if (player) {
-
-                loggedInAs.textContent =
-                    `Logged in as ${player.Name}`;
-
-                logoutButton.style.display =
-                    "inline-block";
-
-            } else {
-
-                loggedInAs.textContent =
-                    "Logged in";
-
-                logoutButton.style.display =
-                    "inline-block";
-            }
-
-
-            // ------------------------------------------
-            // LOGOUT
-            // ------------------------------------------
-
-            logoutButton.onclick =
-                async function () {
-
-                    const {
-                        error: logoutError
-                    } = await supabaseClient.auth.signOut();
-
-                    if (logoutError) {
-
-                        alert(
-                            "Unable to log out: " +
-                            logoutError.message
-                        );
-
-                        return;
-                    }
-
-                    window.location.href =
-                        "login.html";
-                };
-
-        } catch (error) {
-
-            console.error(
-                "Authentication error:",
-                error
-            );
-
-            loggedInAs.textContent =
-                "Authentication error";
-
-            logoutButton.style.display =
-                "none";
-        }
+    if (error) {
+        throw error;
     }
 
+    const user = session?.user ?? null;
 
-    loadAuthStatus();
+    // ------------------------------------------
+    // NOT LOGGED IN
+    // ------------------------------------------
+
+    if (!user) {
+
+        loggedInAs.textContent = "Not logged in";
+
+        logoutButton.style.display = "none";
+
+        return;
+    }
+
+    // ------------------------------------------
+    // FIND IGA PLAYER
+    // ------------------------------------------
+
+    const {
+        data: player,
+        error: playerError
+    } = await supabaseClient
+        .from("Players")
+        .select(`
+            player_id,
+            "Name",
+            "Active"
+        `)
+        .eq("auth_user_id", user.id)
+        .eq("Active", true)
+        .maybeSingle();
+
+    if (playerError) {
+        throw playerError;
+    }
+
+    // ------------------------------------------
+    // DISPLAY LOGIN STATUS
+    // ------------------------------------------
+
+    if (player) {
+
+        loggedInAs.textContent =
+            `Logged in as ${player.Name}`;
+
+    } else {
+
+        loggedInAs.textContent = "Logged in";
+    }
+
+    logoutButton.style.display = "inline-block";
+
+    // ------------------------------------------
+    // LOGOUT
+    // ------------------------------------------
+
+    logoutButton.onclick = async function () {
+
+        const {
+            error: logoutError
+        } = await supabaseClient.auth.signOut();
+
+        if (logoutError) {
+
+            alert(
+                "Unable to log out: " +
+                logoutError.message
+            );
+
+            return;
+        }
+
+        window.location.href = "login.html";
+    };
+
+} catch (error) {
+
+    console.error(
+        "Unable to load authentication status:",
+        error
+    );
+
+    // Only show an authentication error for an actual
+    // problem checking the session or loading the player.
+    loggedInAs.textContent = "Unable to check login status";
+
+    logoutButton.style.display = "none";
+}
+
+}
+
+loadAuthStatus();
 
 </script>
 
