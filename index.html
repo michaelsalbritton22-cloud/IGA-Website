@@ -487,12 +487,13 @@ try {
 
     if (!user) {
 
-        loggedInAs.textContent = "Not logged in";
+    loggedInAs.innerHTML =
+        '<a href="login.html" style="color: inherit; text-decoration: underline;">Sign In</a>';
 
-        logoutButton.style.display = "none";
+    logoutButton.style.display = "none";
 
-        return;
-    }
+    return;
+}
 
     // ------------------------------------------
     // FIND IGA PLAYER
