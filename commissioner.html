@@ -9,6 +9,20 @@
 
     <link rel="stylesheet" href="css/style.css">
 
+    <style>
+        [hidden] { display: none !important; }
+        .commissioner-access-panel { max-width: 760px; margin: 2rem auto; padding: 1.5rem; border: 1px solid #d8dde5; border-radius: 12px; background: #fff; }
+        .commissioner-access-panel h2 { margin-top: 0; }
+        .commissioner-page-title { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+        .commissioner-page-title h2 { margin-bottom: .35rem; }
+        .commissioner-accordion { margin: 1.25rem 0; border: 1px solid #d8dde5; border-radius: 10px; overflow: clip; background: #fff; }
+        .commissioner-accordion > summary { cursor: pointer; padding: 1rem 1.15rem; font-weight: 700; background: #f6f7f9; }
+        .commissioner-accordion > summary::marker { color: #606b7b; }
+        .commissioner-accordion-content { padding: .25rem 1rem 1rem; }
+        .commissioner-tools-note { color: #5e6877; font-size: .95rem; }
+        @media (max-width: 640px) { .commissioner-access-panel { margin: 1rem; padding: 1rem; } .commissioner-accordion-content { padding: .25rem .65rem .75rem; } }
+    </style>
+
 </head>
 
 
@@ -19,20 +33,21 @@
 
     <div id="header"></div>
 
+    <section id="commissionerAccess" class="commissioner-access-panel" role="status" aria-live="polite">
+        <h2>Verifying commissioner access</h2>
+        <p id="commissionerAccessMessage">Checking your signed-in account…</p>
+        <a id="commissionerLoginLink" href="login.html" hidden>Go to sign in</a>
+    </section>
 
-    <main class="container">
+    <main id="commissionerMain" class="container" hidden>
 
 
-        <section class="page-title">
-
-            <h2>
-                Commissioner Dashboard
-            </h2>
-
-            <p>
-                Manage rounds, approvals, players, and league operations.
-            </p>
-
+        <section class="page-title commissioner-page-title">
+            <div>
+                <h2>Commissioner Dashboard</h2>
+                <p>Review submitted scorecards, resolve discrepancies, and approve event results.</p>
+            </div>
+            <button type="button" class="button" onclick="openRoundEntry()">Enter Round</button>
         </section>
 
 
@@ -71,13 +86,10 @@
 
         </section>
 
-        <!-- PENDING APPROVALS -->
-
-        <section>
-
-            <h2>
-                Pending Round Approvals
-            </h2>
+        <!-- SECONDARY WORKFLOW: PENDING ROUND APPROVALS -->
+        <details class="commissioner-accordion">
+            <summary>Pending Round Approvals</summary>
+            <section class="commissioner-accordion-content">
 
 
             <div id="pendingRounds">
@@ -95,8 +107,8 @@
                 </div>
 
             </div>
-
-        </section>
+            </section>
+        </details>
 
         <!-- ROUND REVIEW -->
 
@@ -487,168 +499,9 @@
 </div>
 
 
-            <!-- ==========================================
-                 ROUND PREVIEW
-            =========================================== -->
-
-            <div
-                id="entryPreview"
-                class="review-summary"
-                style="margin-top:25px;"
-            >
-
-                <strong>
-                    Round Preview
-                </strong>
-
-                <p id="entryPreviewText">
-                    Enter all 18 scores to calculate
-                    the round.
-                </p>
-
-            </div>
-
-
-            <!-- ==========================================
-                 NOTES
-            =========================================== -->
-
-            <div style="margin-top:20px;">
-
-                <label for="entryNotes">
-
-                    <strong>
-                        Notes
-                    </strong>
-
-                </label>
-
-                <br>
-
-                <textarea
-                    id="entryNotes"
-                    rows="3"
-                    style="width:100%; margin-top:8px;"
-                    placeholder="Optional commissioner notes"
-                ></textarea>
-
-            </div>
-
-
-            <!-- ==========================================
-                 ACTIONS
-            =========================================== -->
-
-            <div
-                class="approval-actions"
-                style="margin-top:25px;"
-            >
-
-                <button
-                    class="button"
-                    onclick="closeRoundEntry()"
-                >
-
-                    Cancel
-
-                </button>
-
-
-                <button
-                    class="button"
-                    onclick="saveRoundEntry()"
-                >
-
-                    Save Round
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
+                    </div>
 
 </section>
-
-        <!-- COMMISSIONER TOOLS -->
-
-        <section class="cards">
-
-
-            <div class="card">
-
-         <h3>
-           Enter Round
-        </h3>
-
-        <p>
-            Enter a player's 18-hole score directly from 18Birdies.
-         </p>
-
-         <button
-          class="button"
-            onclick="openRoundEntry()"
-            >
-            Enter Round
-         </button>
-
-     </div>
-
-
-            <div class="card">
-
-                <h3>
-                    Player Management
-                </h3>
-
-                <p>
-                    Add, edit, or deactivate IGA players.
-                </p>
-
-                <a href="#" class="button">
-                    Manage Players
-                </a>
-
-            </div>
-
-
-            <div class="card">
-
-                <h3>
-                    Season Management
-                </h3>
-
-                <p>
-                    Manage seasons and qualifying requirements.
-                </p>
-
-                <a href="#" class="button">
-                    Manage Seasons
-                </a>
-
-            </div>
-
-
-            <div class="card">
-
-                <h3>
-                    Championship Management
-                </h3>
-
-                <p>
-                    Manage IGA championship events and winners.
-                </p>
-
-                <a href="#" class="button">
-                    Manage Championships
-                </a>
-
-            </div>
-
-
-        </section>
-
 
     </main>
 
@@ -3814,7 +3667,7 @@ async function loadCommissionerDashboard() {
 
 }
 
-loadCommissionerDashboard();
+// Startup is deferred until the signed-in user is verified as a commissioner.
 
 
 // ==========================================
@@ -5461,6 +5314,73 @@ function clearRoundEntry() {
         null;
 
 }
+
+
+// ==========================================
+// COMMISSIONER ACCESS GATE
+// ==========================================
+
+function setCommissionerAccessMessage(message, showLogin = false) {
+    const panel = document.getElementById("commissionerAccess");
+    const messageNode = document.getElementById("commissionerAccessMessage");
+    const loginLink = document.getElementById("commissionerLoginLink");
+    const main = document.getElementById("commissionerMain");
+
+    if (main) main.hidden = true;
+    if (panel) panel.hidden = false;
+    if (messageNode) messageNode.textContent = message;
+    if (loginLink) loginLink.hidden = !showLogin;
+}
+
+async function initializeCommissionerAccess() {
+    setCommissionerAccessMessage("Checking your signed-in account…");
+
+    try {
+        const { data: userData, error: userError } = await supabaseClient.auth.getUser();
+        if (userError) throw userError;
+
+        const user = userData?.user;
+        if (!user) {
+            setCommissionerAccessMessage("Please sign in with your IGA account to continue.", true);
+            return;
+        }
+
+        const { data: commissioner, error: commissionerError } = await supabaseClient
+            .from("commissioners")
+            .select("user_id")
+            .eq("user_id", user.id)
+            .maybeSingle();
+
+        if (commissionerError) {
+            console.error("COMMISSIONER AUTHORIZATION CHECK FAILED:", commissionerError);
+            setCommissionerAccessMessage("Commissioner access could not be verified. Confirm the commissioners table and its SELECT policy are installed, then reload this page.");
+            return;
+        }
+
+        if (!commissioner) {
+            setCommissionerAccessMessage("This signed-in account is not authorized to access the commissioner dashboard. If you believe this is an error, contact the league administrator.");
+            return;
+        }
+
+        document.getElementById("commissionerAccess").hidden = true;
+        document.getElementById("commissionerMain").hidden = false;
+        await loadCommissionerDashboard();
+
+    } catch (error) {
+        console.error("COMMISSIONER ACCESS INITIALIZATION FAILED:", error);
+        setCommissionerAccessMessage("Unable to verify commissioner access. Check your connection and Supabase configuration, then reload.");
+    }
+}
+
+// If the session is signed out while the page is open, immediately hide the dashboard.
+supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_OUT" || !session) {
+        setCommissionerAccessMessage("Your session is signed out. Please sign in with your IGA account to continue.", true);
+    }
+});
+
+initializeCommissionerAccess();
+
 </script>
 
 </body>
