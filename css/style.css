@@ -4112,3 +4112,48 @@ MOBILE
     color: #1f2937;
     font-size: 12px;
 }
+
+```css
+/* ==========================================
+   HOMEPAGE SCORECARD SUBMISSION
+=========================================== */
+
+.scorecard-submit-section {
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+
+.scorecard-submit-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 28px 32px;
+    border: 1px solid rgba(128, 128, 128, 0.3);
+    border-radius: 10px;
+    background: var(--card-bg, #f7f7f7);
+}
+
+.scorecard-submit-content h2 {
+    margin: 8px 0;
+}
+
+.scorecard-submit-content p {
+    margin-bottom: 0;
+    line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+    .scorecard-submit-card {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 24px;
+    }
+
+    .scorecard-submit-card .button {
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+    }
+}
+```
