@@ -2826,17 +2826,17 @@ MOBILE
 
 @media (max-width: 1100px) {
 
-```
+
 .round-history-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-```
+
 
 }
 
 @media (max-width: 750px) {
 
-```
+
 .rounds-page {
     padding-top: 25px;
 }
@@ -2873,7 +2873,7 @@ MOBILE
 .rounds-page-header h1 {
     font-size: 32px;
 }
-```
+
 
 }
 
@@ -4113,7 +4113,7 @@ MOBILE
     font-size: 12px;
 }
 
-```css
+
 /* ==========================================
    HOMEPAGE SCORECARD SUBMISSION
 =========================================== */
@@ -4156,4 +4156,3 @@ MOBILE
         box-sizing: border-box;
     }
 }
-```
